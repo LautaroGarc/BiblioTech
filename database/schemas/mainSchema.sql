@@ -23,9 +23,8 @@ CREATE TABLE medals (
 
 CREATE TABLE items (
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    img VARCHAR(50) NOT NULL,
-    type ENUM('Computadora', "Calculadora", "Tablero", "Regla ")
+    name ENUM('Computadora', "Calculadora", "Tablero", "Regla 45", "Regla 60"),
+    img VARCHAR(50) NOT NULL, 
     borrowed INT UNSIGNED NOT NULL
 );
 
