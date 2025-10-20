@@ -16,10 +16,15 @@ INSERT INTO medals (img, tag, userId) VALUES
 ('reader_gold.png', '10 Libros Leídos', 1);
 
 INSERT INTO items (name, img, borrowed) VALUES
-('Computadora','computadora.jpg',25,1),
-('Regla 45','regla.jpg',5,3),
-('Tablero','tablero.jpg',10,3),
-('Calculadora', 'calculadora.jpg', 10, 4);
+('Computadora','computadora.jpg', TRUE),
+('Tablero','tablero.jpg', FALSE),
+('Computadora','computadora.jpg', TRUE),
+('Computadora','computadora.jpg', TRUE),
+('Regla 45','regla.jpg', FALSE),
+('Tablero','tablero.jpg', FALSE),
+('Calculadora', 'calculadora.jpg', FALSE),
+('Regla 45','regla.jpg', FALSE),
+('Regla 60','regla.jpg', FALSE):
 
 INSERT INTO books (name, img, timesReaded, borrowed, sinopsis, author, gender, review, editorial, barCode, subGender, ageRangeMin, ageRangeMax, readLevel, rhythm, tone, narrativeStyle, length, type, theme, final, similar) VALUES
 (
