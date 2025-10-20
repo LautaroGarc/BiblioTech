@@ -1,6 +1,6 @@
 USE BiblioTech;
 
-INSERT INTO users (name, lastName, img, email, pass, lvl, nReads, warning) VALUES
+INSERT INTO users (name, lastName, img, email, pass, lvl, nReads, type, warning) VALUES
 ('Ana', 'García', "profile01.png", 'ana.garcia@email.com', 'anaa123', 5, 12, 'alumno', 'nulo'),
 ('Carlos', 'Martínez', "profile02.png", 'carlos.martinez@email.com', 'carlos1234', 3, 8, 'alumno', 'leve'),
 ('María', 'López', "profile02.png", 'maria.lopez@email.com', 'mariaLopez123', 7, 25, 'alumno', 'nulo'),
