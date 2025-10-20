@@ -9,7 +9,8 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL,
     pass VARCHAR(15) NOT NULL,
     lvl INT UNSIGNED NOT NULL,
-    cantLeidos INT UNSIGNED NOT NULL,
+    nReads INT UNSIGNED NOT NULL,
+    type ENUM('alumno','docente'),
     warning ENUM('nulo','leve','medio','alta','lista negra')
 );
 
@@ -24,7 +25,7 @@ CREATE TABLE items (
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     name VARCHAR(100) NOT NULL,
     img VARCHAR(50) NOT NULL,
-    inStock INT UNSIGNED NOT NULL,
+    type ENUM('Computadora', "Calculadora", "Tablero", "Regla ")
     borrowed INT UNSIGNED NOT NULL
 );
 
