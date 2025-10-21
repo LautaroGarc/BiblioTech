@@ -3,7 +3,7 @@ const db = require('../../../database/database.js')
 //obtener libro x
 async function getBook(idBook) {
     try {
-        const [rows] = await db.execute('SELECT * FROM books WHERE id = ?', [idBook]);
+        const [rows] = await db.execute(`SELECT * FROM books WHERE id = ?`, [idBook]);
         return rows[0];
     } catch (error) {
         console.error('error en getBook:', error);
@@ -14,7 +14,7 @@ async function getBook(idBook) {
 //obtener todos los libros
 async function getBooks() {
     try {
-        const [rows] = await db.execute('SELECT * FROM books ORDER BY id');
+        const [rows] = await db.execute(`SELECT * FROM books ORDER BY id`);
         return rows;
     } catch (error) {
         console.error('error en getBook:', error);
@@ -23,9 +23,9 @@ async function getBooks() {
 }
 
 //obtener x dato de x libro
-async function getBookData(idBook, data) {
+async function getBookData(idBook, field) {
     try {
-        const [rows] = await db.execute('SELECT ? FROM books WHERE id = ?', [data, idBook]);
+        const [rows] = await db.execute(`SELECT \`${field}\` FROM books WHERE id = ?`, [field, idBook]);
         return rows[0];
     } catch (error) {
         console.error('error en getBookData:', error);
@@ -34,9 +34,9 @@ async function getBookData(idBook, data) {
 }
 
 //obtener x dato de todos los libros
-async function getBooksData(data) {
+async function getBooksData(field) {
     try {
-        const [rows] = await db.execute('SELECT ? FROM books ORDER BY id', [data]);
+        const [rows] = await db.execute(`SELECT \`${field}\` FROM books ORDER BY id`);
         return rows;
     } catch (error) {
         console.error('error en getBookData:', error);
@@ -45,19 +45,42 @@ async function getBooksData(data) {
 }
 
 //obtener libros con x dato
-async function getBooksWith(data) {
+async function getBooksWith(field, data) {
+    try {
+        const [rows] = await db.execute(`SELECT * FROM books WHERE \`${field}\` = ?`, [data]);
+        return rows;
+    } catch (error) {
+        console.error('error en getBooksWith:', error);
+        throw error;
+    }
+}
 
+//obtener x libro con x dato
+async function getBookWith(bookId, field, data) {
+    try {
+        const [rows] = await db.execute(`SELECT * FROM books WHERE \`${field}\` = ? AND id = ?`, [data, bookId]);
+        return rows[0];
+    } catch (error) {
+        console.error('error en getBookWith:', error);
+        throw error;
+    }
 }
 
 //editar libro
-async function editBook(idBook, data) {
-
+async function editBook(idBook, field, data) {
+    try {
+        const [result] = await db.execute(`UPDATE books SET \`${field}\` = ? WHERE id = ?`, [data, idBook])
+        return result;
+    } catch (error) {
+        console.error('error en editBook:', error);
+        throw error;
+    }
 }
 
 //crear libro
 async function createBook(book) {
     //book = [all]
-
+    
 }
 
 module.exports = {
@@ -65,6 +88,7 @@ module.exports = {
     getBooks,
     getBookData,
     getBooksData,
+    getBookWith,
     getBooksWith,
     editBook,
     createBook
