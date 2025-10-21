@@ -140,6 +140,11 @@ async function createBook(book) {
     }
 }
 
+//delete book
+async function deleteBook(bookId) {
+
+};
+
 module.exports = {
     getBook,
     getBooks,

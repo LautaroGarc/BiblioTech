@@ -21,7 +21,12 @@ async function editLoan(id, type, field, data) {
 };
 
 //crear prestamos
-async function createLoan() {
+async function createLoan(loan) {
+
+};
+
+//delete loan
+async function deleteLoan(loanId, type) {
 
 };
 

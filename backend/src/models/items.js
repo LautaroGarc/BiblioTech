@@ -104,6 +104,11 @@ async function createItem(item) {
     } 
 }
 
+//delete item
+async function deleteItem(itemId) {
+
+};
+
 module.exports = {
     getItems,
     getItem,
