@@ -79,8 +79,62 @@ async function editBook(idBook, field, data) {
 
 //crear libro
 async function createBook(book) {
-    //book = [all]
-    
+    //book = {all}
+
+    sql = `INSERT INTO books (name, img, timesReaded, borrowed, sinopsis, author, gender, review, editorial, barCode, subGender, ageRangeMin, ageRangeMax, readLevel, rhythm, tone, narrativeStyle, length, type, theme, final, similar) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+    try {
+        const requiredFields = [
+            'name', 'img', 'timesReaded', 'borrowed', 'sinopsis', 
+            'author', 'gender', 'review', 'editorial', 'barCode',
+            'subGender', 'ageRangeMin', 'ageRangeMax', 'readLevel',
+            'rhythm', 'tone', 'narrativeStyle', 'length', 'type',
+            'theme', 'final', 'similar'
+        ];
+        const missingFields = requiredFields.filter(field => !(field in book));
+        if (missingFields.length > 0) {
+            throw new Error(`Campos faltantes: ${missingFields.join(', ')}`);
+        }
+
+        const sql = `
+            INSERT INTO books (
+                name, img, timesReaded, borrowed, sinopsis, author, gender, 
+                review, editorial, barCode, subGender, ageRangeMin, ageRangeMax, 
+                readLevel, rhythm, tone, narrativeStyle, length, type, theme, 
+                final, similar
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        
+        const values = [
+            book.name,
+            book.img,
+            book.timesReaded,
+            book.borrowed,
+            book.sinopsis,
+            book.author,
+            book.gender,
+            book.review,
+            book.editorial,
+            book.barCode,
+            book.subGender,
+            book.ageRangeMin,
+            book.ageRangeMax,
+            book.readLevel,
+            book.rhythm,
+            book.tone,
+            book.narrativeStyle,
+            book.length,
+            book.type,
+            book.theme,
+            book.final,
+            JSON.stringify(book.similar) 
+        ];
+
+        const [result] = await db.execute(sql, values)
+        return {...book};
+    } catch (error) {
+        console.error('error en createBook:', error);
+        throw error;
+    }
 }
 
 module.exports = {
