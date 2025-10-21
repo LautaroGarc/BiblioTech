@@ -130,7 +130,10 @@ async function createBook(book) {
         ];
 
         const [result] = await db.execute(sql, values)
-        return {...book};
+        return {
+            result, 
+            ...book
+        };
     } catch (error) {
         console.error('error en createBook:', error);
         throw error;
