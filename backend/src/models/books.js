@@ -1,9 +1,9 @@
 const db = require('../../../database/database.js')
 
 //obtener libro x
-async function getBook(idBook) {
+async function getBook(bookId) {
     try {
-        const [rows] = await db.execute(`SELECT * FROM books WHERE id = ?`, [idBook]);
+        const [rows] = await db.execute(`SELECT * FROM books WHERE id = ?`, [bookId]);
         return rows[0];
     } catch (error) {
         console.error('error en getBook:', error);
@@ -23,9 +23,9 @@ async function getBooks() {
 }
 
 //obtener x dato de x libro
-async function getBookData(idBook, field) {
+async function getBookData(bookId, field) {
     try {
-        const [rows] = await db.execute(`SELECT \`${field}\` FROM books WHERE id = ?`, [field, idBook]);
+        const [rows] = await db.execute(`SELECT \`${field}\` FROM books WHERE id = ?`, [field, bookId]);
         return rows[0];
     } catch (error) {
         console.error('error en getBookData:', error);
@@ -67,9 +67,9 @@ async function getBookWith(bookId, field, data) {
 }
 
 //editar libro
-async function editBook(idBook, field, data) {
+async function editBook(bookId, field, data) {
     try {
-        const [result] = await db.execute(`UPDATE books SET \`${field}\` = ? WHERE id = ?`, [data, idBook])
+        const [result] = await db.execute(`UPDATE books SET \`${field}\` = ? WHERE id = ?`, [data, bookId])
         return result;
     } catch (error) {
         console.error('error en editBook:', error);
@@ -129,7 +129,7 @@ async function createBook(book) {
             JSON.stringify(book.similar) 
         ];
 
-        const [result] = await db.execute(sql, values)
+        const [result] = await db.execute(sql, values);
         return {
             result, 
             ...book
