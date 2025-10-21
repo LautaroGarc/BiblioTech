@@ -24,7 +24,7 @@ INSERT INTO items (name, img, borrowed) VALUES
 ('Tablero','tablero.jpg', FALSE),
 ('Calculadora', 'calculadora.jpg', FALSE),
 ('Regla 45','regla.jpg', FALSE),
-('Regla 60','regla.jpg', FALSE):
+('Regla 60','regla.jpg', FALSE);
 
 INSERT INTO books (name, img, timesReaded, borrowed, sinopsis, author, gender, review, editorial, barCode, subGender, ageRangeMin, ageRangeMax, readLevel, rhythm, tone, narrativeStyle, length, type, theme, final, similar) VALUES
 (
@@ -278,40 +278,30 @@ INSERT INTO IA () VALUES
 
 
 INSERT INTO bookLoans (userId, bookId, state, dateIn, dateOut) VALUES
--- Préstamos activos
 (1, 2, 'en prestamo', '2024-01-15', '2024-02-15'),
 (2, 4, 'en prestamo', '2024-01-20', '2024-02-20'),
 (3, 7, 'en prestamo', '2024-01-25', '2024-02-25'),
 (4, 9, 'en prestamo', '2024-02-01', '2024-03-01'),
-
--- Préstamos devueltos
 (1, 1, 'devuelto', '2023-12-01', '2023-12-15'),
 (2, 3, 'devuelto', '2023-12-10', '2023-12-24'),
 (3, 5, 'devuelto', '2023-11-15', '2023-11-29'),
 (4, 6, 'devuelto', '2023-11-20', '2023-12-04'),
 (5, 8, 'devuelto', '2023-10-05', '2023-10-19'),
 (1, 10, 'devuelto', '2023-10-15', '2023-10-29'),
-
--- Préstamos atrasados
 (2, 2, 'atrasado', '2023-12-20', '2024-01-03'),
 (3, 4, 'atrasado', '2023-12-25', '2024-01-08'),
 (4, 7, 'atrasado', '2024-01-05', '2024-01-19'),
 (5, 9, 'atrasado', '2024-01-10', '2024-01-24');
 
 INSERT INTO itemLoans (userId, itemId, state, dateIn, dateOut) VALUES
--- Préstamos activos de items
 (1, 1, 'en prestamo', '2024-02-01', '2024-02-15'),
 (2, 3, 'en prestamo', '2024-02-05', '2024-02-19'),
 (3, 2, 'en prestamo', '2024-02-10', '2024-02-24'),
-
--- Préstamos devueltos de items
 (1, 2, 'devuelto', '2024-01-10', '2024-01-24'),
 (2, 3, 'devuelto', '2024-01-15', '2024-01-29'),
 (3, 4, 'devuelto', '2024-01-20', '2024-02-03'),
 (4, 1, 'devuelto', '2023-12-01', '2023-12-15'),
 (5, 3, 'devuelto', '2023-12-10', '2023-12-24'),
-
--- Préstamos atrasados de items
 (4, 2, 'atrasado', '2024-01-05', '2024-01-19'),
 (5, 4, 'atrasado', '2024-01-15', '2024-01-29'),
 (1, 5, 'atrasado', '2024-01-20', '2024-02-03');
