@@ -8,6 +8,7 @@ CREATE TABLE users (
     img VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     pass VARCHAR(15) NOT NULL,
+    medals JSON NOT NULL,
     lvl INT UNSIGNED NOT NULL,
     nReads INT UNSIGNED NOT NULL,
     type ENUM('alumno','docente'),
@@ -15,10 +16,9 @@ CREATE TABLE users (
 );
 
 CREATE TABLE medals (
+    id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	img VARCHAR(50) NOT NULL,
-    tag VARCHAR(30) NOT NULL,
-	userId INT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES users(id)
+    tag VARCHAR(30) NOT NULL
 );  
 
 CREATE TABLE items (
