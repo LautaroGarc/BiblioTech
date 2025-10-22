@@ -38,12 +38,12 @@ async function addMedal(field) {
 
 
 // actualizar nivel
-async function updateLvl(field) {
+async function updateLvl(idUser) {
     try{
-        const [result] = await db.execute(``);
+        const [result] = await db.execute(`UPDATE users SET lvl = lvl + 1 WHERE id = ?`, [idUser]);
         return result;
     } catch (error){
-        console.error('Error en updateRank');
+        console.error('Error en updateLvl');
         throw error;
     }
 }
@@ -86,9 +86,9 @@ async function getUser(idUser) {
 */
 
 // advertir usuario (cambiar su warning)
-async function warnUser(idUser, field) {
+async function warnUser(idUser, data) {
     try{
-        const [result] = await db.execute(`UPDATE users SET warning = ? WHERE id = ?`, [field, idUser]);
+        const [result] = await db.execute(`UPDATE users SET warning = ? WHERE id = ?`, [data, idUser]);
         return result;
     } catch (error){
         console.error('Error en warnUser');
