@@ -49,7 +49,7 @@ async function getLoanWith(id, type, field, data) {
 
 async function getLoansWith(type, field, data) {
     try{
-        const query = "SELECT * FROM "+ type +"loans WHERE "+ field +" = ?";
+        const query = `SELECT * FROM \`${type}\` WHERE \`${field}\` = ?`;
         const [result] = await db.execute(query, [data]);
         return result;
     } catch (error){
