@@ -10,7 +10,7 @@ async function addUser(user) {
         console.error('Error en addUser: ', error);
         throw error;
     }
-}
+};
 
 
 
@@ -23,7 +23,7 @@ async function editUser(idUser, field, data) {
         console.error('Error en editUser: ', error);
         throw error;
     }
-}
+};
 
 // eliminar usuario
 async function deleteUser(idUser) {
@@ -34,7 +34,7 @@ async function deleteUser(idUser) {
         console.error('Error en deleteUser: ', error);
         throw error;
     }
-}
+};
 
 
 // agregar medalla a un usuario
@@ -43,10 +43,10 @@ async function addMedal(field) {
         const [result] = await db.execute(``);
         return result;
     } catch (error){
-        console.error('Error en addMedal');
+        console.error('Error en addMedal: ', error);
         throw error;
     }
-}
+};
 
 
 // actualizar nivel
@@ -58,7 +58,7 @@ async function updateLvl(idUser) {
         console.error('Error en updateLvl: ', error);
         throw error;
     }
-}
+};
 
 
 // obtener lista de usuarios
@@ -70,7 +70,7 @@ async function getUsers() {
         console.error('Error en getUsers: ', error);
         throw error;
     }
-}
+};
 
 
 async function getUserWith(field,idUser) {
@@ -82,7 +82,7 @@ async function getUserWith(field,idUser) {
         console.error('Error en getUsersWith: ', error);
         throw error;
     }
-}
+};
 
 async function getUsersWith(field) {
     try{
@@ -93,7 +93,7 @@ async function getUsersWith(field) {
         console.error('Error en getUsersWith: ', error);
         throw error;
     }
-}
+};
 
 
 
@@ -107,7 +107,7 @@ async function getUser(idUser) {
         console.error('Error en getUser: ', error);
         throw error;
     }
-}
+};
 
 
 // banear cuenta
@@ -131,7 +131,7 @@ async function warnUser(idUser, data) {
         console.error('Error en warnUser: ', error);
         throw error;
     }
-}
+};
 
 
 module.exports = {
