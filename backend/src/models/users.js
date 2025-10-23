@@ -1,25 +1,37 @@
 const db = require('../../../database/database.js')
 
-// agregar cuenta
-async function addAccount(account) {
-    //account = {all}
+// agregar usuario
+async function addUser(user) {
+    //user = {all}
     try{
-        const [result] = await db.execute(`INSERT INTO users (name, lastName, img, email, pass, lvl, nReads, type, warning) VALUES (?,?,?,?,?,?,?,?,?)`, [account.name, account.lastName, account.img, account.email, account.pass, account.lvl, account.nReads, account.type, account.warning]);
+        const [result] = await db.execute(`INSERT INTO users (name, lastName, img, email, pass, lvl, nReads, type, warning) VALUES (?,?,?,?,?,?,?,?,?)`, [user.name, user.lastName, user.img, user.email, user.pass, user.lvl, user.nReads, user.type, user.warning]);
         return result;
     } catch (error){
-        console.error('Error en addAccount');
+        console.error('Error en addUser: ', error);
         throw error;
     }
 }
 
 
-// eliminar cuenta
-async function deleteAccount(field) {
+
+async function editUser(idUser, field, data) {
     try{
-        const [result] = await db.execute(`DELETE FROM users WHERE id = ?`, [field]);
+        const query = `UPDATE users SET ${field} = ? WHERE id = ?`;
+        const [result] = await db.execute(query, [data, idUser]);
         return result;
     } catch (error){
-        console.error('Error en deleteAccount');
+        console.error('Error en editUser: ', error);
+        throw error;
+    }
+}
+
+// eliminar usuario
+async function deleteUser(idUser) {
+    try{
+        const [result] = await db.execute(`DELETE FROM users WHERE id = ?`, [idUser]);
+        return result;
+    } catch (error){
+        console.error('Error en deleteUser: ', error);
         throw error;
     }
 }
@@ -31,7 +43,7 @@ async function addMedal(field) {
         const [result] = await db.execute(``);
         return result;
     } catch (error){
-        console.error('Error en ');
+        console.error('Error en addMedal');
         throw error;
     }
 }
@@ -43,7 +55,7 @@ async function updateLvl(idUser) {
         const [result] = await db.execute(`UPDATE users SET lvl = lvl + 1 WHERE id = ?`, [idUser]);
         return result;
     } catch (error){
-        console.error('Error en updateLvl');
+        console.error('Error en updateLvl: ', error);
         throw error;
     }
 }
@@ -55,10 +67,35 @@ async function getUsers() {
         const [result] = await db.execute(`SELECT * FROM users`);
         return result;
     } catch (error){
-        console.error('Error en getUsers');
+        console.error('Error en getUsers: ', error);
         throw error;
     }
 }
+
+
+async function getUserWith(field,idUser) {
+    try{
+        const query = "SELECT " + field + " FROM users WHERE id = ?";
+        const [result] = await db.execute(query, [idUser]);
+        return result;
+    } catch (error){
+        console.error('Error en getUsersWith: ', error);
+        throw error;
+    }
+}
+
+async function getUsersWith(field) {
+    try{
+        const query = "SELECT " + field + " FROM users";
+        const [result] = await db.execute(query);
+        return result;
+    } catch (error){
+        console.error('Error en getUsersWith: ', error);
+        throw error;
+    }
+}
+
+
 
 
 // obtener lista de usuarios
@@ -67,7 +104,7 @@ async function getUser(idUser) {
         const [result] = await db.execute(`SELECT * FROM users WHERE id = ?`, [idUser]);
         return result;
     } catch (error){
-        console.error('Error en getUser');
+        console.error('Error en getUser: ', error);
         throw error;
     }
 }
@@ -91,18 +128,21 @@ async function warnUser(idUser, data) {
         const [result] = await db.execute(`UPDATE users SET warning = ? WHERE id = ?`, [data, idUser]);
         return result;
     } catch (error){
-        console.error('Error en warnUser');
+        console.error('Error en warnUser: ', error);
         throw error;
     }
 }
 
 
 module.exports = {
-    addAccount,
-    deleteAccount,
+    addUser,
+    editUser,
+    deleteUser,
     addMedal,
     updateLvl,
     getUsers,
     getUser,
+    getUserWith,
+    getUsersWith,
     warnUser
 }
