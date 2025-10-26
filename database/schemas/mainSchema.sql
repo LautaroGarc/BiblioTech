@@ -21,9 +21,9 @@ CREATE TABLE medals (
     tag VARCHAR(30) NOT NULL
 );  
 
-CREATE TABLE items (
+CREATE TABLE supplies (
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    name ENUM('Computadora', "Calculadora", "Tablero", "Regla 45", "Regla 60"),
+    name VARCHAR(150),
     img VARCHAR(50) NOT NULL, 
     borrowed INT UNSIGNED NOT NULL
 );
@@ -88,7 +88,7 @@ CREATE TABLE bookLoans (
     FOREIGN KEY (bookId) REFERENCES books(id)
 );
 
-CREATE TABLE itemLoans (
+CREATE TABLE suppLoans (
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     userId INT NOT NULL,
     itemId INT NOT NULL,
