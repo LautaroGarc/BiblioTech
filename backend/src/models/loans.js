@@ -2,12 +2,17 @@ const db = require('../../../database/database.js')
 
 //obtener todos los prestamos
 async function getLoans(type = null) {
-    try{
-
-
-        const query = "SELECT * FROM "+ type + "loans";
-        
-        const [result] = await db.execute(query);
+    try{ 
+        const query1 = `SELECT * FROM itemLoans`;
+        const [result1] = await db.execute(query1);
+        const query2 = `SELECT * FROM bookLoans`;
+        const [result2] = await db.execute(query2);
+        const result = result1.concat(resutl2)
+        if (type === 'itemLoans'){
+            return result1;
+        } else if (type === 'bookLoans'){
+            return result2;
+        }
         return result;
 
     } catch (error){
@@ -22,7 +27,7 @@ async function getLoans(type = null) {
 //obtener x prestamo (item - libro)
 async function getLoan(id, type) {
     try{
-        const query = "SELECT * FROM "+ type + "loans WHERE id = ?";
+        const query = `SELECT * FROM \`${type}\` WHERE id = ?`;
         
         const [result] = await db.execute(query, [id]);
         return result;
@@ -37,7 +42,7 @@ async function getLoan(id, type) {
 //obtener prestamo (item - libro) con x dato
 async function getLoanWith(id, type, field, data) {
     try{
-        const query = "SELECT "+ field +" FROM "+ type +"loans WHERE "+ field +" = ? AND id = ?";
+        const query = `SELECT \`${field}\` FROM \`${type}\` WHERE \`${field}\` = ? AND id = ?`;
         const [result] = await db.execute(query, [data, id]);
         return result;
     } catch (error){
@@ -47,7 +52,7 @@ async function getLoanWith(id, type, field, data) {
 
 };
 
-async function getLoansWith(type, field, data) {
+async function getLoansWith(type = null, field, data) {
     try{
         const query = `SELECT * FROM \`${type}\` WHERE \`${field}\` = ?`;
         const [result] = await db.execute(query, [data]);
@@ -62,7 +67,7 @@ async function getLoansWith(type, field, data) {
 //editar prestamos
 async function editLoan(id, type, field, data) {
     try{
-        const query = "UPDATE "+ type +"loans SET "+ field +" = ? WHERE id = ?";
+        const query = `UPDATE \`${type}\` SET \`${field}\` = ? WHERE id = ?`;
         const [result] = await db.execute(query, [data, id]);
         return result;
     } catch (error){
@@ -75,9 +80,16 @@ async function editLoan(id, type, field, data) {
 //crear prestamos
 async function createLoan(type ,loan) {
     try{
-        const query = "INSERT INTO "+ type +"loans (userId, "+ type +"Id, state, dateIn, dateOut) VALUES (?, ?, ?, ?, ?)";
-        const [result] = await db.execute(query, [loan.userId, loan.id, loan.state, loan.dateIn, loan.dateOut]);
-        return result;
+        const query1 = `INSERT INTO \`${type}\` (userId, bookId, state, dateIn, dateOut) VALUES (?, ?, ?, ?, ?)`;
+        const [result1] = await db.execute(query1, [loan.userId, loan.bookId, loan.state, loan.dateIn, loan.dateOut]);
+        const query2 = `INSERT INTO \`${type}\` (userId, bookId, state, dateIn, dateOut) VALUES (?, ?, ?, ?, ?)`;
+        const [result2] = await db.execute(query2, [loan.userId, loan.itemId, loan.state, loan.dateIn, loan.dateOut]);
+        
+        if (type === 'bookLoans'){
+            return result1;
+        } else if (type === 'itemLoans'){
+            return result2;
+        }
     } catch (error){
         console.error('Error en createLoan: ', error);
         throw error;
@@ -88,7 +100,7 @@ async function createLoan(type ,loan) {
 //delete loan
 async function deleteLoan(loanId, type) {
     try{
-        const query = "DELETE FROM "+ type +"loans WHERE id = ?";
+        const query = `DELETE FROM \`${type}\` WHERE id = ?`;
         const [result] = await db.execute(query, [loanId]);
         return result;
     } catch (error){

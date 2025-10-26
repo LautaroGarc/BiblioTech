@@ -16,7 +16,7 @@ async function addUser(user) {
 
 async function editUser(idUser, field, data) {
     try{
-        const query = `UPDATE users SET ${field} = ? WHERE id = ?`;
+        const query = `UPDATE users SET \`${field}\` = ? WHERE id = ?`;
         const [result] = await db.execute(query, [data, idUser]);
         return result;
     } catch (error){
@@ -75,7 +75,7 @@ async function getUsers() {
 
 async function getUserWith(field,idUser) {
     try{
-        const query = "SELECT " + field + " FROM users WHERE id = ?";
+        const query = `SELECT \`${field}\` FROM users WHERE id = ?`;
         const [result] = await db.execute(query, [idUser]);
         return result;
     } catch (error){
@@ -86,7 +86,7 @@ async function getUserWith(field,idUser) {
 
 async function getUsersWith(field) {
     try{
-        const query = "SELECT " + field + " FROM users";
+        const query = `SELECT \`${field}\` FROM users`;
         const [result] = await db.execute(query);
         return result;
     } catch (error){
