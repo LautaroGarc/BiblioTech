@@ -8,6 +8,7 @@ CREATE TABLE users (
     img VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     pass VARCHAR(15) NOT NULL,
+    forumMod BOOL NOT NULL,
     medals JSON NOT NULL,
     lvl INT UNSIGNED NOT NULL,
     nReads INT UNSIGNED NOT NULL,
@@ -59,14 +60,22 @@ CREATE TABLE forum (
     name VARCHAR(50) NOT NULL
 );
 
+CREATE TABLE usersBlacklist (
+    userId INT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES user(id)
+);
+
 CREATE TABLE forumChat (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     userId INT NOT NULL,
-    forumId INT NOT NULL, 
+    forumId INT NOT NULL,
+    reply BOOLEAN NOT NULL,
+    replyId INT,
     text VARCHAR(150) NOT NULL,
-    date DATE NOT NULL,
+    date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES users(id),
     FOREIGN KEY (forumId) REFERENCES forum(id)
+    IF reply == true 
 );
 
 CREATE TABLE IA (
