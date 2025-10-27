@@ -74,8 +74,12 @@ CREATE TABLE forumChat (
     text VARCHAR(150) NOT NULL,
     date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES users(id),
-    FOREIGN KEY (forumId) REFERENCES forum(id)
-    IF reply == true 
+    FOREIGN KEY (forumId) REFERENCES forum(id),
+    FOREIGN KEY (replyId) REFERENCES forumChat(id),
+    CONSTRAINT chk_reply_logic CHECK (
+        (reply = TRUE AND replyId IS NOT NULL) OR 
+        (reply = FALSE AND replyId IS NULL)
+    )
 );
 
 CREATE TABLE IA (
