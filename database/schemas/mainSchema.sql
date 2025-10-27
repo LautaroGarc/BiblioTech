@@ -62,7 +62,7 @@ CREATE TABLE forum (
 
 CREATE TABLE usersBlacklist (
     userId INT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES user(id)
+    FOREIGN KEY (userId) REFERENCES users(id)
 );
 
 CREATE TABLE forumChat (
