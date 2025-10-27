@@ -109,5 +109,5 @@ CREATE TABLE suppLoans (
     dateIn DATE NOT NULL,
     dateOut DATE NOT NULL,
     FOREIGN KEY (userId) REFERENCES users(id),
-    FOREIGN KEY (itemId) REFERENCES supps(id)
+    FOREIGN KEY (itemId) REFERENCES supplies(id)
 );
