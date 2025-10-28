@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>BiblioTech - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/login.css">
+</head>
+<body>
+  <img src="../assets/logo.png">
+  <div class="login-container">
+    <h2>Iniciar Sesión</h2>
+    <p class="register-link">¿No tenés cuenta? <a href="/register">Hacé click acá</a></p>
+    <form class="loginForm">
+        <div class="form-group">
+            <label for="email">Correo Electronico</label>
+            <input type="text" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="pass">Contraseña</label>
+            <input type="text" id="pass" name="pass" required>
+        </div>
+
+        <div id="msg"></div>
+
+        <button type="submit">Ingresar</button>
+    </form>
+    <a href="/register">Olvidé mi contraseña</a>
+    <form id="hidden" class="forgotPass">
+        <div class="form-group">
+            <label for="email">Correo Electronico</label>
+            <input type="text" id="email" name="email" required>
+        </div>
+    </form>
+  </div>
+
+  <script src="../js/login.js"></script>
+</body>
+</html>
