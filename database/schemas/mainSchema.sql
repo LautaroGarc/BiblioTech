@@ -53,14 +53,14 @@ CREATE TABLE books (
     theme VARCHAR(50) NOT NULL,
 );
 
-CREATE TABLE forum (
-	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    name VARCHAR(50) NOT NULL
-);
-
 CREATE TABLE usersBlacklist (
     userId INT NOT NULL,
     FOREIGN KEY (userId) REFERENCES users(id)
+);
+
+CREATE TABLE forum (
+	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE forumChat (
@@ -85,7 +85,7 @@ CREATE TABLE bookLoans (
     userId INT NOT NULL,
     bookId INT NOT NULL,
     state ENUM('en prestamo','devuelto','atrasado') NOT NULL,
-    dateIn DATE NOT NULL,
+    dateIn DATE DEFAULT CURRENT_TIMESTAMP,
     dateOut DATE NOT NULL,
     FOREIGN KEY (userId) REFERENCES users(id),
     FOREIGN KEY (bookId) REFERENCES books(id)
@@ -96,7 +96,7 @@ CREATE TABLE suppLoans (
     userId INT NOT NULL,
     itemId INT NOT NULL,
     state ENUM('en prestamo','devuelto','atrasado') NOT NULL,
-    dateIn DATE NOT NULL,
+    dateIn DATE DEFAULT CURRENT_TIMESTAMP,
     dateOut DATE NOT NULL,
     FOREIGN KEY (userId) REFERENCES users(id),
     FOREIGN KEY (itemId) REFERENCES supplies(id)
