@@ -5,7 +5,7 @@ const dotenv = require('dotenv')
 const app = express();
 const PORT = process.env.PORT;
 
-//--- SERVIR PUBLICOS ---
+//--- PUBLICOS ---
 app.use(express.estatic(path.join(__dirname, 'frontend/public')));
 
 //--- RUTAS API ---

@@ -50,14 +50,6 @@ router.get('/check-email', checkEmail);
 router.post('/forgot-password', forgotPassword);
 
 /**
- * @route   POST /api/auth/logout
- * @desc    Cerrar sesión del usuario actual
- * @access  Private
- * @header  Authorization: Bearer {token}
- */
-router.post('/logout', authenticateToken, logout);
-
-/**
  * @route   GET /api/auth/me
  * @desc    Obtener información del usuario actual
  * @access  Private
