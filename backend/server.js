@@ -5,6 +5,12 @@ const dotenv = require('dotenv')
 const app = express();
 const PORT = process.env.PORT;
 
+//--- SERVIR PUBLICOS ---
+app.use(express.estatic(path.join(__dirname, 'frontend/public')));
+
+//--- RUTAS API ---
+app.use('/api/auth', require('./src/routes/authRoutes'));
+
 app.listen(PORT, () => {
     console.log('[ Servidor disponible ]')
 })
