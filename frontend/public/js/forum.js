@@ -15,17 +15,43 @@ function displaySections(sections) {
     `).join('');
 }
 
-// mostrar mensajes
+// mostrar mensajes y respuestas
+
 function displayChat(messages) {
     const chatContainer = document.getElementById('forum-chat');
-    chatContainer.innerHTML = messages.map(message => `
-        <div class="message">
-            <strong>${message.users.name}:</strong> <br>
-            <p>${message.text}</p> <br>
-            <p>${message.date}</p>
-        </div>
-    `).join('');
+    
+  
+    const mainMessages = messages.filter(msg => !msg.reply);
+    const replies = messages.filter(msg => msg.reply === true);
+    
+    chatContainer.innerHTML = mainMessages.map(message => {
+        
+        const messageReplies = replies.filter(reply => reply.replyId === message.id);
+        
+        const htmlmsg = `
+            <div class="message main-message">
+                <strong>${message.users.name}:</strong><br>
+                <p>${message.text}</p><br>
+                <p class="date">${message.date}</p>
+            </div>
+        `;
+        
+        
+        const repliesHtml = messageReplies.map(reply => `
+            <div class="message reply">
+                <strong>${reply.users.name}:</strong><br>
+                <p>${reply.text}</p><br>
+                <p class="date">${reply.date}</p>
+            </div>
+        `).join('');
+        
+        return htmlmsg + repliesHtml;
+        
+    }).join('');
 }
+
+
+
 
 
 // cargar secciones
