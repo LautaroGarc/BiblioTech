@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/config');
-const { addUser, getUsers } = require('../../models/users');
+const { addUser, getUsers, getUser } = require('../../models/users');
 
 async function register(req, res) {
     try {
@@ -115,6 +115,29 @@ async function getMe(req, res) {
             message: 'Error al obtener perfil' 
         });
     }
+}
+
+async function getUser(req, res) {
+    try {
+        const userId = req.userId;
+        const user = await getUser(userId);
+
+        if (!user) {
+            return res.status(404).json({ 
+                message: 'Usuario no encontrado' 
+            });
+        }
+
+        const { pass, ...userWithoutPassword } = user;
+
+        res.json({ user: userWithoutPassword });
+
+    } catch (error) {
+        console.error('Error en getUser:', error);
+        res.status(500).json({ 
+            message: 'Error al obtener perfil del usuario' 
+        });
+    }   
 }
 
 async function checkEmail(req, res) {

@@ -1,1 +1,1 @@
-//GET    /api/recommendations/similar/:bookId
+//get devolver libro similar
