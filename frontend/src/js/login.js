@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                showMessage('Hemos enviado los pasos para recuperar tu contraseña, revisa la casilla "spam".', 'success', recoverMsgDiv);
+                showMessage(response.msg, response.msgType, recoverMsgDiv);
                 
                 setTimeout(() => {
                     showLoginForm();
