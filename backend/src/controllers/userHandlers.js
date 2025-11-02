@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/config');
-const { addUser, getUsers, getUser } = require('../../models/users');
+const { addUser, getUsers, getUser } = require('../models/users');
 
 async function register(req, res) {
     try {
@@ -19,29 +19,49 @@ async function register(req, res) {
         const hashedPassword = await bcrypt.hash(pass, 10);
 
         const newUser = {
-            
+            name: name,
+            lastName: lastName,
+            email: email,
+            pass: hashedPassword,
+            img: chooseImg(), // null por ahora
+            lvl: 1,
+            nReads: 0,
+            type: 'user', // por defecto todos son 'user'
+            warning: 0,
+            accepted: false // requiere aprobación de admin
         };
 
         const result = await addUser(newUser);
+        const userId = result.insertId;
 
+        // Token incluye accepted: false
         const token = jwt.sign(
             { 
-                
+                id: userId,
+                email: email,
+                type: 'user',
+                accepted: false
             },
             JWT_SECRET,
             { expiresIn: '24h' }
         );
 
         res.status(201).json({
-            message: 'Usuario registrado exitosamente',
+            message: 'Usuario registrado exitosamente. Esperando aprobación del administrador.',
             token,
             user: {
-                
+                id: userId,
+                name: name,
+                lastName: lastName,
+                email: email,
+                type: 'user',
+                lvl: 1,
+                accepted: false
             }
         });
 
     } catch (error) {
-        console.error('[ REGISTER ] ', error);
+        console.error('[ REGISTER ERROR ]', error);
         res.status(500).json({ 
             message: 'Error al registrar usuario' 
         });
@@ -71,7 +91,10 @@ async function login(req, res) {
 
         const token = jwt.sign(
             { 
-                
+                id: user.id,
+                email: user.email,
+                type: user.type,
+                accepted: user.accepted
             },
             JWT_SECRET,
             { expiresIn: '24h' }
@@ -81,45 +104,44 @@ async function login(req, res) {
             message: 'Login exitoso',
             token,
             user: {
-                
+                id: user.id,
+                name: user.name,
+                lastName: user.lastName,
+                email: user.email,
+                type: user.type,
+                lvl: user.lvl,
+                img: user.img,
+                accepted: user.accepted
             }
         });
 
     } catch (error) {
-        console.error('Error en login:', error);
+        console.error('[ LOGIN ERROR ]', error);
         res.status(500).json({ 
             message: 'Error al iniciar sesión' 
         });
     }
 }
 
-async function getMe(req, res) {
+async function logout(req, res) {
     try {
-        const userId = req.user.id;
-        const users = await getUsers();
-        const user = users.find(u => u.id === userId);
-
-        if (!user) {
-            return res.status(404).json({ 
-                message: 'Usuario no encontrado' 
-            });
-        }
-
-        const { pass, ...userWithoutPassword } = user;
-
-        res.json({ user: userWithoutPassword });
-
+        // Con JWT, el logout es del lado del cliente (borrar token de localStorage)
+        // Aquí solo confirmamos la acción
+        res.json({ 
+            message: 'Logout exitoso',
+            ok: true 
+        });
     } catch (error) {
-        console.error('Error en getMe:', error);
+        console.error('[ LOGOUT ERROR ]', error);
         res.status(500).json({ 
-            message: 'Error al obtener perfil' 
+            message: 'Error al cerrar sesión' 
         });
     }
 }
 
-async function getUser(req, res) {
+async function getMe(req, res) {
     try {
-        const userId = req.userId;
+        const userId = req.user.id; // viene del token decodificado
         const user = await getUser(userId);
 
         if (!user) {
@@ -133,7 +155,30 @@ async function getUser(req, res) {
         res.json({ user: userWithoutPassword });
 
     } catch (error) {
-        console.error('Error en getUser:', error);
+        console.error('[ GET ME ERROR ]', error);
+        res.status(500).json({ 
+            message: 'Error al obtener perfil' 
+        });
+    }
+}
+
+async function getUserById(req, res) {
+    try {
+        const userId = req.params.id; // viene de la URL /api/users/:id
+        const user = await getUser(userId);
+
+        if (!user) {
+            return res.status(404).json({ 
+                message: 'Usuario no encontrado' 
+            });
+        }
+
+        const { pass, ...userWithoutPassword } = user;
+
+        res.json({ user: userWithoutPassword });
+
+    } catch (error) {
+        console.error('[ GET USER ERROR ]', error);
         res.status(500).json({ 
             message: 'Error al obtener perfil del usuario' 
         });
@@ -149,7 +194,7 @@ async function checkEmail(req, res) {
         res.json({ exists });
 
     } catch (error) {
-        console.error('[ CHECK EMAIL ERROR ] ', error);
+        console.error('[ CHECK EMAIL ERROR ]', error);
         res.status(500).json({ 
             message: 'Error al verificar email' 
         });
@@ -160,11 +205,23 @@ async function forgotPassword(req, res) {
     try {
         const { email } = req.body;
 
-        // 1. Generar token temporal
+        // Verificar que el email existe
+        const users = await getUsers();
+        const user = users.find(u => u.email === email);
+
+        if (!user) {
+            return res.status(404).json({ 
+                msgType: 'error',
+                msg: 'Email no registrado' 
+            });
+        }
+
+        // TODO: 
+        // 1. Generar token temporal de recuperación
         // 2. Enviar email con link de recuperación
         // 3. Guardar token en DB con expiración
 
-        console.log('[ LOGIN ] Solicitud de recuperación para:', email);
+        console.log('[ FORGOT PASSWORD ] Solicitud de recuperación para:', email);
 
         res.json({ 
             ok: true,
@@ -173,15 +230,16 @@ async function forgotPassword(req, res) {
         });
 
     } catch (error) {
-        console.error('Error en forgotPassword:', error);
+        console.error('[ FORGOT PASSWORD ERROR ]', error);
         res.status(500).json({ 
             msgType: 'error',
-            message: 'Error al recuperar contraseña' 
+            msg: 'Error al recuperar contraseña' 
         });
     }
 }
 
 function chooseImg() {
+    // TODO: implementar lógica para asignar imagen de perfil
     return null;
 }
 
@@ -190,6 +248,7 @@ module.exports = {
     login,
     logout,
     getMe,
+    getUserById,
     checkEmail,
     forgotPassword
 };

@@ -8,37 +8,31 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
 //--- DIRECCIONES ---
 app.get('/', (req, res) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
-    if (!req.session.user.accepted) {
-        return res.redirect('/waiting');
-    }
-    res.redirect('/home');
+    // Redirigir siempre a login, el frontend maneja la nav
+    res.redirect('/login');
 });
 
 app.get('/login', (req, res) => {
-    if (req.session.user) {
-        return req.session.user.accepted ? res.redirect('/home') : res.redirect('/waiting');
-    }
     res.sendFile(path.join(__dirname, 'frontend', 'public', 'login.html'));
 });
 
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'public', 'register.html'));
+});
+
 app.get('/waiting', (req, res) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
-    if (req.session.user.accepted) {
-        return res.redirect('/home');
-    }
     res.sendFile(path.join(__dirname, 'frontend', 'public', 'waiting.html'));
 });
 
+// Ruta protegida - requiere token válido
 app.get('/home', authenticateToken, (req, res) => {
-    if (!req.session.user.accepted) {
+    // req.user viene del token decodificado (tiene id, email, type, accepted)
+    
+    if (!req.user.accepted) {
         return res.redirect('/waiting');
     }
 
@@ -59,7 +53,7 @@ app.get('/home', authenticateToken, (req, res) => {
 });
 
 app.get('/profile', authenticateToken, (req, res) => {
-    if (!req.session.user.accepted) {
+    if (!req.user.accepted) {
         return res.redirect('/waiting');
     }
 
@@ -68,8 +62,7 @@ app.get('/profile', authenticateToken, (req, res) => {
 
 //--- RUTAS API ---
 app.use('/api/auth', require(path.join(__dirname, 'backend', 'src','routes','authRoutes.js')));
-
-
+app.use('/api/users', require(path.join(__dirname, 'backend', 'src','routes','userRoutes.js')));
 
 //--- ERROR 404 ---
 app.use('*', (req, res) => {
@@ -77,13 +70,11 @@ app.use('*', (req, res) => {
 });
 
 // Servidor desplegado
-
 app.listen(PORT, () => {
-    console.log('[ Servidor disponible ]')
+    console.log('[ Servidor disponible en puerto', PORT, ']')
 })
 
 ///// cerrar servidor graceful /////////////////////////////////////////////
-
 process.on('SIGTERM', () => {
     console.log('[ SIGTERM recibido, cerrando servidor ]');
     process.exit(0);
