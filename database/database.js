@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 const path = require('path');
-const DB_CONFIG = require(path.join(__dirname, 'backend', 'src', 'config', 'config.js'));
+const { DB_CONFIG } = require(path.join(__dirname, '..', 'backend', 'src', 'config', 'config.js'));
 
 const connection = mysql.createConnection({
   host: DB_CONFIG.host,
