@@ -1,14 +1,14 @@
 const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
-const { authenticateToken } = require(path.join(__dirname, 'backend', 'src','middlewares','authMiddleware.js'));
+const { authenticateToken } = require(path.join(__dirname, 'src','middlewares','authMiddleware.js'));
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'frontend', 'public')));
+app.use(express.static(path.join(__dirname, '..','frontend', 'src', 'public')));
 
 //--- DIRECCIONES ---
 app.get('/', (req, res) => {

@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS books (
     gender VARCHAR(255) NOT NULL,
     readLevel INT UNSIGNED NOT NULL,
     length INT NOT NULL,
-    theme VARCHAR(50) NOT NULL,
+    theme VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS usersBlacklist (

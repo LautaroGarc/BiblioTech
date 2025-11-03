@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({
                     email: email,
-                    password: pass
+                    pass: pass
                 })
             });
 

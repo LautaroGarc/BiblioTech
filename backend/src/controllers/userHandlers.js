@@ -123,22 +123,6 @@ async function login(req, res) {
     }
 }
 
-async function logout(req, res) {
-    try {
-        // Con JWT, el logout es del lado del cliente (borrar token de localStorage)
-        // Aquí solo confirmamos la acción
-        res.json({ 
-            message: 'Logout exitoso',
-            ok: true 
-        });
-    } catch (error) {
-        console.error('[ LOGOUT ERROR ]', error);
-        res.status(500).json({ 
-            message: 'Error al cerrar sesión' 
-        });
-    }
-}
-
 async function getMe(req, res) {
     try {
         const userId = req.user.id; // viene del token decodificado
@@ -246,7 +230,7 @@ function chooseImg() {
 module.exports = {
     register,
     login,
-    logout,
+    getUsers,
     getMe,
     getUserById,
     checkEmail,
