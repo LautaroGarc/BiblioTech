@@ -31,7 +31,7 @@ CREATE TABLE supplies (
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     name VARCHAR(150),
     img VARCHAR(50) NOT NULL, 
-    barCode VARCHAR,
+    barCode VARCHAR(20),
     borrowed INT UNSIGNED NOT NULL
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE books (
     gender VARCHAR(255) NOT NULL,
     readLevel INT UNSIGNED NOT NULL,
     length INT NOT NULL,
-    theme VARCHAR(50) NOT NULL,
+    theme VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE forum (
