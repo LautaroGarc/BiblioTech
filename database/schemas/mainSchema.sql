@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS books (
     img VARCHAR(255) NOT NULL,
     review DECIMAL(1,2) DEFAULT 0.00,
     barCode VARCHAR(255) UNIQUE,
+    quant INT NOT NULL,
     likes JSON DEFAULT (JSON_ARRAY()),
     timesReaded INT UNSIGNED DEFAULT 0,
     borrowed BOOLEAN DEFAULT FALSE,
