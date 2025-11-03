@@ -18,6 +18,9 @@ function displaySections(sections) {
 // mostrar mensajes y respuestas
 
 function displayChat(messages) {
+
+    document.getElementById('chat-box').style.display = 'inline-block';
+
     const chatContainer = document.getElementById('forum-chat');
     
   
@@ -57,7 +60,7 @@ function displayChat(messages) {
 
 // cargar secciones
 function loadForums() {
-    fetch('/api/forums/sections')
+    fetch('/api/forums')
         .then(response => response.json())
         .then(sections => {
             displaySections(sections);
@@ -66,7 +69,7 @@ function loadForums() {
 
 // seleccionar seccion
 function loadForumChat(sectionId) {
-    fetch(`/api/forums/chat/${sectionId}`)
+    fetch(`/api/forums/${sectionId}/messages`)
         .then(response => response.json())
         .then(messages => {
             displayChat(messages);
@@ -93,7 +96,7 @@ function initCommentForm(forumId, userId) {
 // configurar eventos del formulario
 function setupFormEvents() {
     const form = document.getElementById('comment-form');
-    
+
     const cancelReplyBtn = document.getElementById('cancel-reply');
     
     // envio
