@@ -6,12 +6,26 @@
     <title>Foros</title>
 </head>
 <body>
+    <!--agregar boton de ranking-->
+    <button href="ranking.html">Ranking</button>
     <div class="principal">
         <h1>¡NUESTROS FOROS!</h1>
         <h2>Participa en nuestra comunidad de lectores.</h2>
 
         <div id="forums">
             <!--Cargar foros existentes-->
+        </div>
+        <div id="chat-box">
+            <form id="comment-form">
+                <label for="author">Nombre</label>
+                <input id="author" name="author" type="text" placeholder="Tu nombre (opcional)">
+                <label for="comment">Comentario</label>
+                <textarea id="comment" name="comment" rows="3" required placeholder="Escribe tu comentario..."></textarea>
+                <button type="submit" id="submit-btn">Enviar</button>
+                <button type="button" id="cancel-reply" style="display: none;">Cancelar respuesta</button>
+            </form>
+
+            
         </div>
         <div id="forum-chat">
             <!--Cargar mensajes-->
