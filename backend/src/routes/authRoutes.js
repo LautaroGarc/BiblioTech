@@ -5,7 +5,6 @@ const {
     register,
     login,
     logout,
-    getMe,
     checkEmail,
     forgotPassword
 } = require('../controllers/userHandlers');
@@ -48,22 +47,5 @@ router.get('/check-email', checkEmail);
  * @return  { ok: boolean }
  */
 router.post('/forgot-password', forgotPassword);
-
-/**
- * @route   POST /api/auth/logout
- * @desc    Cerrar sesión del usuario actual
- * @access  Private
- * @header  Authorization: Bearer {token}
- */
-router.post('/logout', authenticateToken, logout);
-
-/**
- * @route   GET /api/auth/me
- * @desc    Obtener información del usuario actual
- * @access  Private
- * @header  Authorization: Bearer {token}
- * @return  { user }
- */
-router.get('/me', authenticateToken, getMe);
 
 module.exports = router;

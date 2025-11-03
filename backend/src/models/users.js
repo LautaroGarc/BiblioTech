@@ -102,7 +102,7 @@ async function getUsersWith(field) {
 async function getUser(idUser) {
     try{
         const [result] = await db.execute(`SELECT * FROM users WHERE id = ?`, [idUser]);
-        return result;
+        return result[0];
     } catch (error){
         console.error('Error en getUser: ', error);
         throw error;
