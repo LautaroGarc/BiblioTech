@@ -1,6 +1,21 @@
 const forumsSections = document.getElementById("forums");
 
-forumsSections.addEventListener('DOMContentLoaded', function() {
+
+const prevBtn = document.getElementById('prevPageBtn');
+const nextBtn = document.getElementById('nextPageBtn');
+const pageInfo = document.getElementById('pageInfo');
+let currentPage = 1;
+
+
+let currentForumId = null;
+let currentUserId = null;
+let replyingTo = null;
+let totalPages = 1;
+
+
+
+
+window.addEventListener('DOMContentLoaded', function() {
     loadForums();
 });
 
@@ -15,17 +30,31 @@ function displaySections(sections) {
     `).join('');
 }
 
+function updateCurrentPageInfo(currentPage = 1, totalPages = 1) {
+    pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+}
+
 // mostrar mensajes y respuestas
 
-function displayChat(messages) {
+function displayChat(data) {
+    totalPages = data.totalPages;
+
+    currentPage = data.currentPage;
+
+    updateCurrentPageInfo(currentPage, totalPages);
 
     document.getElementById('chat-box').style.display = 'inline-block';
 
     const chatContainer = document.getElementById('forum-chat');
+
+    chatContainer.innerHTML = '';
+
+    const mainMessages = data.messages.filter(msg => !msg.reply);
     
-  
-    const mainMessages = messages.filter(msg => !msg.reply);
-    const replies = messages.filter(msg => msg.reply === true);
+    const replies = data.messages.filter(msg => msg.reply === true);
     
     chatContainer.innerHTML = mainMessages.map(message => {
         
@@ -69,18 +98,31 @@ function loadForums() {
 
 // seleccionar seccion
 function loadForumChat(sectionId) {
-    fetch(`/api/forums/${sectionId}/messages`)
+    currentForumId = sectionId
+    fetch(`/api/forums/${sectionId}/messages?page=${currentPage}`)
         .then(response => response.json())
-        .then(messages => {
-            displayChat(messages);
+        .then(data => {
+            displayChat(data);
         });
 }
 
 
+prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage --;
+    }
+    loadForumChat(currentForumId);
+});
 
-let currentForumId = null;
-let currentUserId = null;
-let replyingTo = null;
+nextBtn.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+        currentPage ++;
+    }
+    loadForumChat(currentForumId);
+});
+
+
+
 
 // init formulario
 function initCommentForm(forumId, userId) {

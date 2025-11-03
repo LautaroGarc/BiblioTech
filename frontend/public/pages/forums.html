@@ -21,11 +21,23 @@
         </div>
         <div id="chat-box" style="display: none;">
             <form id="comment-form">
+
+                <input type="hidden" id="forumId" name="forumId">
+                <input type="hidden" id="userId" name="userId">
+                <input type="hidden" id="replyId" name="replyId" value="">
+                <input type="hidden" id="isReply" name="isReply" value="false">
+
+
                 <label for="comment">Comentario</label>
                 <textarea id="comment" name="comment" rows="3" required placeholder="Escribe tu comentario..."></textarea>
                 <button type="submit" id="submit-btn">Enviar</button>
                 <button type="button" id="cancel-reply" style="display: none;">Cancelar respuesta</button>
             </form>
+        </div>
+        <div id="pagesBtn">
+            <button id="prevPageBtn">Anterior</button>
+            <span id="pageInfo">Página 1</span>
+            <button id="nextPageBtn">Siguiente</button>
         </div>
     </div>
 </body>
