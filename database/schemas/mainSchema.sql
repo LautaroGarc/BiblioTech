@@ -3,18 +3,8 @@ USE BiblioTech;
 
 CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-<<<<<<< HEAD
 	img VARCHAR(50),
     tag VARCHAR(30)
-);  
-
-CREATE TABLE supplies (
-	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    name VARCHAR(150),
-    img VARCHAR(50) NOT NULL, 
-    barCode VARCHAR(20),
-    borrowed INT UNSIGNED NOT NULL
-=======
     accepted BOOLEAN DEFAULT FALSE,
     type ENUM('user', 'admin') NOT NULL DEFAULT 'user',
     name VARCHAR(50) NOT NULL,
@@ -34,7 +24,15 @@ CREATE TABLE supplies (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_email (email),
     INDEX idx_type (type)
->>>>>>> bdc6d1a4888862105e37316368239f70f57a2fcf
+);  
+
+CREATE TABLE supplies (
+	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    name VARCHAR(150),
+    img VARCHAR(50) NOT NULL, 
+    barCode VARCHAR(20),
+    borrowed INT UNSIGNED NOT NULL
+    
 );
 
 CREATE TABLE IF NOT EXISTS medals (
@@ -68,17 +66,14 @@ CREATE TABLE IF NOT EXISTS books (
     editorial VARCHAR(255) NOT NULL,
     gender VARCHAR(255) NOT NULL,
     readLevel INT UNSIGNED NOT NULL,
-<<<<<<< HEAD
     length INT NOT NULL,
     theme VARCHAR(50) NOT NULL
-=======
     length INT UNSIGNED NOT NULL,
     theme VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_author (author),
     INDEX idx_gender (gender),
     INDEX idx_barcode (barCode)
->>>>>>> bdc6d1a4888862105e37316368239f70f57a2fcf
 );
 
 CREATE TABLE IF NOT EXISTS usersBlacklist (
