@@ -3,20 +3,17 @@ const { JWT_SECRET } = require('../config/config');
 
 /**
  * Middleware: Autenticar token (para rutas protegidas)
- * Verifica que el token sea válido
- * Si es válido, agrega req.user con los datos del token
- * Si no es válido, devuelve error 401 o 403
  */
 function authenticateToken(req, res, next) {
-    // BUSCAR TOKEN EN 3 LUGARES: headers, cookies, query params
+    // Buscar token en múltiples lugares
     let token = req.headers['authorization']?.split(' ')[1]; // Bearer token
     
     if (!token) {
-        token = req.cookies?.token; // ← AGREGAR ESTO
+        token = req.cookies?.token;
     }
     
     if (!token) {
-        token = req.query?.token; // query params
+        token = req.query?.token;
     }
 
     if (!token) {
@@ -37,12 +34,14 @@ function authenticateToken(req, res, next) {
     });
 }
 
+/**
+ * Middleware: Verificar sesión y redirigir
+ */
 function checkSession(req, res, next) {
-    // BUSCAR TOKEN EN 3 LUGARES
     let token = req.headers['authorization']?.split(' ')[1];
     
     if (!token) {
-        token = req.cookies?.token; // ← AGREGAR ESTO
+        token = req.cookies?.token;
     }
     
     if (!token) {
@@ -66,11 +65,12 @@ function checkSession(req, res, next) {
         }
     });
 }
+
 /**
  * Middleware: Verificar que el usuario sea admin
  */
 function isAdmin(req, res, next) {
-    if (req.user.type !== 'admin') {
+    if (!req.user || req.user.type !== 'admin') {
         return res.status(403).json({ 
             message: 'Acceso denegado. Se requieren permisos de administrador.' 
         });
@@ -82,7 +82,7 @@ function isAdmin(req, res, next) {
  * Middleware: Verificar que el usuario sea estudiante o admin
  */
 function isStudent(req, res, next) {
-    if (req.user.type !== 'student' && req.user.type !== 'admin') {
+    if (!req.user || (req.user.type !== 'student' && req.user.type !== 'admin')) {
         return res.status(403).json({ 
             message: 'Acceso denegado.' 
         });

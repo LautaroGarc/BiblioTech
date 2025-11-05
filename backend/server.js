@@ -17,42 +17,27 @@ app.use('/assets', express.static(path.join(__dirname, '..', 'frontend', 'src', 
 
 //--- RUTAS PÚBLICAS (con redirección inteligente) ---
 
-// Raíz - redirige según estado de sesión
 app.get('/', checkSession, (req, res) => {
-    // Si checkSession detectó sesión válida, ya redirigió
-    // Si llegamos acá, no hay sesión
     res.redirect('/login');
 });
 
-// Login - solo accesible SIN sesión activa
 app.get('/login', checkSession, (req, res) => {
-    // Si hay sesión, checkSession ya redirigió a /waiting o /home
-    // Si llegamos acá, no hay sesión válida
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'login.html'));
 });
 
-// Register - solo accesible SIN sesión activa
 app.get('/register', checkSession, (req, res) => {
-    // Si hay sesión, checkSession ya redirigió
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'register.html'));
 });
 
-// Waiting - solo accesible CON sesión pero SIN aceptación
 app.get('/waiting', authenticateToken, (req, res) => {
-    // authenticateToken verifica que haya token válido
-    
     if (req.user.accepted) {
-        // Si ya está aceptado, no debería estar en waiting
         return res.redirect('/home');
     }
-    
-    // Usuario tiene sesión pero no está aceptado
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'waiting.html'));
 });
 
 //--- RUTAS PROTEGIDAS (requieren sesión + aceptación) ---
 
-// Home - requiere sesión válida Y aceptación
 app.get('/home', authenticateToken, (req, res) => {
     if (!req.user.accepted) {
         return res.redirect('/waiting');
@@ -63,18 +48,13 @@ app.get('/home', authenticateToken, (req, res) => {
     switch(userType) {
         case 'admin':
             return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'home.html'));
-        
         case 'user':
             return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'home.html'));
-        
         default:
-            return res.status(403).json({ 
-                message: 'Acceso denegado' 
-            });
+            return res.status(403).json({ message: 'Acceso denegado' });
     }
 });
 
-// Profile - requiere sesión válida Y aceptación
 app.get('/profile', authenticateToken, (req, res) => {
     if (!req.user.accepted) {
         return res.redirect('/waiting');
@@ -89,7 +69,6 @@ app.get('/profile', authenticateToken, (req, res) => {
     }
 });
 
-// Books - requiere sesión válida Y aceptación
 app.get('/books', authenticateToken, (req, res) => {
     if (!req.user.accepted) {
         return res.redirect('/waiting');
@@ -104,7 +83,6 @@ app.get('/books', authenticateToken, (req, res) => {
     }
 });
 
-// Forum - requiere sesión válida Y aceptación
 app.get('/forum', authenticateToken, (req, res) => {
     if (!req.user.accepted) {
         return res.redirect('/waiting');
@@ -113,7 +91,6 @@ app.get('/forum', authenticateToken, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'forum.html'));
 });
 
-// Search - requiere sesión válida Y aceptación
 app.get('/search', authenticateToken, (req, res) => {
     if (!req.user.accepted) {
         return res.redirect('/waiting');
@@ -122,7 +99,6 @@ app.get('/search', authenticateToken, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'search.html'));
 });
 
-// Plus (admin/user) - requiere sesión válida Y aceptación
 app.get('/plus', authenticateToken, (req, res) => {
     if (!req.user.accepted) {
         return res.redirect('/waiting');
@@ -140,6 +116,10 @@ app.get('/plus', authenticateToken, (req, res) => {
 //--- RUTAS API ---
 app.use('/api/auth', require('./src/routes/authRoutes.js'));
 app.use('/api/users', require('./src/routes/userRoutes.js'));
+app.use('/api/admin', require('./src/routes/adminRoutes.js'));
+app.use('/api/items', require('./src/routes/itemRoutes.js'));
+app.use('/api/loans', require('./src/routes/loanRoutes.js'));
+app.use('/api/forums', require('./src/routes/forumRoutes.js'));
 
 //--- ERROR 404 ---
 app.use('*', (req, res) => {
