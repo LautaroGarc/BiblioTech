@@ -1,11 +1,20 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/config');
 
-/**
- * Middleware: Autenticar token (para rutas protegidas)
- */
+function generateToken(user) {
+    return jwt.sign(
+        { 
+            id: user.id,
+            email: user.email,
+            type: user.type,
+            accepted: user.accepted 
+        },
+        JWT_SECRET,
+        { expiresIn: '24h' } // ← 24 horas de expiración
+    );
+}
+
 function authenticateToken(req, res, next) {
-    // Buscar token en múltiples lugares
     let token = req.headers['authorization']?.split(' ')[1]; // Bearer token
     
     if (!token) {
@@ -17,6 +26,10 @@ function authenticateToken(req, res, next) {
     }
 
     if (!token) {
+        token = req.headers['x-auth-token'];
+    }
+
+    if (!token) {
         return res.status(401).json({ 
             message: 'Acceso no autorizado. Token requerido.' 
         });
@@ -24,8 +37,13 @@ function authenticateToken(req, res, next) {
 
     jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
+            if (err.name === 'TokenExpiredError') {
+                return res.status(403).json({ 
+                    message: 'Token expirado. Por favor, inicia sesión nuevamente.' 
+                });
+            }
             return res.status(403).json({ 
-                message: 'Token inválido o expirado.' 
+                message: 'Token inválido.' 
             });
         }
         
@@ -91,6 +109,7 @@ function isStudent(req, res, next) {
 }
 
 module.exports = {
+    generateToken,
     authenticateToken,
     checkSession,
     isAdmin,

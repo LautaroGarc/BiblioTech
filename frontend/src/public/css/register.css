@@ -32,9 +32,9 @@ body {
 }
 
 /* Logo */
-img {
+.logo {
   width: 200px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   filter: drop-shadow(0 0 15px rgba(0, 150, 255, 0.6));
   animation: float 6s ease-in-out infinite;
 }
@@ -51,17 +51,28 @@ img {
   }
 }
 
-/* Contenedor principal SIN recuadro */
-.login-container {
+/* Contenedor principal */
+.register-container {
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Títulos */
 h2 {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   color: #fff;
   font-weight: 600;
   font-size: 32px;
@@ -83,15 +94,15 @@ h2::after {
   box-shadow: 0 2px 8px rgba(0, 180, 219, 0.4);
 }
 
-/* Enlace de registro */
-.register-link {
+/* Enlace de login */
+.login-link {
   text-align: center;
   margin-bottom: 30px;
   color: #e0e0e0;
   font-size: 16px;
 }
 
-.register-link a {
+.login-link a {
   color: #4fc3f7;
   text-decoration: none;
   font-weight: 600;
@@ -100,7 +111,7 @@ h2::after {
   padding: 2px 4px;
 }
 
-.register-link a::after {
+.login-link a::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -111,30 +122,43 @@ h2::after {
   transition: width 0.3s ease;
 }
 
-.register-link a:hover {
+.login-link a:hover {
   color: #29b6f6;
   text-shadow: 0 0 8px rgba(79, 195, 247, 0.5);
 }
 
-.register-link a:hover::after {
+.login-link a:hover::after {
   width: 100%;
 }
 
-/* Formularios */
-.loginForm, .forgotPass {
+/* Formulario */
+.registerForm {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 20px;
 }
 
+/* Grupo de formulario en línea (Nombre y Apellido) */
+.form-group-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-group-inline > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grupos de formulario normales */
 .form-group {
   position: relative;
-  margin-bottom: 5px;
 }
 
+/* Labels */
 label {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   color: #e0e0e0;
   font-weight: 500;
   font-size: 15px;
@@ -142,12 +166,13 @@ label {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* Inputs */
 input {
   width: 100%;
-  padding: 16px 20px;
+  padding: 15px 18px;
   background: rgba(255, 255, 255, 0.08);
   border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
   font-size: 16px;
   transition: all 0.4s ease;
@@ -168,18 +193,18 @@ input::placeholder {
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* Botones */
+/* Botón */
 button {
   background: linear-gradient(135deg, #00b4db, #0083b0);
   color: white;
   border: none;
-  padding: 18px;
-  border-radius: 12px;
+  padding: 16px;
+  border-radius: 10px;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.4s ease;
-  margin-top: 15px;
+  margin-top: 10px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 6px 20px rgba(0, 180, 219, 0.3);
@@ -211,86 +236,37 @@ button:active {
   transform: translateY(-1px);
 }
 
-/* Enlace de contraseña olvidada */
-.forgot-pass {
-  display: block;
-  text-align: center;
-  margin-top: 25px;
-  color: #4fc3f7;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  position: relative;
-  padding: 8px 0;
-  font-size: 15px;
-}
-
-.forgot-pass::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #4fc3f7, #29b6f6);
-  transition: width 0.3s ease;
-}
-
-.forgot-pass:hover {
-  color: #29b6f6;
-  text-shadow: 0 0 8px rgba(79, 195, 247, 0.4);
-}
-
-.forgot-pass:hover::after {
-  width: 100%;
-}
-
 /* Mensajes */
-#msg, #recoverMsg {
+#msg {
   padding: 15px;
   border-radius: 10px;
-  margin: 20px 0;
+  margin: 15px 0;
   text-align: center;
   font-weight: 500;
   animation: fadeIn 0.5s ease-out;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-#msg.success, #recoverMsg.success {
-  background: rgba(76, 175, 80, 0.15);
-  border-color: rgba(76, 175, 80, 0.4);
-  color: #a5d6a7;
-}
-
-#msg.error, #recoverMsg.error {
-  background: rgba(244, 67, 54, 0.15);
-  border-color: rgba(244, 67, 54, 0.4);
-  color: #ef9a9a;
-}
-
-/* Sección de recuperación */
-.hidden {
+  min-height: 0;
   display: none;
 }
 
-#backToLogin {
+#msg:not(:empty) {
   display: block;
-  text-align: center;
-  margin-top: 25px;
-  color: #b0b0b0;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  padding: 8px 0;
-  font-size: 15px;
 }
 
-#backToLogin:hover {
-  color: #e0e0e0;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+#msg.success {
+  background: rgba(76, 175, 80, 0.15);
+  border-color: rgba(76, 175, 80, 0.4);
+  color: #a5d6a7;
+  display: block;
+}
+
+#msg.error {
+  background: rgba(244, 67, 54, 0.15);
+  border-color: rgba(244, 67, 54, 0.4);
+  color: #ef9a9a;
+  display: block;
 }
 
 /* Efectos de partículas sutiles en el fondo */
@@ -320,32 +296,8 @@ body::before {
   }
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-  .login-container {
-    padding: 0 15px;
-  }
-  
-  h2 {
-    font-size: 28px;
-  }
-  
-  img {
-    width: 160px;
-    margin-bottom: 30px;
-  }
-  
-  input, button {
-    padding: 14px 18px;
-  }
-  
-  .register-link {
-    font-size: 15px;
-  }
-}
-
 /* Animación de entrada para los elementos del formulario */
-.form-group {
+.form-group, .form-group-inline {
   animation: slideUp 0.6s ease-out;
 }
 
@@ -361,15 +313,58 @@ body::before {
 }
 
 /* Retraso escalonado para las animaciones */
-.form-group:nth-child(1) { animation-delay: 0.1s; }
+.form-group-inline { animation-delay: 0.1s; }
 .form-group:nth-child(2) { animation-delay: 0.2s; }
-button { animation-delay: 0.3s; }
-.forgot-pass { animation-delay: 0.4s; }
+.form-group:nth-child(3) { animation-delay: 0.3s; }
+.form-group:nth-child(4) { animation-delay: 0.4s; }
+button { animation-delay: 0.5s; }
 
-/* Ocultar mensajes vacíos */
-#msg:empty, #recoverMsg:empty {
-  display: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 0 !important;
+/* Responsive */
+@media (max-width: 520px) {
+  .register-container {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+  
+  .form-group-inline {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  h2 {
+    font-size: 28px;
+  }
+  
+  .logo {
+    width: 160px;
+    margin-bottom: 25px;
+  }
+  
+  input, button {
+    padding: 14px 16px;
+  }
+  
+  .login-link {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 380px) {
+  body {
+    padding: 15px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+  
+  input {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  
+  button {
+    padding: 14px;
+    font-size: 16px;
+  }
 }

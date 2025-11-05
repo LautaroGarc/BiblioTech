@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const db = require('../../../database/database'); // ✅ Ruta corregida
 
 class LoanModel {
     // Crear préstamo de libro
@@ -96,7 +96,6 @@ class LoanModel {
         await db.execute(bookQuery);
         await db.execute(supplyQuery);
         
-        // Obtener conteo de actualizados
         const [bookResult] = await db.execute('SELECT ROW_COUNT() as updated');
         const [supplyResult] = await db.execute('SELECT ROW_COUNT() as updated');
         
@@ -108,7 +107,6 @@ class LoanModel {
 
     // Buscar item por código de barras
     static async findItemByBarcode(barcode) {
-        // Buscar en libros
         const bookQuery = `
             SELECT 
                 'book' as type,
@@ -122,7 +120,6 @@ class LoanModel {
             WHERE barCode = ?
         `;
         
-        // Buscar en útiles
         const supplyQuery = `
             SELECT 
                 'supply' as type,

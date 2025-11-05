@@ -1,4 +1,4 @@
-const LoanModel = require('../models/loanModel');
+const LoanModel = require('../models/loans.js');
 
 class LoanController {
     // Crear préstamo

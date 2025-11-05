@@ -5,6 +5,8 @@ const path = require('path');
 const { JWT_SECRET } = require('../config/config');
 const { addUser, getUsers, getUser } = require('../models/users');
 
+const { generateToken } = require('../middlewares/authMiddleware.js')
+
 async function register(req, res) {
     try {
         const { name, lastName, email, pass } = req.body;
@@ -29,31 +31,23 @@ async function register(req, res) {
         };
 
         const result = await addUser(newUser);
-        const userId = result.insertId;
+        newUser.id = result.insertId;
+        newUser.type = 'user'
+        newUser.accepted = false
 
-        // Token incluye accepted: false
-        const token = jwt.sign(
-            { 
-                id: userId,
-                email: email,
-                type: 'user',
-                accepted: false
-            },
-            JWT_SECRET,
-            { expiresIn: '24h' }
-        );
+        const token = generateToken(newUser);
 
         res.status(201).json({
             message: 'Usuario registrado exitosamente. Esperando aprobación del administrador.',
             token,
             user: {
-                id: userId,
-                name: name,
-                lastName: lastName,
-                email: email,
-                type: 'user',
-                lvl: 1,
-                accepted: false
+                id: newUser.id,
+                name: newUser.name,
+                lastName: newUser.lastName,
+                email: newUser.email,
+                type: newUser.type,
+                img: newUser.img,
+                accepted: newUser.accepted
             }
         });
 
@@ -86,16 +80,7 @@ async function login(req, res) {
             });
         }
 
-        const token = jwt.sign(
-            { 
-                id: user.id,
-                email: user.email,
-                type: user.type,
-                accepted: user.accepted
-            },
-            JWT_SECRET,
-            { expiresIn: '24h' }
-        );
+        const token = generateToken(user);
 
         res.json({
             message: 'Login exitoso',
@@ -106,7 +91,6 @@ async function login(req, res) {
                 lastName: user.lastName,
                 email: user.email,
                 type: user.type,
-                lvl: user.lvl,
                 img: user.img,
                 accepted: user.accepted
             }
@@ -221,11 +205,38 @@ async function forgotPassword(req, res) {
 
 function chooseImg() {
     try {
-        const photos = fs.readdirSync(path.join(__dirname, '..','..','frontend','src','public','assets'))
-        return photos[Math.floor(Math.random() * photos.lenght)]
+        const assetsPath = path.join(__dirname, '..', '..', 'frontend', 'src', 'public', 'assets','profiles');
+        
+        // Verificar si el directorio existe
+        if (!fs.existsSync(assetsPath)) {
+            console.warn('[CHOOSE IMG] Directorio de assets no encontrado, usando imagen por defecto');
+            return '/assets/default-avatar.png';
+        }
+        
+        // Leer archivos del directorio
+        const files = fs.readdirSync(assetsPath);
+        
+        // Filtrar solo imágenes
+        const imageFiles = files.filter(file => 
+            /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file)
+        );
+        
+        // Si no hay imágenes, retornar default
+        if (imageFiles.length === 0) {
+            console.warn('[CHOOSE IMG] No hay imágenes disponibles, usando imagen por defecto');
+            return '/assets/default-avatar.png';
+        }
+        
+        // Elegir una imagen aleatoria
+        const randomIndex = Math.floor(Math.random() * imageFiles.length);
+        const selectedImage = `/assets/${imageFiles[randomIndex]}`;
+        
+        console.log('[CHOOSE IMG] Imagen seleccionada:', selectedImage);
+        return selectedImage;
+        
     } catch (error) {
-        console.error(`Error: ${error.message}`);
-        return null;
+        console.error('[CHOOSE IMG ERROR]', error.message);
+        return '/assets/default-avatar.png';
     }
 }
 

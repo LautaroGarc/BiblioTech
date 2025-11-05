@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil de Usuario</title>
+  <link rel="stylesheet" href="perfil.css">
+</head>
+<body>
+
+  <header>
+    <div class="perfil-header">
+      <div class="perfil-info">
+        <div class="foto-perfil">Foto de perfil</div>
+        <span class="nombre-usuario">NombreUsuario</span>
+      </div>
+      <button class="btn-editar" onclick="togglePopup()">Editar perfil</button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR CON GRID -->
+  <div class="section-grid">
+
+    <!-- MEDALLAS -->
+    <a href="medallas.html" class="section-card">
+      <h2>Medallas</h2>
+      <p>Aún no tienes medallas</p>
+    </a>
+
+    <!-- LIBROS LIKEADOS -->
+    <a href="libroslikeados.html" class="section-card">
+      <h2>Libros con Me Gusta</h2>
+      <p>Sin libros guardados</p>
+    </a>
+
+    <!-- HISTORIAL OCUPA TODO EL ANCHO -->
+    <a href="historial.html" class="section-card section-full">
+      <h2>Historial de reservas</h2>
+      <p>No tienes reservas aún</p>
+    </a>
+
+  </div>
+
+  <!-- Popup Editar Perfil -->
+  <div id="popupEditarPerfil" class="popup-overlay">
+      <div class="popup-content">
+          <div class="popup-header">
+              <h2>Editar Perfil</h2>
+              <button class="close-btn" onclick="togglePopup()">×</button>
+          </div>
+          <form class="edit-form">
+              <div class="form-group">
+                  <label for="nombre">Nombre:</label>
+                  <input type="text" id="nombre" name="nombre" required>
+              </div>
+              <div class="form-group">
+                  <label for="email">Email:</label>
+                  <input type="email" id="email" name="email" required>
+              </div>
+              <div class="form-group">
+                  <label for="bio">Biografía:</label>
+                  <textarea id="bio" name="bio" rows="4"></textarea>
+              </div>
+              <div class="form-group">
+                  <label for="foto">Foto de perfil:</label>
+                  <input type="file" id="foto" name="foto" accept="image/*">
+              </div>
+              <div class="form-buttons">
+                  <button type="button" class="btn-cancelar" onclick="togglePopup()">Cancelar</button>
+                  <button type="submit" class="btn-guardar">Guardar Cambios</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <script src="perfil.js"></script>
+</body>
+</html>

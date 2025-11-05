@@ -8,7 +8,7 @@ require('dotenv').config({
 const PORT = process.env.PORT || 5000;
 
 console.log('╔════════════════════════════════════════╗');
-console.log('║        🚀 BIBLIOTECH SERVER 🚀        ║');
+console.log('║           BIBLIOTECH SERVER            ║');
 console.log('╚════════════════════════════════════════╝');
 console.log('');
 console.log(`Servidor corriendo en: http://localhost:${PORT}`);

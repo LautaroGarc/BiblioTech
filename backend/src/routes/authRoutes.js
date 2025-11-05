@@ -31,13 +31,13 @@ router.post('/register', validateRegister, register);
 router.post('/login', validateLogin, login);
 
 /**
- * @route   GET /api/auth/check-email
+ * @route   POST /api/auth/check-email
  * @desc    Verificar si email ya existe
  * @access  Public
  * @body    { email }
  * @return  { exists: boolean }
  */
-router.get('/check-email', checkEmail);
+router.post('/check-email', checkEmail);
 
 /**
  * @route   POST /api/auth/forgot-password

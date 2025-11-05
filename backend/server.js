@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const { authenticateToken, checkSession } = require('./src/middlewares/authMiddleware.js');
 
 const app = express();
@@ -8,6 +10,12 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use(cors({
+    origin: ['http://localhost:5000', 'https://right-mite-infinite.ngrok-free.app'],
+    credentials: true
+}));
 
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'src', 'public')));
@@ -117,7 +125,7 @@ app.get('/plus', authenticateToken, (req, res) => {
 app.use('/api/auth', require('./src/routes/authRoutes.js'));
 app.use('/api/users', require('./src/routes/userRoutes.js'));
 app.use('/api/admin', require('./src/routes/adminRoutes.js'));
-app.use('/api/items', require('./src/routes/itemRoutes.js'));
+//app.use('/api/items', require('./src/routes/itemRoutes.js'));
 app.use('/api/loans', require('./src/routes/loanRoutes.js'));
 app.use('/api/forums', require('./src/routes/forumRoutes.js'));
 

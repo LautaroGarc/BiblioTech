@@ -12,8 +12,6 @@ async function addUser(user) {
     }
 };
 
-
-
 async function editUser(idUser, field, data) {
     try{
         const query = `UPDATE users SET \`${field}\` = ? WHERE id = ?`;
