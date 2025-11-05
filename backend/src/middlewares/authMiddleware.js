@@ -24,6 +24,33 @@ function authenticateToken(req, res, next) {
     });
 }
 
+function redirectSession(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        token = req.cookies?.token;
+    }
+
+    if (!token) {
+        return next();
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return next();
+        }
+        
+        req.user = user;
+        
+        if (!user.accepted) {
+            return res.redirect('/waiting');
+        } else {
+            return res.redirect('/home');
+        }
+    });
+}
+
 function isAdmin(req, res, next) {
     if (req.user.type !== 'admin') {
         return res.status(403).json({ 
@@ -44,6 +71,7 @@ function isStudent(req, res, next) {
 
 module.exports = {
     authenticateToken,
+    redirectSession,
     isAdmin,
     isStudent
 };

@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const { JWT_SECRET } = require('../config/config');
 const { addUser, getUsers, getUser } = require('../models/users');
 
@@ -23,7 +25,7 @@ async function register(req, res) {
             lastName: lastName,
             email: email,
             pass: hashedPassword,
-            img: chooseImg(), // null por ahora
+            img: chooseImg(),
             lvl: 1,
             nReads: 0,
             type: 'user', // por defecto todos son 'user'
@@ -223,8 +225,13 @@ async function forgotPassword(req, res) {
 }
 
 function chooseImg() {
-    // TODO: implementar lógica para asignar imagen de perfil
-    return null;
+    try {
+        const photos = fs.readdirSync(path.join(__dirname, '..','..','frontend','src','public','assets'))
+        return photos[Math.floor(Math.random() * photos.lenght)]
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        return null;
+    }
 }
 
 module.exports = {
