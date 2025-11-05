@@ -25,12 +25,7 @@ async function register(req, res) {
             lastName: lastName,
             email: email,
             pass: hashedPassword,
-            img: chooseImg(),
-            lvl: 1,
-            nReads: 0,
-            type: 'user', // por defecto todos son 'user'
-            warning: 0,
-            accepted: false // requiere aprobación de admin
+            img: chooseImg()
         };
 
         const result = await addUser(newUser);

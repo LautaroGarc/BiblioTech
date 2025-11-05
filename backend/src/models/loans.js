@@ -1,121 +1,306 @@
-const db = require('../../../database/database.js')
+const db = require('../config/database');
 
-//obtener todos los prestamos
-async function getLoans(type = null) {
-    try{ 
-        const query1 = `SELECT * FROM itemLoans`;
-        const [result1] = await db.execute(query1);
-        const query2 = `SELECT * FROM bookLoans`;
-        const [result2] = await db.execute(query2);
-        const result = result1.concat(resutl2)
-        if (type === 'itemLoans'){
-            return result1;
-        } else if (type === 'bookLoans'){
-            return result2;
-        }
+class LoanModel {
+    // Crear préstamo de libro
+    static async createBookLoan(loanData) {
+        const { userId, bookId, dateOut } = loanData;
+        const query = `
+            INSERT INTO bookLoans (userId, bookId, dateOut, state) 
+            VALUES (?, ?, ?, 'espera')
+        `;
+        const [result] = await db.execute(query, [userId, bookId, dateOut]);
         return result;
-
-    } catch (error){
-        console.error('Error en getLoans: ', error);
-        throw error;
     }
 
-
-
-};
-
-//obtener x prestamo (item - libro)
-async function getLoan(id, type) {
-    try{
-        const query = `SELECT * FROM \`${type}\` WHERE id = ?`;
-        
-        const [result] = await db.execute(query, [id]);
+    // Crear préstamo de útil
+    static async createSupplyLoan(loanData) {
+        const { userId, itemId, dateOut } = loanData;
+        const query = `
+            INSERT INTO suppLoans (userId, itemId, dateOut, state) 
+            VALUES (?, ?, ?, 'espera')
+        `;
+        const [result] = await db.execute(query, [userId, itemId, dateOut]);
         return result;
-        
-    } catch (error){
-        console.error('Error en getLoan: ', error);
-        throw error;
     }
 
-};
-
-//obtener prestamo (item - libro) con x dato
-async function getLoanWith(id, type, field, data) {
-    try{
-        const query = `SELECT \`${field}\` FROM \`${type}\` WHERE \`${field}\` = ? AND id = ?`;
-        const [result] = await db.execute(query, [data, id]);
-        return result;
-    } catch (error){
-        console.error('Error en getLoanWith: ', error);
-        throw error;
+    // Obtener préstamos activos de un usuario
+    static async getActiveLoansByUser(userId) {
+        const query = `
+            SELECT 
+                'book' as type,
+                bl.id,
+                bl.userId,
+                bl.bookId as itemId,
+                b.name as itemName,
+                b.img,
+                bl.state,
+                bl.dateIn,
+                bl.dateOut,
+                bl.returned_at
+            FROM bookLoans bl
+            JOIN books b ON bl.bookId = b.id
+            WHERE bl.userId = ? AND bl.state IN ('espera', 'en prestamo', 'atrasado')
+            
+            UNION ALL
+            
+            SELECT 
+                'supply' as type,
+                sl.id,
+                sl.userId,
+                sl.itemId,
+                s.name as itemName,
+                s.img,
+                sl.state,
+                sl.dateIn,
+                sl.dateOut,
+                sl.returned_at
+            FROM suppLoans sl
+            JOIN supplies s ON sl.itemId = s.id
+            WHERE sl.userId = ? AND sl.state IN ('espera', 'en prestamo', 'atrasado')
+            ORDER BY dateIn DESC
+        `;
+        const [rows] = await db.execute(query, [userId, userId]);
+        return rows;
     }
 
-};
-
-async function getLoansWith(type = null, field, data) {
-    try{
-        const query = `SELECT * FROM \`${type}\` WHERE \`${field}\` = ?`;
-        const [result] = await db.execute(query, [data]);
-        return result;
-    } catch (error){
-        console.error('Error en getLoansWith: ', error);
-        throw error;
-    }
-
-};
-
-//editar prestamos
-async function editLoan(id, type, field, data) {
-    try{
-        const query = `UPDATE \`${type}\` SET \`${field}\` = ? WHERE id = ?`;
-        const [result] = await db.execute(query, [data, id]);
-        return result;
-    } catch (error){
-        console.error('Error en editLoan: ', error);
-        throw error;
-    }
-
-};
-
-//crear prestamos
-async function createLoan(type ,loan) {
-    try{
-        const query1 = `INSERT INTO \`${type}\` (userId, bookId, state, dateIn, dateOut) VALUES (?, ?, ?, ?, ?)`;
-        const [result1] = await db.execute(query1, [loan.userId, loan.bookId, loan.state, loan.dateIn, loan.dateOut]);
-        const query2 = `INSERT INTO \`${type}\` (userId, bookId, state, dateIn, dateOut) VALUES (?, ?, ?, ?, ?)`;
-        const [result2] = await db.execute(query2, [loan.userId, loan.itemId, loan.state, loan.dateIn, loan.dateOut]);
-        
-        if (type === 'bookLoans'){
-            return result1;
-        } else if (type === 'itemLoans'){
-            return result2;
-        }
-    } catch (error){
-        console.error('Error en createLoan: ', error);
-        throw error;
-    }
-
-};
-
-//delete loan
-async function deleteLoan(loanId, type) {
-    try{
-        const query = `DELETE FROM \`${type}\` WHERE id = ?`;
+    // Devolver item
+    static async returnLoan(loanId, type) {
+        const table = type === 'book' ? 'bookLoans' : 'suppLoans';
+        const query = `
+            UPDATE ${table} 
+            SET state = 'devuelto', returned_at = CURRENT_TIMESTAMP 
+            WHERE id = ? AND state != 'devuelto'
+        `;
         const [result] = await db.execute(query, [loanId]);
         return result;
-    } catch (error){
-        console.error('Error en deleteLoan: ', error);
-        throw error;
     }
 
-};
+    // Verificar y actualizar préstamos atrasados
+    static async checkAndUpdateOverdueLoans() {
+        const bookQuery = `
+            UPDATE bookLoans 
+            SET state = 'atrasado' 
+            WHERE state = 'en prestamo' 
+            AND dateOut < CURDATE() 
+            AND returned_at IS NULL
+        `;
+        
+        const supplyQuery = `
+            UPDATE suppLoans 
+            SET state = 'atrasado' 
+            WHERE state = 'en prestamo' 
+            AND dateOut < CURDATE() 
+            AND returned_at IS NULL
+        `;
 
-module.exports = {
-    getLoans,
-    getLoan,
-    getLoanWith,
-    getLoansWith,
-    deleteLoan,
-    editLoan,
-    createLoan
+        await db.execute(bookQuery);
+        await db.execute(supplyQuery);
+        
+        // Obtener conteo de actualizados
+        const [bookResult] = await db.execute('SELECT ROW_COUNT() as updated');
+        const [supplyResult] = await db.execute('SELECT ROW_COUNT() as updated');
+        
+        return {
+            bookLoansUpdated: bookResult[0].updated,
+            supplyLoansUpdated: supplyResult[0].updated
+        };
+    }
+
+    // Buscar item por código de barras
+    static async findItemByBarcode(barcode) {
+        // Buscar en libros
+        const bookQuery = `
+            SELECT 
+                'book' as type,
+                id,
+                name,
+                img,
+                barCode,
+                quant as quantity,
+                (quant - (SELECT COUNT(*) FROM bookLoans WHERE bookId = books.id AND state IN ('espera', 'en prestamo', 'atrasado'))) as available
+            FROM books 
+            WHERE barCode = ?
+        `;
+        
+        // Buscar en útiles
+        const supplyQuery = `
+            SELECT 
+                'supply' as type,
+                id,
+                name,
+                img,
+                barCode,
+                (total_quantity - borrowed) as available,
+                total_quantity as quantity
+            FROM supplies 
+            WHERE barCode = ?
+        `;
+
+        const [books] = await db.execute(bookQuery, [barcode]);
+        const [supplies] = await db.execute(supplyQuery, [barcode]);
+
+        if (books.length > 0) return books[0];
+        if (supplies.length > 0) return supplies[0];
+        
+        return null;
+    }
+
+    // Historial completo de préstamos
+    static async getLoanHistory(userId = null, itemId = null, type = null) {
+        let whereClause = '';
+        const params = [];
+
+        if (userId) {
+            whereClause += ' WHERE bl.userId = ? OR sl.userId = ?';
+            params.push(userId, userId);
+        }
+
+        const query = `
+            SELECT 
+                'book' as type,
+                bl.id,
+                bl.userId,
+                u.name as userName,
+                u.lastName as userLastName,
+                bl.bookId as itemId,
+                b.name as itemName,
+                bl.state,
+                bl.dateIn,
+                bl.dateOut,
+                bl.returned_at
+            FROM bookLoans bl
+            JOIN users u ON bl.userId = u.id
+            JOIN books b ON bl.bookId = b.id
+            ${userId ? 'WHERE bl.userId = ?' : ''}
+            
+            UNION ALL
+            
+            SELECT 
+                'supply' as type,
+                sl.id,
+                sl.userId,
+                u.name as userName,
+                u.lastName as userLastName,
+                sl.itemId as itemId,
+                s.name as itemName,
+                sl.state,
+                sl.dateIn,
+                sl.dateOut,
+                sl.returned_at
+            FROM suppLoans sl
+            JOIN users u ON sl.userId = u.id
+            JOIN supplies s ON sl.itemId = s.id
+            ${userId ? 'WHERE sl.userId = ?' : ''}
+            ORDER BY dateIn DESC
+            LIMIT 100
+        `;
+        
+        const [rows] = await db.execute(query, params);
+        return rows;
+    }
+
+    // Obtener todos los préstamos (para admin)
+    static async getAllLoans(filters = {}) {
+        const { state, type, limit = 50, offset = 0 } = filters;
+        let whereClause = '';
+        const params = [];
+
+        if (state) {
+            whereClause += ` AND bl.state = ? AND sl.state = ?`;
+            params.push(state, state);
+        }
+
+        const query = `
+            SELECT 
+                'book' as type,
+                bl.id,
+                bl.userId,
+                u.name as userName,
+                u.lastName as userLastName,
+                u.email as userEmail,
+                bl.bookId as itemId,
+                b.name as itemName,
+                bl.state,
+                bl.dateIn,
+                bl.dateOut,
+                bl.returned_at
+            FROM bookLoans bl
+            JOIN users u ON bl.userId = u.id
+            JOIN books b ON bl.bookId = b.id
+            WHERE 1=1 ${whereClause}
+            
+            UNION ALL
+            
+            SELECT 
+                'supply' as type,
+                sl.id,
+                sl.userId,
+                u.name as userName,
+                u.lastName as userLastName,
+                u.email as userEmail,
+                sl.itemId as itemId,
+                s.name as itemName,
+                sl.state,
+                sl.dateIn,
+                sl.dateOut,
+                sl.returned_at
+            FROM suppLoans sl
+            JOIN users u ON sl.userId = u.id
+            JOIN supplies s ON sl.itemId = s.id
+            WHERE 1=1 ${whereClause}
+            ORDER BY dateIn DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        params.push(parseInt(limit), parseInt(offset));
+        const [rows] = await db.execute(query, params);
+        return rows;
+    }
+
+    // Obtener préstamos atrasados
+    static async getOverdueLoans() {
+        const query = `
+            SELECT 
+                'book' as type,
+                bl.id,
+                bl.userId,
+                u.name as userName,
+                u.lastName as userLastName,
+                u.email as userEmail,
+                bl.bookId as itemId,
+                b.name as itemName,
+                bl.dateIn,
+                bl.dateOut,
+                DATEDIFF(CURDATE(), bl.dateOut) as daysOverdue
+            FROM bookLoans bl
+            JOIN users u ON bl.userId = u.id
+            JOIN books b ON bl.bookId = b.id
+            WHERE bl.state = 'atrasado'
+            
+            UNION ALL
+            
+            SELECT 
+                'supply' as type,
+                sl.id,
+                sl.userId,
+                u.name as userName,
+                u.lastName as userLastName,
+                u.email as userEmail,
+                sl.itemId as itemId,
+                s.name as itemName,
+                sl.dateIn,
+                sl.dateOut,
+                DATEDIFF(CURDATE(), sl.dateOut) as daysOverdue
+            FROM suppLoans sl
+            JOIN users u ON sl.userId = u.id
+            JOIN supplies s ON sl.itemId = s.id
+            WHERE sl.state = 'atrasado'
+            ORDER BY daysOverdue DESC
+        `;
+
+        const [rows] = await db.execute(query);
+        return rows;
+    }
 }
+
+module.exports = LoanModel;

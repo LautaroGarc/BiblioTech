@@ -4,7 +4,7 @@ const db = require('../../../database/database.js')
 async function addUser(user) {
     //user = {all}
     try{
-        const [result] = await db.execute(`INSERT INTO users (name, lastName, img, email, pass, lvl, nReads, type, warning) VALUES (?,?,?,?,?,?,?,?,?)`, [user.name, user.lastName, user.img, user.email, user.pass, user.lvl, user.nReads, user.type, user.warning]);
+        const [result] = await db.execute(`INSERT INTO users (name, lastName, img, email, pass) VALUES (?,?,?,?,?)`, [user.name, user.lastName, user.img, user.email, user.pass]);
         return result;
     } catch (error){
         console.error('Error en addUser: ', error);

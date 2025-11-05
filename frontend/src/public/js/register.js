@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function checkEmailExists(email) {
         try {
             const response = await fetch('/api/auth/check-email', {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },

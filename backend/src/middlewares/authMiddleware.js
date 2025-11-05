@@ -8,8 +8,16 @@ const { JWT_SECRET } = require('../config/config');
  * Si no es válido, devuelve error 401 o 403
  */
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    // BUSCAR TOKEN EN 3 LUGARES: headers, cookies, query params
+    let token = req.headers['authorization']?.split(' ')[1]; // Bearer token
+    
+    if (!token) {
+        token = req.cookies?.token; // ← AGREGAR ESTO
+    }
+    
+    if (!token) {
+        token = req.query?.token; // query params
+    }
 
     if (!token) {
         return res.status(401).json({ 
@@ -24,52 +32,40 @@ function authenticateToken(req, res, next) {
             });
         }
         
-        // Agregar info del usuario al request
-        req.user = user; // { id, email, type, accepted }
+        req.user = user;
         next();
     });
 }
 
-/**
- * Middleware: Verificar sesión y redirigir inteligentemente
- * Para rutas públicas (login, register, /)
- * - Si HAY sesión válida:
- *   - Si accepted = true → redirige a /home
- *   - Si accepted = false → redirige a /waiting
- * - Si NO hay sesión → continúa (permite acceso)
- */
 function checkSession(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    let token = authHeader && authHeader.split(' ')[1];
-
-    // Si no viene en headers, buscar en query params (para navegación directa)
-    if (!token && req.query.token) {
-        token = req.query.token;
-    }
-
-    // Si no hay token, no hay sesión → permitir acceso a ruta pública
+    // BUSCAR TOKEN EN 3 LUGARES
+    let token = req.headers['authorization']?.split(' ')[1];
+    
     if (!token) {
-        return next();
+        token = req.cookies?.token; // ← AGREGAR ESTO
+    }
+    
+    if (!token) {
+        token = req.query?.token;
     }
 
-    // Verificar si el token es válido
+    if (!token) {
+        return next(); // No hay token → permitir acceso
+    }
+
     jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
-            // Token inválido/expirado → permitir acceso a ruta pública
-            return next();
+            return next(); // Token inválido → permitir acceso
         }
         
-        // Token válido → redirigir según estado de aceptación
+        // Token válido → redirigir según estado
         if (user.accepted) {
-            // Usuario aceptado → redirigir a home
             return res.redirect('/home');
         } else {
-            // Usuario NO aceptado → redirigir a waiting
             return res.redirect('/waiting');
         }
     });
 }
-
 /**
  * Middleware: Verificar que el usuario sea admin
  */
