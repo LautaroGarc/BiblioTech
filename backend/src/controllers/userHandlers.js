@@ -2,25 +2,36 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 const { JWT_SECRET } = require('../config/config');
 const { addUser, getUsers, getUser } = require('../models/users');
 
-const { generateToken } = require('../middlewares/authMiddleware.js')
-
 async function register(req, res) {
     try {
+        console.log('[REGISTER] Datos recibidos:', req.body);
+        
         const { name, lastName, email, pass } = req.body;
+        
+        // Validar que los campos existan
+        if (!name || !lastName || !email || !pass) {
+            console.error('[REGISTER] Faltan campos requeridos');
+            return res.status(400).json({ 
+                message: 'Todos los campos son requeridos' 
+            });
+        }
         
         const users = await getUsers();
         const existingUser = users.find(u => u.email === email);
         
         if (existingUser) {
+            console.log('[REGISTER] Email ya registrado:', email);
             return res.status(400).json({ 
                 message: 'El email ya está registrado' 
             });
         }
 
         const hashedPassword = await bcrypt.hash(pass, 10);
+        console.log('[REGISTER] Contraseña hasheada correctamente');
 
         const newUser = {
             name: name,
@@ -30,57 +41,97 @@ async function register(req, res) {
             img: chooseImg()
         };
 
+        console.log('[REGISTER] Insertando usuario en BD:', { name, lastName, email });
         const result = await addUser(newUser);
-        newUser.id = result.insertId;
-        newUser.type = 'user'
-        newUser.accepted = false
+        const userId = result.insertId;
+        console.log('[REGISTER] Usuario creado con ID:', userId);
 
-        const token = generateToken(newUser);
+        // Token incluye accepted: false
+        const token = jwt.sign(
+            { 
+                id: userId,
+                email: email,
+                type: 'user',
+                accepted: false
+            },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        console.log('[REGISTER] Token generado para usuario:', userId);
 
         res.status(201).json({
             message: 'Usuario registrado exitosamente. Esperando aprobación del administrador.',
             token,
             user: {
-                id: newUser.id,
-                name: newUser.name,
-                lastName: newUser.lastName,
-                email: newUser.email,
-                type: newUser.type,
+                id: userId,
+                name: name,
+                lastName: lastName,
+                email: email,
+                type: 'user',
+                lvl: 1,
                 img: newUser.img,
-                accepted: newUser.accepted
+                accepted: false
             }
         });
+
+        console.log('[REGISTER] Respuesta enviada exitosamente');
 
     } catch (error) {
         console.error('[ REGISTER ERROR ]', error);
         res.status(500).json({ 
-            message: 'Error al registrar usuario' 
+            message: 'Error al registrar usuario',
+            error: error.message 
         });
     }
 }
 
 async function login(req, res) {
     try {
+        console.log('[LOGIN] Intento de login:', req.body.email);
+        
         const { email, pass } = req.body;
+
+        if (!email || !pass) {
+            return res.status(400).json({ 
+                message: 'Email y contraseña son requeridos' 
+            });
+        }
 
         const users = await getUsers();
         const user = users.find(u => u.email === email);
 
         if (!user) {
+            console.log('[LOGIN] Usuario no encontrado:', email);
             return res.status(401).json({ 
                 message: 'Credenciales inválidas' 
             });
         }
 
+        console.log('[LOGIN] Usuario encontrado. Verificando contraseña...');
         const validPassword = await bcrypt.compare(pass, user.pass);
         
         if (!validPassword) {
+            console.log('[LOGIN] Contraseña incorrecta para:', email);
             return res.status(401).json({ 
                 message: 'Credenciales inválidas' 
             });
         }
 
-        const token = generateToken(user);
+        console.log('[LOGIN] Contraseña correcta. Generando token...');
+
+        const token = jwt.sign(
+            { 
+                id: user.id,
+                email: user.email,
+                type: user.type,
+                accepted: user.accepted
+            },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        console.log('[LOGIN] Login exitoso para:', email, '| Accepted:', user.accepted);
 
         res.json({
             message: 'Login exitoso',
@@ -91,6 +142,7 @@ async function login(req, res) {
                 lastName: user.lastName,
                 email: user.email,
                 type: user.type,
+                lvl: user.lvl,
                 img: user.img,
                 accepted: user.accepted
             }
@@ -99,14 +151,15 @@ async function login(req, res) {
     } catch (error) {
         console.error('[ LOGIN ERROR ]', error);
         res.status(500).json({ 
-            message: 'Error al iniciar sesión' 
+            message: 'Error al iniciar sesión',
+            error: error.message 
         });
     }
 }
 
 async function getMe(req, res) {
     try {
-        const userId = req.user.id; // viene del token decodificado
+        const userId = req.user.id;
         const user = await getUser(userId);
 
         if (!user) {
@@ -129,7 +182,7 @@ async function getMe(req, res) {
 
 async function getUserById(req, res) {
     try {
-        const userId = req.params.id; // viene de la URL /api/users/:id
+        const userId = req.params.id;
         const user = await getUser(userId);
 
         if (!user) {
@@ -152,16 +205,30 @@ async function getUserById(req, res) {
 
 async function checkEmail(req, res) {
     try {
+        console.log('[CHECK EMAIL] Body recibido:', req.body);
+        
         const { email } = req.body;
+        
+        if (!email) {
+            console.error('[CHECK EMAIL] Email no proporcionado');
+            return res.status(400).json({ 
+                message: 'Email es requerido',
+                exists: false 
+            });
+        }
+
         const users = await getUsers();
         const exists = users.some(u => u.email === email);
+
+        console.log('[CHECK EMAIL] Email:', email, '| Existe:', exists);
 
         res.json({ exists });
 
     } catch (error) {
         console.error('[ CHECK EMAIL ERROR ]', error);
         res.status(500).json({ 
-            message: 'Error al verificar email' 
+            message: 'Error al verificar email',
+            exists: false
         });
     }
 }
@@ -170,7 +237,6 @@ async function forgotPassword(req, res) {
     try {
         const { email } = req.body;
 
-        // Verificar que el email existe
         const users = await getUsers();
         const user = users.find(u => u.email === email);
 
@@ -181,12 +247,9 @@ async function forgotPassword(req, res) {
             });
         }
 
-        // TODO: 
-        // 1. Generar token temporal de recuperación
-        // 2. Enviar email con link de recuperación
-        // 3. Guardar token en DB con expiración
-
         console.log('[ FORGOT PASSWORD ] Solicitud de recuperación para:', email);
+
+        forgotPass(email);
 
         res.json({ 
             ok: true,
@@ -203,40 +266,34 @@ async function forgotPassword(req, res) {
     }
 }
 
+
+
 function chooseImg() {
     try {
-        const assetsPath = path.join(__dirname, '..', '..', 'frontend', 'src', 'public', 'assets','profiles');
+        const assetsPath = path.join(__dirname, '..', '..', 'frontend', 'src', 'public', 'assets', 'profiles');
         
-        // Verificar si el directorio existe
         if (!fs.existsSync(assetsPath)) {
-            console.warn('[CHOOSE IMG] Directorio de assets no encontrado, usando imagen por defecto');
-            return '/assets/default-avatar.png';
+            console.log('[CHOOSE IMG] Directorio no existe, usando default');
+            return '/assets/profiles/azul.png';
         }
         
-        // Leer archivos del directorio
-        const files = fs.readdirSync(assetsPath);
-        
-        // Filtrar solo imágenes
-        const imageFiles = files.filter(file => 
+        const photos = fs.readdirSync(assetsPath);
+        const imageFiles = photos.filter(file => 
             /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file)
         );
         
-        // Si no hay imágenes, retornar default
         if (imageFiles.length === 0) {
-            console.warn('[CHOOSE IMG] No hay imágenes disponibles, usando imagen por defecto');
-            return '/assets/default-avatar.png';
+            console.log('[CHOOSE IMG] No hay imágenes, usando default');
+            return '/assets/profiles/azul.png';
         }
         
-        // Elegir una imagen aleatoria
-        const randomIndex = Math.floor(Math.random() * imageFiles.length);
-        const selectedImage = `/assets/${imageFiles[randomIndex]}`;
-        
-        console.log('[CHOOSE IMG] Imagen seleccionada:', selectedImage);
-        return selectedImage;
+        const randomImage = imageFiles[Math.floor(Math.random() * imageFiles.length)];
+        console.log('[CHOOSE IMG] Imagen seleccionada:', randomImage);
+        return `/assets/profiles/${randomImage}`;
         
     } catch (error) {
         console.error('[CHOOSE IMG ERROR]', error.message);
-        return '/assets/default-avatar.png';
+        return '/assets/profiles/azul.png';
     }
 }
 

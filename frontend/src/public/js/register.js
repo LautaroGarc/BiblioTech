@@ -1,11 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Redirigir si ya hay sesión activa
     if (redirectIfAuthenticated()) {
-        return; // Ya redirigió, no continuar
+        return;
     }
 
     const registerForm = document.querySelector('.registerForm');
     const messageDiv = document.getElementById('msg');
+
+    if (!registerForm) {
+        console.error('[REGISTER] No se encontró el formulario de registro');
+        return;
+    }
 
     registerForm.addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -81,6 +86,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showMessage(message, type) {
+        if (!messageDiv) return;
+        
         messageDiv.textContent = message;
         messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
         
@@ -89,12 +96,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function clearMessage() {
-        messageDiv.textContent = '';
-        messageDiv.className = '';
+        if (messageDiv) {
+            messageDiv.textContent = '';
+            messageDiv.className = '';
+        }
     }
 
     async function registerUser(firstName, lastName, email, password) {
         try {
+            console.log('[REGISTER] Registrando usuario:', email);
+
             // Verificar si el email ya existe
             const emailExists = await checkEmailExists(email);
             
@@ -120,17 +131,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const data = await response.json();
+            console.log('[REGISTER] Respuesta del servidor:', data);
 
             if (response.ok) {
                 // Registro exitoso
                 showMessage('¡Registro exitoso! Esperando aprobación...', 'success');
                 
-                // CACHEAR: Guardar token y usuario en localStorage
+                // Guardar sesión
                 saveSession(data.token, data.user);
                 
-                console.log('[REGISTER] Sesión guardada en caché:', {
-                    user: data.user.email,
-                    accepted: data.user.accepted
+                console.log('[REGISTER] Sesión guardada:', {
+                    email: data.user.email,
+                    accepted: data.user.accepted,
+                    type: data.user.type
                 });
                 
                 // Redirigir a página de espera después de 2 segundos
@@ -158,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function checkEmailExists(email) {
         try {
             const response = await fetch('/api/auth/check-email', {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },

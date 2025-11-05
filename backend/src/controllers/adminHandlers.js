@@ -1,13 +1,11 @@
 const { getUsers, getUser, editUser, deleteUser: deleteUserModel, warnUser: warnUserModel } = require('../models/users');
 const db = require('../../../database/database');
 
-// Obtener usuarios pendientes de aprobación
 async function getPendingUsers(req, res) {
     try {
         const users = await getUsers();
         const pendingUsers = users.filter(u => !u.accepted && u.type !== 'admin');
         
-        // Remover contraseñas
         const safeUsers = pendingUsers.map(u => {
             const { pass, ...user } = u;
             return user;
@@ -27,7 +25,6 @@ async function getPendingUsers(req, res) {
     }
 }
 
-// Aprobar usuario
 async function approveUser(req, res) {
     try {
         const userId = req.params.id;
@@ -62,7 +59,6 @@ async function approveUser(req, res) {
     }
 }
 
-// Rechazar usuario (eliminarlo)
 async function rejectUser(req, res) {
     try {
         const userId = req.params.id;
@@ -97,7 +93,6 @@ async function rejectUser(req, res) {
     }
 }
 
-// Obtener todos los usuarios
 async function getAllUsers(req, res) {
     try {
         const users = await getUsers();
@@ -121,7 +116,6 @@ async function getAllUsers(req, res) {
     }
 }
 
-// Advertir usuario
 async function warnUser(req, res) {
     try {
         const userId = req.params.id;
@@ -146,8 +140,6 @@ async function warnUser(req, res) {
         
         await warnUserModel(userId, newWarningLevel);
         
-        // TODO: Enviar notificación al usuario
-        
         res.json({
             success: true,
             message: 'Usuario advertido exitosamente',
@@ -166,7 +158,6 @@ async function warnUser(req, res) {
     }
 }
 
-// Eliminar usuario
 async function deleteUser(req, res) {
     try {
         const userId = req.params.id;
@@ -201,7 +192,6 @@ async function deleteUser(req, res) {
     }
 }
 
-// Generar reportes estadísticos
 async function generateReports(req, res) {
     try {
         const { type, startDate, endDate } = req.query;

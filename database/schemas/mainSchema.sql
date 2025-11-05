@@ -1,4 +1,4 @@
-DROP DATABASE bibliotech;CREATE DATABASE IF NOT EXISTS bibliotech;
+CREATE DATABASE IF NOT EXISTS bibliotech;
 USE bibliotech;
 
 CREATE TABLE IF NOT EXISTS users (

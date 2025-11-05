@@ -1,12 +1,10 @@
 const dotenv = require('dotenv');
 const path = require('path');
 
-//- Cargar variables de entorno (PORT, JWT_SECRET, DB credentials)
-
 dotenv.config({ path: path.join(__dirname, 'env/main.env') });
 
 module.exports = {
-    PORT: process.env.PORT || 3000,
+    PORT: process.env.PORT || 5000,
     JWT_SECRET: process.env.JWT_SECRET,
     DB_CONFIG: {
         host: process.env.DB_HOST,
