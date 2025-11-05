@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Redirigir si ya hay sesión activa
+    if (redirectIfAuthenticated()) {
+        return; // Ya redirigió, no continuar
+    }
+
     const loginForm = document.querySelector('.loginForm');
     const forgotForm = document.querySelector('.forgotPass');
     const messageDiv = document.getElementById('msg');
@@ -87,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loginUser(email, pass) {
         try {
+            showMessage('Iniciando sesión...', 'info', messageDiv);
             
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -103,18 +109,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 showMessage('¡Login exitoso! Redirigiendo...', 'success', messageDiv);
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
                 
+                // CACHEAR: Guardar token y usuario en localStorage
+                saveSession(data.token, data.user);
+                
+                console.log('[LOGIN] Sesión guardada en caché:', {
+                    user: data.user.email,
+                    accepted: data.user.accepted
+                });
+                
+                // Redirigir según estado de aceptación
                 setTimeout(() => {
-                    window.location.href = '/home';
-                }, 2000);
+                    if (data.user.accepted) {
+                        window.location.href = '/home';
+                    } else {
+                        window.location.href = '/waiting';
+                    }
+                }, 1500);
+                
             } else {
                 showMessage(data.message || 'Error en el login', 'error', messageDiv);
             }
 
         } catch (error) {
-            console.error('Error:', error);
+            console.error('[LOGIN ERROR]', error);
             showMessage('Error de conexión con el servidor', 'error', messageDiv);
         }
     }
@@ -139,18 +157,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                showMessage(response.msg, response.msgType, recoverMsgDiv);
+                showMessage(data.msg || 'Se ha enviado un correo', 'success', recoverMsgDiv);
                 
                 setTimeout(() => {
                     showLoginForm();
                 }, 3000);
                 
             } else {
-                showMessage(data.message || 'Error al recuperar la contraseña', 'error', recoverMsgDiv);
+                showMessage(data.msg || 'Error al recuperar la contraseña', 'error', recoverMsgDiv);
             }
 
         } catch (error) {
-            console.error('Error:', error);
+            console.error('[FORGOT PASSWORD ERROR]', error);
             showMessage('Error de conexión con el servidor', 'error', recoverMsgDiv);
         }
     }
@@ -166,10 +184,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const data = await response.json();
-            return data.exists; //backend responde con { exists: true/false }
+            return data.exists;
             
         } catch (error) {
-            console.error('Error validando email:', error);
+            console.error('[EMAIL VALIDATOR ERROR]', error);
             return false;
         }
     }

@@ -1,6 +1,12 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/config');
 
+/**
+ * Middleware: Autenticar token (para rutas protegidas)
+ * Verifica que el token sea válido
+ * Si es válido, agrega req.user con los datos del token
+ * Si no es válido, devuelve error 401 o 403
+ */
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
@@ -19,38 +25,54 @@ function authenticateToken(req, res, next) {
         }
         
         // Agregar info del usuario al request
-        req.user = user; // { id, email, type }
+        req.user = user; // { id, email, type, accepted }
         next();
     });
 }
 
-function redirectSession(req, res, next) {
+/**
+ * Middleware: Verificar sesión y redirigir inteligentemente
+ * Para rutas públicas (login, register, /)
+ * - Si HAY sesión válida:
+ *   - Si accepted = true → redirige a /home
+ *   - Si accepted = false → redirige a /waiting
+ * - Si NO hay sesión → continúa (permite acceso)
+ */
+function checkSession(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    let token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) {
-        token = req.cookies?.token;
+    // Si no viene en headers, buscar en query params (para navegación directa)
+    if (!token && req.query.token) {
+        token = req.query.token;
     }
 
+    // Si no hay token, no hay sesión → permitir acceso a ruta pública
     if (!token) {
         return next();
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    // Verificar si el token es válido
+    jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
+            // Token inválido/expirado → permitir acceso a ruta pública
             return next();
         }
         
-        req.user = user;
-        
-        if (!user.accepted) {
-            return res.redirect('/waiting');
-        } else {
+        // Token válido → redirigir según estado de aceptación
+        if (user.accepted) {
+            // Usuario aceptado → redirigir a home
             return res.redirect('/home');
+        } else {
+            // Usuario NO aceptado → redirigir a waiting
+            return res.redirect('/waiting');
         }
     });
 }
 
+/**
+ * Middleware: Verificar que el usuario sea admin
+ */
 function isAdmin(req, res, next) {
     if (req.user.type !== 'admin') {
         return res.status(403).json({ 
@@ -60,6 +82,9 @@ function isAdmin(req, res, next) {
     next();
 }
 
+/**
+ * Middleware: Verificar que el usuario sea estudiante o admin
+ */
 function isStudent(req, res, next) {
     if (req.user.type !== 'student' && req.user.type !== 'admin') {
         return res.status(403).json({ 
@@ -71,7 +96,7 @@ function isStudent(req, res, next) {
 
 module.exports = {
     authenticateToken,
-    redirectSession,
+    checkSession,
     isAdmin,
     isStudent
 };

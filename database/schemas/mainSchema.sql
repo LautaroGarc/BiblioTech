@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS BiblioTech;
-USE BiblioTech;
+DROP DATABASE bibliotech;CREATE DATABASE IF NOT EXISTS bibliotech;
+USE bibliotech;
 
 CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     pass VARCHAR(255) NOT NULL,
     forumMod BOOLEAN DEFAULT FALSE,
     medals JSON,
-    notifications JSON, ---div y pag
+    notifications JSON,
     lvl INT UNSIGNED DEFAULT 1,
     xp INT UNSIGNED DEFAULT 0,
     warning INT DEFAULT 0,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS books (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     name VARCHAR(255) NOT NULL,
     img VARCHAR(255) NOT NULL,
-    review DECIMAL(1,2) DEFAULT 0.00,
+    review DECIMAL(3,2) DEFAULT 0.00,
     barCode VARCHAR(255) UNIQUE,
     quant INT NOT NULL,
     likes JSON,

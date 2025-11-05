@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Notificaciones</title>
+    <link rel="stylesheet" href="homeadmin.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Notificaciones</h1>
+            <p>Gestiona tus solicitudes de acceso y reservas</p>
+        </header>
+        
+        <div class="filtros">
+            <button class="filtro-btn active" id="filtro-todas">Todas</button>
+            <button class="filtro-btn" id="filtro-reservas">Reservas</button>
+            <button class="filtro-btn" id="filtro-acceso">Acceso</button>
+        </div>
+        
+        <div class="notificaciones-container">
+            <div class="notificacion" data-tipo="reserva">
+                <div class="notificacion-contenido">
+                    <div class="notificacion-titulo">Solicitud de Reserva</div>
+                    <div class="notificacion-descripcion"> </div>
+                </div>
+                <div class="notificacion-acciones">
+                    <button class="btn btn-aceptar" id="aceptar-reserva-1">Aceptar</button>
+                    <button class="btn btn-rechazar" id="rechazar-reserva-1">Rechazar</button>
+                </div>
+            </div>
+            
+            <div class="notificacion" data-tipo="acceso">
+                <div class="notificacion-contenido">
+                    <div class="notificacion-titulo">Solicitud de Acceso</div>
+                    <div class="notificacion-descripcion"></div>
+                </div>
+                <div class="notificacion-acciones">
+                    <button class="btn btn-aceptar" id="aceptar-acceso-1">Aceptar</button>
+                    <button class="btn btn-rechazar" id="rechazar-acceso-1">Rechazar</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+</html>
