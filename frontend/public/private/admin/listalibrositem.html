@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Libros</title>
+    <link rel="stylesheet" href="styles/listalibrositem.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Mis Libros</h1>
+        
+        <div class="book-list" id="bookList">
+            <!-- Los libros se generarán dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Modal de edición -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">Editar Libro</div>
+            
+            <form id="editForm">
+                <div class="form-group">
+                    <label>Cambiar nombre</label>
+                    <input type="text" id="editName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Cambiar imagen</label>
+                    <input type="text" id="editImage" placeholder="URL de la imagen">
+                </div>
+                
+                <div class="form-group">
+                    <label>Cambiar cantidad</label>
+                    <input type="number" id="editQuantity" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Cambiar descripción</label>
+                    <textarea id="editDescription"></textarea>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-save">✓ Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo
+        let books = [
+            { id: 1, name: "Cien Años de Soledad", quantity: 3, image: "", description: "Novela de Gabriel García Márquez" },
+            { id: 2, name: "Don Quijote", quantity: 2, image: "", description: "Clásico de la literatura española" },
+            { id: 3, name: "El Principito", quantity: 5, image: "", description: "Libro infantil filosófico" },
+            { id: 4, name: "1984", quantity: 1, image: "", description: "Distopía de George Orwell" },
+            { id: 5, name: "Rayuela", quantity: 2, image: "", description: "Novela de Julio Cortázar" },
+            { id: 6, name: "Ficciones", quantity: 3, image: "", description: "Cuentos de Jorge Luis Borges" }
+        ];
+
+        let editingBookId = null;
+
+        function renderBooks() {
+            const bookList = document.getElementById('bookList');
+            bookList.innerHTML = books.map(book => `
+                <div class="book-item">
+                    <div class="book-info">
+                        <div class="book-title">${book.name}</div>
+                        <div class="book-quantity">Cantidad: ${book.quantity}</div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-edit" onclick="openEditModal(${book.id})">Editar</button>
+                        <button class="btn btn-delete" onclick="deleteBook(${book.id})">✕ Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openEditModal(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (!book) return;
+
+            editingBookId = bookId;
+            document.getElementById('editName').value = book.name;
+            document.getElementById('editImage').value = book.image;
+            document.getElementById('editQuantity').value = book.quantity;
+            document.getElementById('editDescription').value = book.description;
+            
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+            editingBookId = null;
+        }
+
+        function deleteBook(bookId) {
+            if (confirm('¿Estás seguro de que quieres eliminar este libro?')) {
+                books = books.filter(b => b.id !== bookId);
+                renderBooks();
+            }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const book = books.find(b => b.id === editingBookId);
+            if (book) {
+                book.name = document.getElementById('editName').value;
+                book.image = document.getElementById('editImage').value;
+                book.quantity = parseInt(document.getElementById('editQuantity').value);
+                book.description = document.getElementById('editDescription').value;
+                
+                renderBooks();
+                closeModal();
+            }
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Renderizar libros al cargar
+        renderBooks();
+    </script>
+</body>
+</html>

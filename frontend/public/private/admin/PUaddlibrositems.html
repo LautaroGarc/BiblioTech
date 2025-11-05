@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Tipo</title>
+    <link rel="stylesheet" href="styles/addlibrositems.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            seleccionar que<br>quiero agregar
+        </div>
+        
+        <div class="option-button" onclick="handleSelection('libro')">
+            libro
+        </div>
+        
+        <div class="option-button" onclick="handleSelection('item')">
+            ítem
+        </div>
+    </div>
+
+    <script>
+        function handleSelection(tipo) {
+            console.log('Tipo seleccionado:', tipo);
+            // Aquí se agregará la navegación más adelante
+        }
+    </script>
+</body>
+</html>

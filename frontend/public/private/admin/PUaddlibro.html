@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Libros</title>
+    <link rel="stylesheet" href="styles/addlibro.css">
+</head>
+<body>
+    <div class="container">
+        <div class="title">agregar libros</div>
+        
+        <form id="libroForm" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <input type="text" class="input-field" placeholder="agregar nombre" id="nombre" required>
+            </div>
+            
+            <div class="two-columns">
+                <div class="form-group">
+                    <input type="text" class="input-field" placeholder="agregar portada" id="portada">
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" class="input-field" placeholder="seleccionar idioma" id="idioma">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <input type="text" class="input-field" placeholder="agregar sinopsis" id="sinopsis">
+            </div>
+            
+            <div class="form-group">
+                <input type="text" class="input-field" placeholder="agregar autor" id="autor">
+            </div>
+            
+            <div class="form-group">
+                <input type="text" class="input-field" placeholder="add ISBN card" id="isbn">
+            </div>
+            
+            <button type="button" class="scanner-button" onclick="openScanner()">
+                escanear
+            </button>
+        </form>
+        
+        <div class="submit-button" onclick="submitForm()"></div>
+    </div>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            submitForm();
+        }
+
+        function submitForm() {
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                portada: document.getElementById('portada').value,
+                idioma: document.getElementById('idioma').value,
+                sinopsis: document.getElementById('sinopsis').value,
+                autor: document.getElementById('autor').value,
+                isbn: document.getElementById('isbn').value
+            };
+            
+            console.log('Datos del libro:', formData);
+            alert('Libro agregado exitosamente!');
+            // Aquí se procesarán los datos más adelante
+        }
+
+        function openScanner() {
+            console.log('Abriendo escáner...');
+            alert('Función de escáner - Por implementar');
+            // Aquí se agregará la funcionalidad del escáner
+        }
+    </script>
+</body>
+</html>

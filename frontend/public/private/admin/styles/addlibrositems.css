@@ -1,0 +1,96 @@
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Calibri, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: linear-gradient(135deg, #b8c6f5 0%, #d4c5f0 100%);
+            border-radius: 25px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .title {
+            text-align: center;
+            color: #003d5c;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .option-button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #003d5c;
+            padding: 30px 20px;
+            margin: 20px 0;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.3);
+            font-size: 28px;
+            font-weight: 700;
+            text-transform: lowercase;
+        }
+
+        .option-button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.5);
+            background: linear-gradient(135deg, #5fb9ff 0%, #1ffbff 100%);
+        }
+
+        .option-button:active {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                max-width: 320px;
+            }
+
+            .title {
+                font-size: 18px;
+                margin-bottom: 25px;
+            }
+
+            .option-button {
+                padding: 25px 15px;
+                font-size: 24px;
+                margin: 15px 0;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 25px 15px;
+            }
+
+            .title {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+
+            .option-button {
+                padding: 22px 12px;
+                font-size: 22px;
+                margin: 12px 0;
+            }
+        }
+    

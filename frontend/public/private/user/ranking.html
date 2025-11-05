@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking - BiblioTech</title>
+    <link rel="stylesheet" href="styles/ranking.css">
+</head>
+<body>
+      
+    <header class="header">
+
+            <button class="nav-button" id="forobutton" title="volver al foro">
+                <a href="foro.html" target="_self">
+                    <img src="buttonbackicon.png" id="forobuttonicon">
+                </a>
+            </button>
+
+            <h1>rankings</h1>
+
+    </header>
+
+
+    <div class="container">
+        
+        <div class="rankings-container">
+            <!-- ranking de mayor rango -->
+            <section class="ranking-section" id="top-rank">
+                <h2 class="ranking-title">top 10 usuario con mas niveles</h2>
+                <div class="ranking-list" id="rank-list">
+                    <!-- los elementos del ranking se cargan aca -->     
+                    <div class="ranking-item">
+                        <div class="ranking-position">1</div>
+                        <div class="ranking-content">
+                            <div class="ranking-name">(nombre del Usuario)</div>
+                            <div class="ranking-details">(niveles: ?) </div>
+                        </div>
+                    </div>
+                
+                </div>
+            </section>
+
+            <!-- ranking de libros más leídos -->
+            <section class="ranking-section" id="top-books">
+                <h2 class="ranking-title"> top usuario con mas libros leidos</h2>
+                <div class="ranking-list" id="books-list">
+                    <!-- los elementos del ranking se cargan aca -->
+                    <div class="ranking-item">
+                        <div class="ranking-position">1</div>
+                        <div class="ranking-content">
+                            <div class="ranking-name">(nombre del Usuario)</div>
+                            <div class="ranking-details">(Lecturas: 1,250)</div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

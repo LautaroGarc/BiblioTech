@@ -1,0 +1,185 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Calibri, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: linear-gradient(135deg, #b8c6f5 0%, #d4c5f0 100%);
+            border-radius: 25px;
+            padding: 40px 30px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .title {
+            color: #003d5c;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-family: Calibri, Arial, sans-serif;
+            font-size: 16px;
+            color: #003d5c;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .input-field::placeholder {
+            color: rgba(0, 61, 92, 0.7);
+            font-weight: 500;
+        }
+
+        .input-field:focus {
+            outline: none;
+            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .scanner-button {
+            width: 100%;
+            background: linear-gradient(135deg, #5a8fd8 0%, #4a7bc5 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px 20px;
+            font-family: Calibri, Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(90, 143, 216, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .scanner-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(90, 143, 216, 0.6);
+            background: linear-gradient(135deg, #6a9fe8 0%, #5a8bd5 100%);
+        }
+
+        .scanner-button:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-button {
+            position: absolute;
+            bottom: -25px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6e 100%);
+            border: 4px solid white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 30px rgba(0, 255, 136, 0.7);
+        }
+
+        .submit-button:active {
+            transform: scale(1.05);
+        }
+
+        .submit-button::before {
+            content: '✓';
+            font-size: 36px;
+            color: white;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                max-width: 340px;
+            }
+
+            .title {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .input-field {
+                padding: 12px 15px;
+                font-size: 15px;
+            }
+
+            .scanner-button {
+                padding: 15px 15px;
+                font-size: 16px;
+            }
+
+            .submit-button {
+                width: 50px;
+                height: 50px;
+                right: 20px;
+                bottom: -20px;
+            }
+
+            .submit-button::before {
+                font-size: 28px;
+            }
+
+            .two-columns {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 25px 15px;
+            }
+
+            .title {
+                font-size: 18px;
+            }
+
+            .input-field {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .scanner-button {
+                padding: 12px 12px;
+                font-size: 15px;
+            }
+        }

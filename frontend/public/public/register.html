@@ -4,12 +4,49 @@
   <meta charset="utf-8">
   <title>Registro - BiblioTech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../styles/login.css">
+  <link rel="stylesheet" href="styles/register.css">
 </head>
 <body>
-  <img src="../assets/logo.png" alt='Logo BiblioTech'>
+
+  <img src="logo.png" class="logo">
+
   <div class="register-container">
-    <h2>Registrarse</h2>
+    <div id="registerSection">
+      <h2>crear cuenta</h2>
+      <p class="login-link">¿ya tenés cuenta? <a href="login.html">inicia sesion</a></p>
+
+      <form class="registerForm">
+        <div class="form-group-inline">
+          <div>
+            <label for="firstName">nombre</label>
+            <input type="text" id="firstName" name="nombre" required>
+          </div>
+          <div>
+            <label for="lastName">apellido</label>
+            <input type="text" id="lastName" name="apellido" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">correo electronico</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">contraseña</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">confirmar contraseña</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+
+        <div id="msg"></div>
+        <button type="submit">registrarse </button>
+
+      </form>
+    </div>
   </div>
 </body>
 </html>

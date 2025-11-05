@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de prestamos</title>
+  <link rel="stylesheet" href="form.css
+  ">
+</head>
+<body>
+  
+  <div class="popup-fondo">
+    <div class="popup-form">
+      <span class="cerrar">&times;</span>
+      <h2>Formulario de prestamos</h2>
+
+      <form>
+        <label for="nombre">Nombre y apellido:</label>
+        <input type="text" id="nombre" placeholder="Ej: Ana Gómez" required>
+
+        <label for="email">Correo electrónico:</label>
+        <input type="email" id="email" placeholder="ejemplo@gmail.com" required>
+
+        <label for="item">Item a alquilar:</label>
+        <input type="text" id="item" placeholder="Ej: Calculadora científica" required>
+
+        <label for="fecha">Fecha de alquiler:</label>
+        <input type="date" id="fecha" required>
+
+        <label for="dias">Cantidad de días:</label>
+        <input type="number" id="dias" min="1" max="30" required>
+
+        <label for="comentarios">Comentarios adicionales:</label>
+        <textarea id="comentarios" rows="3" placeholder="Escribe alguna observación..."></textarea>
+
+        <button type="submit">Enviar solicitud</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

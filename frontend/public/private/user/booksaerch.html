@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Catálogo de Libros - Biblioteca</title>
+  <link rel="stylesheet" href="styles/booksaerch.css" />
+</head>
+<body>
+  <header>
+    <h1>Catálogo de Libros</h1>
+    <button id ="back-btn">← Volver</button>
+    <input id="search" class="search-bar" type="search" placeholder="🔍 Buscar por título o autor..." />
+  </header>
+
+  <div class="barra-btn">
+
+    <button id="filter-btn" class="filter-btn">Filtrar</button>
+    <button id ="likeados-btn" class="likeados-btn">❤️</button>
+  </div>
+
+
+  <div class="books-container" id="books-container">
+    <!-- Las tarjetas se generan desde script.js -->
+  </div>
+
+
+
+  <!-- Popup -->
+  <div class="popup" id="popup" aria-hidden="true">
+    <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+      <button class="cerrar" id="close-popup" aria-label="Cerrar">&times;</button>
+
+      <div class="popup-left">
+        <img id="popup-img" src="" alt="Portada libro" />
+      </div>
+
+      <div class="popup-right">
+        <h2 id="popup-title"></h2>
+        <p id="popup-author" class="muted"></p>
+        <p id="popup-desc"></p>
+        <p id="popup-stock" class="stock-line"></p>
+
+        <form id="rent-form" class="rent-form" novalidate>
+          <h3>Solicitar alquiler</h3>
+
+          <label for="nombre">Nombre y Apellido</label>
+          <input id="nombre" name="nombre" type="text" required placeholder="Ej: Juan Pérez" />
+
+          <div class="row">
+            <div class="col">
+              <label for="fecha-retiro">Fecha de retiro</label>
+              <input id="fecha-retiro" name="fecha-retiro" type="date" required />
+            </div>
+            <div class="col">
+              <label for="fecha-devolucion">Fecha de devolución</label>
+              <input id="fecha-devolucion" name="fecha-devolucion" type="date" required />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label for="curso">Curso</label>
+              <input id="curso" name="curso" type="text" required placeholder="Ej: 3º A" />
+            </div>
+            <div class="col">
+              <label for="turno">Turno</label>
+              <select id="turno" name="turno" required>
+                <option value="">Elegir...</option>
+                <option value="Mañana">Mañana</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noche">Noche</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button id="submit-rent" type="submit">Solicitar alquiler</button>
+          </div>
+
+          <p id="form-feedback" class="feedback" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="bt-back-next" class="bt-back-next">
+    <button id="back-page-btn" class="back-page-btn">← Anterior</button>
+    <span id="page-info" class="page-info">Página 1</span>
+    <button id="next-page-btn" class="next-page-btn">Siguiente →</button>
+  </div>
+  
+  <script src="booksaerch.js"></script>
+</body>
+</html>
+
+

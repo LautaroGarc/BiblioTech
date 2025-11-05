@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuarios</title>
+    <link rel="stylesheet" href="styles/perfiles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Tarjeta de Perfil -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <h2>Abigail Barraza</h2>
+                <div class="profile-info">
+                    <span class="info-badge">Niveles: 1,2,3,4,5</span>
+                    <span class="info-badge">Rango: ?????</span>
+                    <span class="info-badge">Medallas: cobre, plata y oro</span>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filter-nivel">Niveles</label>
+                    <select id="filter-nivel" data-filter="nivel">
+                        <option value="">Todos los niveles</option>
+                        <option value="1">Nivel 1</option>
+                        <option value="2">Nivel 2</option>
+                        <option value="3">Nivel 3</option>
+                        <option value="4">Nivel 4</option>
+                        <option value="5">Nivel 5</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-medalla">Medallas</label>
+                    <select id="filter-medalla" data-filter="medalla">
+                        <option value="">Todas las medallas</option>
+                        <option value="cobre">Cobre</option>
+                        <option value="plata">Plata</option>
+                        <option value="oro">Oro</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-rango">Rango</label>
+                    <select id="filter-rango" data-filter="rango">
+                        <option value="">Todos los rangos</option>
+                        <option value="principiante">Principiante</option>
+                        <option value="intermedio">Intermedio</option>
+                        <option value="avanzado">Avanzado</option>
+                        <option value="experto">Experto</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Usuarios -->
+        <div class="users-list">
+            <h3>Lista completa de usuarios</h3>
+            <div id="users-container">
+                <!-- Los usuarios se cargarán dinámicamente aquí -->
+                <!-- Ejemplo de usuarios: -->
+                <div class="user-item" 
+                     data-user-id="1" 
+                     data-nivel="3" 
+                     data-medalla="plata" 
+                     data-rango="intermedio"
+                     onclick="openUserModal(this)">
+                    <div class="user-name">nombre de usuario</div>
+                    <div class="user-date">fecha de ingreso: 15/01/2024</div>
+                </div>
+
+                <div class="user-item" 
+                     data-user-id="2" 
+                     data-nivel="5" 
+                     data-medalla="oro" 
+                     data-rango="experto"
+                     onclick="openUserModal(this)">
+                    <div class="user-name">nombre de usuario</div>
+                    <div class="user-date">fecha de ingreso: 10/02/2024</div>
+                </div>
+
+                <div class="user-item" 
+                     data-user-id="3" 
+                     data-nivel="1" 
+                     data-medalla="cobre" 
+                     data-rango="principiante"
+                     onclick="openUserModal(this)">
+                    <div class="user-name">nombre de usuario</div>
+                    <div class="user-date">fecha de ingreso: 20/03/2024</div>
+                </div>
+
+                <div class="user-item" 
+                     data-user-id="4" 
+                     data-nivel="2" 
+                     data-medalla="plata" 
+                     data-rango="principiante"
+                     onclick="openUserModal(this)">
+                    <div class="user-name">nombre de usuario</div>
+                    <div class="user-date">fecha de ingreso: 05/04/2024</div>
+                </div>
+
+                <div class="user-item" 
+                     data-user-id="5" 
+                     data-nivel="4" 
+                     data-medalla="oro" 
+                     data-rango="avanzado"
+                     onclick="openUserModal(this)">
+                    <div class="user-name">nombre de usuario</div>
+                    <div class="user-date">fecha de ingreso: 12/05/2024</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Opciones -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+        <div class="modal" id="options-modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>⚠️ Gestión de Usuario</h3>
+            </div>
+
+            <div class="modal-user-info" id="modal-user-info">
+                <!-- La información del usuario se cargará aquí -->
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-warning" onclick="openWarningForm()">
+                    Advertencia Manual
+                </button>
+                <button class="btn btn-danger" onclick="restrictAccount()">
+                    Restringir Cuenta
+                </button>
+                <button class="btn btn-cancel" onclick="closeModal()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal de Advertencia -->
+        <div class="modal warning-modal" id="warning-modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>✉️ Enviar Advertencia</h3>
+            </div>
+
+            <div class="modal-user-info" id="warning-user-info">
+                <!-- La información del usuario se cargará aquí -->
+            </div>
+
+            <form class="warning-form" id="warning-form" onsubmit="sendWarning(event)">
+                <div class="form-group">
+                    <label for="warning-message">Mensaje de advertencia:</label>
+                    <textarea 
+                        id="warning-message" 
+                        name="warning-message" 
+                        placeholder="Escribe aquí el motivo de la advertencia..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeWarningForm()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        Enviar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Variable global para almacenar el usuario seleccionado
+        let selectedUser = null;
+
+        // Función para abrir el modal de opciones
+        function openUserModal(element) {
+            selectedUser = {
+                id: element.getAttribute('data-user-id'),
+                name: element.querySelector('.user-name').textContent,
+                date: element.querySelector('.user-date').textContent,
+                nivel: element.getAttribute('data-nivel'),
+                medalla: element.getAttribute('data-medalla'),
+                rango: element.getAttribute('data-rango')
+            };
+
+            // Cargar información del usuario en el modal
+            document.getElementById('modal-user-info').innerHTML = `
+                <p><strong>Usuario:</strong> ${selectedUser.name}</p>
+                <p><strong>ID:</strong> ${selectedUser.id}</p>
+                <p><strong>${selectedUser.date}</strong></p>
+                <p><strong>Nivel:</strong> ${selectedUser.nivel} | <strong>Medalla:</strong> ${selectedUser.medalla} | <strong>Rango:</strong> ${selectedUser.rango}</p>
+            `;
+
+            document.getElementById('modal-overlay').classList.add('active');
+            document.getElementById('options-modal').style.display = 'block';
+            document.getElementById('warning-modal').classList.remove('active');
+        }
+
+        // Función para cerrar el modal
+        function closeModal(event) {
+            if (event && event.target !== document.getElementById('modal-overlay')) {
+                return;
+            }
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.getElementById('options-modal').style.display = 'none';
+            document.getElementById('warning-modal').classList.remove('active');
+            selectedUser = null;
+        }
+
+        // Función para abrir el formulario de advertencia
+        function openWarningForm() {
+            document.getElementById('options-modal').style.display = 'none';
+            
+            // Cargar información del usuario en el modal de advertencia
+            document.getElementById('warning-user-info').innerHTML = `
+                <p><strong>Enviando advertencia a:</strong> ${selectedUser.name}</p>
+                <p><strong>ID:</strong> ${selectedUser.id}</p>
+            `;
+
+            document.getElementById('warning-modal').classList.add('active');
+        }
+
+        // Función para cerrar el formulario de advertencia y volver al modal principal
+        function closeWarningForm() {
+            document.getElementById('warning-modal').classList.remove('active');
+            document.getElementById('options-modal').style.display = 'block';
+            document.getElementById('warning-form').reset();
+        }
+
+        // Función para enviar advertencia
+        function sendWarning(event) {
+            event.preventDefault();
+            
+            const message = document.getElementById('warning-message').value;
+            
+            // Aquí se implementará la lógica para enviar la advertencia
+            console.log('Enviando advertencia a usuario:', selectedUser.id);
+            console.log('Mensaje:', message);
+            
+            // TODO: Implementar llamada al backend
+            // fetch('/api/send-warning', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         userId: selectedUser.id,
+            //         message: message
+            //     })
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     alert('Advertencia enviada exitosamente');
+            //     closeModal();
+            // });
+
+            alert(`Advertencia enviada a ${selectedUser.name}`);
+            closeModal();
+        }
+
+        // Función para restringir cuenta
+        function restrictAccount() {
+            const confirmRestrict = confirm(`¿Estás seguro de que deseas restringir la cuenta de ${selectedUser.name}?\n\nEsta acción eliminará el acceso del usuario a la plataforma.`);
+            
+            if (confirmRestrict) {
+                // Aquí se implementará la lógica para restringir la cuenta
+                console.log('Restringiendo cuenta del usuario:', selectedUser.id);
+                
+                // TODO: Implementar llamada al backend
+                // fetch('/api/restrict-account', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         userId: selectedUser.id
+                //     })
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     alert('Cuenta restringida exitosamente');
+                //     // Remover el usuario de la lista visual
+                //     document.querySelector(`[data-user-id="${selectedUser.id}"]`).remove();
+                //     closeModal();
+                // });
+
+                alert(`Cuenta de ${selectedUser.name} restringida exitosamente`);
+                
+                // Remover visualmente el usuario de la lista
+                const userElement = document.querySelector(`[data-user-id="${selectedUser.id}"]`);
+                if (userElement) {
+                    userElement.style.opacity = '0';
+                    setTimeout(() => userElement.remove(), 300);
+                }
+                
+                closeModal();
+            }
+        }
+
+        // Sistema de filtros
+        document.querySelectorAll('[data-filter]').forEach(select => {
+            select.addEventListener('change', applyFilters);
+        });
+
+        function applyFilters() {
+            const nivelFilter = document.getElementById('filter-nivel').value;
+            const medallaFilter = document.getElementById('filter-medalla').value;
+            const rangoFilter = document.getElementById('filter-rango').value;
+
+            const users = document.querySelectorAll('.user-item');
+
+            users.forEach(user => {
+                const userNivel = user.getAttribute('data-nivel');
+                const userMedalla = user.getAttribute('data-medalla');
+                const userRango = user.getAttribute('data-rango');
+
+                const matchNivel = !nivelFilter || userNivel === nivelFilter;
+                const matchMedalla = !medallaFilter || userMedalla === medallaFilter;
+                const matchRango = !rangoFilter || userRango === rangoFilter;
+
+                if (matchNivel && matchMedalla && matchRango) {
+                    user.style.display = 'block';
+                } else {
+                    user.style.display = 'none';
+                }
+            });
+        }
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

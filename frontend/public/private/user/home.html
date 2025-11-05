@@ -9,16 +9,16 @@
 </head>
 
 <body>
-
+  
   <header id ="header"> <!--cabecera con campanita y logo-->
     <img src="logo.png">
-  <a href="http://127.0.0.1:5500/frontend/public/private/user/userActivity.html" target="_blank">
+  <a href="userActivity.html" target="_self">
     <img src="campana.png" id="campana">
   </a>
   </header>
 
     <main id="main-content"> <!--(contiene todo los carruseles con botones + titulos + info) -->
-
+  
         <section class="title-description-section"> <!--seccion de titulo y descripcion-->
             <h1 id="title">BiblioTech</h1> <!--titulo principal-->
             <p id="descripcion">Tu biblioteca digital de confianza</p><!--descripcion principal-->
@@ -80,6 +80,54 @@
         </section>
 
     </main>
+
+<div id="nav-placeholder"></div>
+
+<!-- placeholder (opcional) -->
+<div id="nav-placeholder"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const navUrl = "navigation.html"; // ruta relativa a navigation.html
+  const cssUrl = "navigatioon.css"; // ruta a tu CSS de la barra
+
+  fetch(navUrl)
+    .then(response => {
+      if (!response.ok) throw new Error("No se pudo cargar " + navUrl + " (status " + response.status + ")");
+      return response.text();
+    })
+    .then(htmlText => {
+      // parsear el HTML obtenido
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, "text/html");
+
+      // intentar obtener el contenedor principal (clase .navegador)
+      const navElem = doc.querySelector(".navegador") || doc.body;
+      if (!navElem) throw new Error("navigation.html no contiene un elemento con clase .navegador");
+
+      // clonar para moverlo al documento actual
+      const imported = document.importNode(navElem, true);
+      // insertarlo al final del body (la barra tiene position: fixed así que se va a superponer)
+      document.body.appendChild(imported);
+
+      // añadir hoja de estilos si no está presente
+      if (!document.querySelector(`link[href="${cssUrl}"]`)) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = cssUrl;
+        document.head.appendChild(link);
+      }
+
+      console.log("Barra de navegación cargada correctamente desde:", navUrl);
+    })
+    .catch(err => {
+      console.error("Error cargando navigation.html:", err);
+      // Mostrar aviso visible (opcional)
+      const ph = document.getElementById("nav-placeholder");
+      if (ph) ph.innerHTML = "<!-- error cargando navigation: ver consola -->";
+    });
+});
+</script>
 
 </body>
 </html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Items</title>
+    <link rel="stylesheet" href="styles/additem.css">
+</head>
+<body>
+    <div class="container">
+        <div class="title">agregar items</div>
+        
+        <form id="itemForm" onsubmit="handleSubmit(event)">
+            <div class="two-columns">
+                <div class="form-group">
+                    <input type="text" class="input-field" placeholder="agregar nombre" id="nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" class="input-field" placeholder="agregar imagen" id="imagen">
+                </div>
+            </div>
+            
+            <div class="scanner-group">
+                <button type="button" class="scanner-button" onclick="openScanner()">
+                    escanear
+                </button>
+                
+                <button type="button" class="add-cant" onclick="addCantidad()">
+                    add<br>cant
+                </button>
+            </div>
+        </form>
+        
+        <div class="submit-button" onclick="submitForm()"></div>
+    </div>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            submitForm();
+        }
+
+        function submitForm() {
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                imagen: document.getElementById('imagen').value
+            };
+            
+            console.log('Datos del item:', formData);
+            alert('Item agregado exitosamente!');
+            // Aquí se procesarán los datos más adelante
+        }
+
+        function openScanner() {
+            console.log('Abriendo escáner...');
+            alert('Función de escáner - Por implementar');
+            // Aquí se agregará la funcionalidad del escáner
+        }
+
+        function addCantidad() {
+            console.log('Agregando cantidad...');
+            alert('Función de cantidad - Por implementar');
+            // Aquí se agregará la funcionalidad de cantidad
+        }
+    </script>
+</body>
+</html>
