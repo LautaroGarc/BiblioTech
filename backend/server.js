@@ -51,9 +51,9 @@ app.get('/home', authenticateToken, (req, res) => {
     
     switch(userType) {
         case 'admin':
-            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'home', 'home.html'));
+            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'home.html'));
         case 'user':
-            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'home', 'home.html'));
+            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'home.html'));
         default:
             return res.status(403).json({ message: 'Acceso denegado' });
     }
