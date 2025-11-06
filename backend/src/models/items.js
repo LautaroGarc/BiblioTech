@@ -118,6 +118,16 @@ async function deleteItem(itemId) {
     }
 };
 
+async function getCarrouselSupps() {
+    try {
+
+    } catch (error) {
+        console.error('error en getBook:', error);
+        throw error;
+    }
+}
+
+
 module.exports = {
     getItems,
     getItem,
@@ -127,5 +137,6 @@ module.exports = {
     getItemWith,
     editItem,
     createItem,
-    deleteItem
+    deleteItem,
+    getCarrouselSupps
 }

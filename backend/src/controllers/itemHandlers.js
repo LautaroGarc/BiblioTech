@@ -2,14 +2,16 @@ const {
     getBooks, 
     getBook, 
     createBook: createBookModel, 
-    editBook 
+    editBook, 
+    getCarrouselBooks
 } = require('../models/books');
 
 const { 
     getItems, 
     getItem, 
     createItem, 
-    editItem 
+    editItem,
+    getCarrouselSupps
 } = require('../models/items');
 class ItemController{
 // ========== HANDLERS DE LIBROS ==========
@@ -274,6 +276,38 @@ class ItemController{
             res.status(500).json({
                 success: false,
                 message: 'Error al crear útil'
+            });
+        }
+    }
+    static async bookCarrousel(req, res) {
+        try {
+            const books = getCarrouselBooks()
+            res.json({
+                success: true,
+                books: books
+            })
+        } catch(error) {
+            console.error('[CARROUSEL SUPPLY ERROR]', error);
+            res.status(500).json({
+                success: false,
+                message: ''
+            });
+        }
+    }
+
+    static async suppCarrousel(req, res) {
+        try {
+            const supps = getCarrouselSupps()
+
+            res.json({
+                success: true,
+                supps: supps
+            })
+        } catch(error) {
+            console.error('[CARROUSEL BOOK ERROR]', error);
+            res.status(500).json({
+                success: false,
+                message: ''
             });
         }
     }

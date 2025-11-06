@@ -11,6 +11,16 @@ async function getBook(bookId) {
     }
 }
 
+async function getCarrouselBooks() {
+    try {
+        const [books] = await db.execute(`SELECT id, name, img, review, quant, likes, author, gender FROM books WHERE borrowed = False`);
+        return books[0]
+    } catch (error) {
+        console.error('error en getBook:', error);
+        throw error;
+    }
+}
+
 //obtener todos los libros
 async function getBooks() {
     try {
@@ -153,5 +163,6 @@ module.exports = {
     getBookWith,
     getBooksWith,
     editBook,
-    createBook
+    createBook,
+    getCarrouselBooks
 }

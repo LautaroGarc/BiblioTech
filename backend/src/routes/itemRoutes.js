@@ -17,4 +17,7 @@ router.get('/api/supps/:id', ItemController.getSupplyById);
 router.post('/api/supps', authenticateToken, isAdmin, ItemController.createSupply);
 router.put('/api/supps/:id', authenticateToken, isAdmin, ItemController.updateSupply);
 
+router.get('/api/books/carrousel', ItemController.bookCarrousel);
+router.get('/api/supps/carrousel', ItemController.suppCarrousel);
+
 module.exports = router;
