@@ -120,6 +120,7 @@ app.use('/api/admin', require('./src/routes/adminRoutes.js'));
 app.use('/api/items', require('./src/routes/itemRoutes.js'));
 app.use('/api/loans', require('./src/routes/loanRoutes.js'));
 app.use('/api/forums', require('./src/routes/forumRoutes.js'));
+app.use('/scan', require('./src/routes/scanRoutes.js'));
 
 //--- ERROR 404 ---
 app.use('*', (req, res) => {
