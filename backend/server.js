@@ -43,7 +43,7 @@ app.get('/register', checkSession, (req, res) => {
 });
 
 app.get('/waiting', authenticateToken, (req, res) => {
-    const verf = isAccepted(req.user.id);
+    const verf = 1 == isAccepted(req.user.id);
     if (verf) {
         return res.redirect('/home');
     }
@@ -53,7 +53,7 @@ app.get('/waiting', authenticateToken, (req, res) => {
 //--- RUTAS PROTEGIDAS (requieren sesión + aceptación) ---
 
 app.get('/home', authenticateToken, (req, res) => {
-    const verf = isAccepted(req.user.id)
+    const verf = 1 == isAccepted(req.user.id)
     if (!verf) {
         return res.redirect('/waiting');
     }
