@@ -2,12 +2,46 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>bandeja - BiblioTech</title>
+  <title>Mi Actividad - BiblioTech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="userActivity.css">
+  <link rel="stylesheet" href="styles/useractivity.css">
 </head>
+<body>
 
-<body> 
-  
+  <header>
+    <div class="header-left">
+      <button class="back-button" onclick="window.location.href='home.html'">←</button>
+      <h1>Mi Actividad</h1>
+    </div>
+    <img src="logo.png" alt="BiblioTech">
+  </header>
+
+  <div class="container">
+    
+    <!-- Filtros -->
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="todas">Todas</button>
+      <button class="filter-tab" data-filter="alquileres">Alquileres</button>
+      <button class="filter-tab" data-filter="devoluciones">Devoluciones</button>
+      <button class="filter-tab" data-filter="clubes">Clubes de Lectura</button>
+      <button class="filter-tab" data-filter="recordatorios">Recordatorios</button>
+    </div>
+
+    <!-- Lista de notificaciones -->
+    <div class="notifications-list" id="notificationsList">
+      <!-- Las notificaciones se generarán aquí -->
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-state-icon">🔔</div>
+      <h3>No hay notificaciones</h3>
+      <p>Cuando tengas actividad, aparecerá aquí</p>
+    </div>
+
+  </div>
+
+  <script src="useractivity.js"></script>
+
 </body>
 </html>

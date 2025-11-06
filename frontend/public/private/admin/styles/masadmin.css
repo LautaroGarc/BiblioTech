@@ -1,137 +1,238 @@
+/* Estilos generales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #fff;
+  animation: gradientShift 15s ease infinite;
+  background-size: 400% 400%;
+  position: relative;
+}
 
-        body {
-            font-family: Calibri, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 
-        .container {
-            background: #8b92a8;
-            border-radius: 25px;
-            padding: 30px 20px;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
+/* Efectos de partículas sutiles en el fondo */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(0, 180, 219, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 80% 70%, rgba(79, 195, 247, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 40% 80%, rgba(41, 182, 246, 0.1) 2px, transparent 2px);
+  background-size: 200px 200px, 300px 300px, 250px 250px;
+  animation: particles 20s infinite linear;
+  pointer-events: none;
+  z-index: -1;
+}
 
-        .add-button {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
-            transition: all 0.3s ease;
-            border: 4px solid white;
-        }
+@keyframes particles {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  100% {
+    transform: translateY(-100px) translateX(50px);
+  }
+}
 
-        .add-button:hover {
-            transform: translateX(-50%) scale(1.1);
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6);
-        }
+/* Contenedor principal */
+.container {
+  max-width: 1000px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 25px;
+  padding: 40px;
+  animation: fadeIn 0.8s ease-out;
+}
 
-        .add-button::before {
-            content: '+';
-            font-size: 36px;
-            color: white;
-            font-weight: bold;
-            line-height: 1;
-        }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
-        .menu-item {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: #003d5c;
-            padding: 25px 20px;
-            margin: 20px 0;
-            border-radius: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            font-size: 18px;
-            font-weight: 600;
-        }
+/* Botón de agregar (oculto) */
+.add-button {
+  display: none;
+}
 
-        .menu-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
-            background: linear-gradient(135deg, #5fb9ff 0%, #1ffbff 100%);
-        }
+/* Items del menú */
+.menu-item {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 40px 30px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  line-height: 1.4;
+  animation: slideUp 0.6s ease-out;
+}
 
-        .menu-item:active {
-            transform: translateY(-2px);
-        }
+.menu-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.6s;
+}
 
-        .menu-item.small {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 15px;
-            font-size: 16px;
-        }
+.menu-item:hover::before {
+  left: 100%;
+}
 
-        .menu-item.small:hover {
-            background: linear-gradient(135deg, #7b8eef 0%, #8a5bb5 100%);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #4fc3f7;
+  transform: translateY(-8px);
+  box-shadow: 0 12px 35px rgba(79, 195, 247, 0.4);
+}
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 25px 15px;
-                max-width: 320px;
-            }
+.menu-item:active {
+  transform: translateY(-4px);
+}
 
-            .add-button {
-                width: 50px;
-                height: 50px;
-            }
+/* Item pequeño (esquina inferior derecha) */
+.menu-item.small {
+  font-size: 18px;
+  padding: 30px 20px;
+  line-height: 1.6;
+}
 
-            .add-button::before {
-                font-size: 30px;
-            }
+/* Animaciones escalonadas */
+#add-libro-item { animation-delay: 0.1s; }
+#process-loan-item { animation-delay: 0.2s; }
+#process-return-item { animation-delay: 0.3s; }
+#view-inventory-item { animation-delay: 0.4s; }
 
-            .menu-item {
-                padding: 20px 15px;
-                font-size: 16px;
-                margin: 15px 0;
-            }
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-            .menu-item.small {
-                padding: 18px 12px;
-                font-size: 14px;
-            }
-        }
+/* Responsive para tablets */
+@media (max-width: 768px) {
+  .container {
+    padding: 30px 20px;
+    gap: 20px;
+  }
 
-        @media (max-width: 360px) {
-            .container {
-                padding: 20px 10px;
-            }
+  .menu-item {
+    padding: 35px 25px;
+    font-size: 20px;
+  }
 
-            .menu-item {
-                padding: 18px 12px;
-                font-size: 15px;
-            }
+  .menu-item.small {
+    font-size: 17px;
+    padding: 25px 18px;
+  }
+}
 
-            .menu-item.small {
-                padding: 16px 10px;
-                font-size: 13px;
-            }
-        }
-  
+/* Responsive para móviles */
+@media (max-width: 640px) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 18px;
+    padding: 20px 15px;
+  }
+
+  .menu-item {
+    min-height: 140px;
+    padding: 30px 20px;
+    font-size: 19px;
+  }
+
+  .menu-item.small {
+    font-size: 17px;
+    padding: 30px 20px;
+    min-height: 120px;
+  }
+}
+
+/* Responsive para móviles pequeños */
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+
+  .container {
+    padding: 15px 10px;
+    gap: 15px;
+  }
+
+  .menu-item {
+    min-height: 130px;
+    padding: 25px 18px;
+    font-size: 18px;
+  }
+
+  .menu-item.small {
+    font-size: 16px;
+    padding: 25px 18px;
+    min-height: 110px;
+  }
+}
+
+/* Estados adicionales */
+.menu-item:focus {
+  outline: none;
+  border-color: #4fc3f7;
+  box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.25);
+}
+
+/* Mejora de accesibilidad */
+.menu-item:focus-visible {
+  outline: 3px solid #4fc3f7;
+  outline-offset: 2px;
+}

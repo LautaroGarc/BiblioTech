@@ -1,75 +1,474 @@
-/* === CONFIGURACIÓN GENERAL === */
-body {
-  font-family: Calibri, sans-serif;
-  background: linear-gradient(135deg, #cde9ff, #87cefa);
+/* Estilos generales */
+* {
   margin: 0;
   padding: 0;
-  color: #0b3954;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* === CONTENEDOR PRINCIPAL === */
+body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: #fff;
+  animation: gradientShift 15s ease infinite;
+  background-size: 400% 400%;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Contenedor principal */
 .estadisticas-container {
+  max-width: 1400px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  padding: 40px 20px;
-  max-width: 1200px;
-  margin: auto;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  padding: 20px;
+  animation: fadeIn 0.8s ease-out;
 }
 
-/* === TÍTULO PRINCIPAL === */
-.estadisticas-container h1 {
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Título principal */
+.estadisticas-container > h1 {
   grid-column: 1 / -1;
   text-align: center;
-  font-size: 2.2em;
-  color: #083d77;
+  font-size: 42px;
+  font-weight: 600;
   margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  padding-bottom: 20px;
 }
 
-/* === CAJAS DE ESTADÍSTICAS === */
-.estadisticas-container > div {
-  background-color: #e6f4ff;
-  border: 2px solid #83c5f7;
+.estadisticas-container > h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, #00b4db, #0083b0);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 180, 219, 0.4);
+}
+
+/* Estilos comunes para todos los bloques */
+.grafico-barra1,
+.grafico-barra2,
+.grafico-torta1,
+.grafico-torta2,
+.ranking-lista1,
+.ranking-lista2,
+.ranking-lista3,
+.ranking-lista4 {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 64, 128, 0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 25px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.6s ease-out;
 }
 
-.estadisticas-container > div:hover {
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.grafico-barra1:hover,
+.grafico-barra2:hover,
+.grafico-torta1:hover,
+.grafico-torta2:hover,
+.ranking-lista1:hover,
+.ranking-lista2:hover,
+.ranking-lista3:hover,
+.ranking-lista4:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 64, 128, 0.25);
+  border-color: #4fc3f7;
+  box-shadow: 0 12px 40px rgba(79, 195, 247, 0.3);
 }
 
-/* === TÍTULOS SECUNDARIOS === */
-.estadisticas-container h2 {
-  font-size: 1.3em;
-  color: #0b3954;
-  margin-bottom: 10px;
-  border-bottom: 2px solid #5dade2;
-  padding-bottom: 5px;
+/* Efecto de brillo en hover */
+.grafico-barra1::before,
+.grafico-barra2::before,
+.grafico-torta1::before,
+.grafico-torta2::before,
+.ranking-lista1::before,
+.ranking-lista2::before,
+.ranking-lista3::before,
+.ranking-lista4::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.6s;
 }
 
-/* === ADAPTABILIDAD PARA MÓVILES === */
-@media (max-width: 768px) {
+.grafico-barra1:hover::before,
+.grafico-barra2:hover::before,
+.grafico-torta1:hover::before,
+.grafico-torta2:hover::before,
+.ranking-lista1:hover::before,
+.ranking-lista2:hover::before,
+.ranking-lista3:hover::before,
+.ranking-lista4:hover::before {
+  left: 100%;
+}
+
+/* Títulos de los bloques */
+h2 {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  padding-bottom: 12px;
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #00b4db, #0083b0);
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 180, 219, 0.4);
+}
+
+/* Gráficos de barra (ocupan todo el ancho) */
+.grafico-barra1,
+.grafico-barra2 {
+  grid-column: 1 / -1;
+  min-height: 300px;
+}
+
+/* Gráficos de torta (lado a lado) */
+.grafico-torta1,
+.grafico-torta2 {
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Rankings (lado a lado en dos columnas) */
+.ranking-lista1,
+.ranking-lista2,
+.ranking-lista3,
+.ranking-lista4 {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Animaciones escalonadas */
+.grafico-barra1 { animation-delay: 0.1s; }
+.grafico-barra2 { animation-delay: 0.2s; }
+.grafico-torta1 { animation-delay: 0.3s; }
+.grafico-torta2 { animation-delay: 0.4s; }
+.ranking-lista1 { animation-delay: 0.5s; }
+.ranking-lista2 { animation-delay: 0.6s; }
+.ranking-lista3 { animation-delay: 0.7s; }
+.ranking-lista4 { animation-delay: 0.8s; }
+
+/* Efectos de partículas sutiles en el fondo */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(0, 180, 219, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 80% 70%, rgba(79, 195, 247, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 40% 80%, rgba(41, 182, 246, 0.1) 2px, transparent 2px);
+  background-size: 200px 200px, 300px 300px, 250px 250px;
+  animation: particles 20s infinite linear;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes particles {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  100% {
+    transform: translateY(-100px) translateX(50px);
+  }
+}
+
+/* Responsive Design */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 1024px) {
   .estadisticas-container {
     grid-template-columns: 1fr;
-    padding: 20px;
+    gap: 20px;
+    padding: 15px;
   }
-
-  .estadisticas-container h1 {
-    font-size: 1.8em;
+  
+  .grafico-barra1,
+  .grafico-barra2,
+  .grafico-torta1,
+  .grafico-torta2,
+  .ranking-lista1,
+  .ranking-lista2,
+  .ranking-lista3,
+  .ranking-lista4 {
+    grid-column: 1 / -1;
   }
-
-  .estadisticas-container h2 {
-    font-size: 1.1em;
+  
+  .estadisticas-container > h1 {
+    font-size: 36px;
   }
 }
 
-/* === DETALLE EXTRA (SUAVIZADO VISUAL) === */
-.estadisticas-container > div:nth-child(even) {
-  background-color: #d8efff;
+/* Dispositivos móviles grandes */
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
+  
+  .estadisticas-container {
+    padding: 10px;
+    gap: 18px;
+  }
+  
+  .estadisticas-container > h1 {
+    font-size: 30px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+  }
+  
+  .estadisticas-container > h1::after {
+    width: 90px;
+  }
+  
+  .grafico-barra1,
+  .grafico-barra2 {
+    min-height: 280px;
+    padding: 20px;
+  }
+  
+  .grafico-torta1,
+  .grafico-torta2 {
+    min-height: 300px;
+    padding: 20px;
+  }
+  
+  .ranking-lista1,
+  .ranking-lista2,
+  .ranking-lista3,
+  .ranking-lista4 {
+    min-height: 260px;
+    padding: 20px;
+  }
+  
+  h2 {
+    font-size: 17px;
+    margin-bottom: 18px;
+  }
+}
+
+/* Dispositivos móviles estándar */
+@media (max-width: 480px) {
+  body {
+    padding: 8px;
+  }
+  
+  .estadisticas-container {
+    padding: 8px;
+    gap: 15px;
+  }
+  
+  .estadisticas-container > h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+  
+  .estadisticas-container > h1::after {
+    width: 70px;
+    height: 3px;
+  }
+  
+  .grafico-barra1,
+  .grafico-barra2 {
+    padding: 16px;
+    min-height: 240px;
+    border-radius: 12px;
+  }
+  
+  .grafico-torta1,
+  .grafico-torta2 {
+    padding: 16px;
+    min-height: 260px;
+    border-radius: 12px;
+  }
+  
+  .ranking-lista1,
+  .ranking-lista2,
+  .ranking-lista3,
+  .ranking-lista4 {
+    padding: 16px;
+    min-height: 220px;
+    border-radius: 12px;
+  }
+  
+  h2 {
+    font-size: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+  }
+  
+  h2::after {
+    width: 40px;
+    height: 2.5px;
+  }
+}
+
+/* Dispositivos móviles pequeños */
+@media (max-width: 375px) {
+  body {
+    padding: 6px;
+  }
+  
+  .estadisticas-container {
+    padding: 6px;
+    gap: 12px;
+  }
+  
+  .estadisticas-container > h1 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+  
+  .estadisticas-container > h1::after {
+    width: 60px;
+  }
+  
+  .grafico-barra1,
+  .grafico-barra2,
+  .grafico-torta1,
+  .grafico-torta2,
+  .ranking-lista1,
+  .ranking-lista2,
+  .ranking-lista3,
+  .ranking-lista4 {
+    padding: 14px;
+    border-radius: 10px;
+    min-height: 200px;
+  }
+  
+  h2 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+  
+  h2::after {
+    width: 35px;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 320px) {
+  body {
+    padding: 5px;
+  }
+  
+  .estadisticas-container {
+    padding: 5px;
+    gap: 10px;
+  }
+  
+  .estadisticas-container > h1 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+  
+  .grafico-barra1,
+  .grafico-barra2,
+  .grafico-torta1,
+  .grafico-torta2,
+  .ranking-lista1,
+  .ranking-lista2,
+  .ranking-lista3,
+  .ranking-lista4 {
+    padding: 12px;
+    min-height: 180px;
+  }
+  
+  h2 {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+}
+
+/* Optimización táctil para móviles */
+@media (hover: none) and (pointer: coarse) {
+  .grafico-barra1,
+  .grafico-barra2,
+  .grafico-torta1,
+  .grafico-torta2,
+  .ranking-lista1,
+  .ranking-lista2,
+  .ranking-lista3,
+  .ranking-lista4 {
+    transition: all 0.2s ease;
+  }
+  
+  .grafico-barra1:active,
+  .grafico-barra2:active,
+  .grafico-torta1:active,
+  .grafico-torta2:active,
+  .ranking-lista1:active,
+  .ranking-lista2:active,
+  .ranking-lista3:active,
+  .ranking-lista4:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
 }

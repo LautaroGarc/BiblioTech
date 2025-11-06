@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Biblioteca</title>
+    <title>Mas Admin - BiblioTech</title>
     <link rel="stylesheet" href="styles/masadmin.css">
 </head>
 <body>
     <div class="container">
-        <div class="add-button">
-        </div>
         
         <div class="menu-item" id="add-libro-item">
             agregar libro o ítem
@@ -27,7 +25,51 @@
             lista de<br>ítems y<br>libros
         </div>
     </div>
+<!-- placeholder (opcional) -->
+<div id="nav-placeholder"></div>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const navUrl = "navigation.html"; // ruta relativa a navigation.html
+  const cssUrl = "navigatioon.css"; // ruta a tu CSS de la barra
+
+  fetch(navUrl)
+    .then(response => {
+      if (!response.ok) throw new Error("No se pudo cargar " + navUrl + " (status " + response.status + ")");
+      return response.text();
+    })
+    .then(htmlText => {
+      // parsear el HTML obtenido
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, "text/html");
+
+      // intentar obtener el contenedor principal (clase .navegador)
+      const navElem = doc.querySelector(".navegador") || doc.body;
+      if (!navElem) throw new Error("navigation.html no contiene un elemento con clase .navegador");
+
+      // clonar para moverlo al documento actual
+      const imported = document.importNode(navElem, true);
+      // insertarlo al final del body (la barra tiene position: fixed así que se va a superponer)
+      document.body.appendChild(imported);
+
+      // añadir hoja de estilos si no está presente
+      if (!document.querySelector(`link[href="${cssUrl}"]`)) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = cssUrl;
+        document.head.appendChild(link);
+      }
+
+      console.log("Barra de navegación cargada correctamente desde:", navUrl);
+    })
+    .catch(err => {
+      console.error("Error cargando navigation.html:", err);
+      // Mostrar aviso visible (opcional)
+      const ph = document.getElementById("nav-placeholder");
+      if (ph) ph.innerHTML = "<!-- error cargando navigation: ver consola -->";
+    });
+});
+</script>
   
 </body>
 </html>

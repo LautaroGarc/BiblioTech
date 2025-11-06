@@ -1,0 +1,353 @@
+/* Estilos generales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #fff;
+  animation: gradientShift 15s ease infinite;
+  background-size: 400% 400%;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Logo refinado */
+.logo {
+  width: 160px;
+  height: 150px;
+
+  margin-bottom: 35px;
+  filter: drop-shadow(0 0 20px rgba(79, 195, 247, 0.4));
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Contenedor principal refinado */
+.register-container {
+  width: 100%;
+  max-width: 480px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Títulos refinados */
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 32px;
+  position: relative;
+  padding-bottom: 15px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, #4fc3f7, #29b6f6);
+  border-radius: 3px;
+}
+
+/* Enlace de login refinado */
+.login-link {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #e0e0e0;
+  font-size: 16px;
+}
+
+.login-link a {
+  color: #4fc3f7;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(79, 195, 247, 0.1);
+}
+
+.login-link a:hover {
+  color: #29b6f6;
+  background: rgba(79, 195, 247, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Formulario sin caja - fondo transparente */
+.registerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  /* Se eliminó el fondo, borde y sombra para que use el fondo del body */
+}
+
+/* Grupo de formulario en línea refinado */
+.form-group-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-group-inline > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grupos de formulario normales refinados */
+.form-group {
+  position: relative;
+}
+
+/* Labels refinados */
+label {
+  display: block;
+  margin-bottom: 10px;
+  color: #e0e0e0;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+/* Inputs refinados */
+input {
+  width: 100%;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  outline: none;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+input:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #4fc3f7;
+  box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+  transform: translateY(-2px);
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Botón refinado */
+button {
+  background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(79, 195, 247, 0.3);
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(79, 195, 247, 0.4);
+}
+
+button:active {
+  transform: translateY(-1px);
+}
+
+/* Mensajes refinados */
+#msg {
+  padding: 16px;
+  border-radius: 12px;
+  margin: 18px 0;
+  text-align: center;
+  font-weight: 500;
+  animation: fadeIn 0.5s ease-out;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  min-height: 0;
+  display: none;
+}
+
+#msg:not(:empty) {
+  display: block;
+}
+
+#msg.success {
+  background: rgba(76, 175, 80, 0.15);
+  border-color: rgba(76, 175, 80, 0.3);
+  color: #a5d6a7;
+}
+
+#msg.error {
+  background: rgba(244, 67, 54, 0.15);
+  border-color: rgba(244, 67, 54, 0.3);
+  color: #ef9a9a;
+}
+
+/* Efectos de partículas sutiles */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(79, 195, 247, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, rgba(41, 182, 246, 0.05) 1px, transparent 1px);
+  background-size: 200px 200px, 250px 250px;
+  animation: particles 20s infinite linear;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes particles {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  100% {
+    transform: translateY(-100px) translateX(50px);
+  }
+}
+
+/* Animación de entrada para los elementos del formulario */
+.form-group, .form-group-inline {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Retraso escalonado refinado */
+.form-group-inline { animation-delay: 0.1s; }
+.form-group:nth-child(2) { animation-delay: 0.2s; }
+.form-group:nth-child(3) { animation-delay: 0.3s; }
+.form-group:nth-child(4) { animation-delay: 0.4s; }
+button { animation-delay: 0.5s; }
+
+/* Responsive refinado */
+@media (max-width: 520px) {
+  .register-container {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+  
+  .form-group-inline {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  
+  h2 {
+    font-size: 28px;
+  }
+  
+  .logo {
+    width: 140px;
+    margin-bottom: 25px;
+  }
+  
+  input, button {
+    padding: 14px 16px;
+  }
+  
+  .login-link {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 380px) {
+  body {
+    padding: 15px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+  
+  input {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  
+  button {
+    padding: 16px;
+    font-size: 16px;
+  }
+}

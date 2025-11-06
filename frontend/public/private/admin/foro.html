@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foros de Lectura</title>
+    <style>
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Contenido principal */
+        .principal {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        /* Panel de foros */
+        .forums-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .forums-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .forums-list {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+        }
+
+        .forums-list h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .forum-item {
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .forum-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
+        }
+
+        .forum-item.active {
+            background-color: #f0f7ff;
+            border-color: #3498db;
+        }
+
+        .forum-icon {
+            font-size: 1.5rem;
+            color: #3498db;
+            background: #e1f0ff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .forum-content h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .forum-content p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .forum-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: #95a5a6;
+        }
+
+        /* Panel de chat */
+        .chat-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            padding: 1.2rem 1.5rem;
+        }
+
+        .chat-header h2 {
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+        }
+
+        .message.own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message.own .message-avatar {
+            background: #2ecc71;
+        }
+
+        .message-content {
+            background: #f0f2f5;
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            position: relative;
+        }
+
+        .message.own .message-content {
+            background: #3498db;
+            color: white;
+        }
+
+        .message-user {
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .message-text {
+            margin-bottom: 0.5rem;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            text-align: right;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 0.5rem;
+        }
+
+        .message-action {
+            background: none;
+            border: none;
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .message.own .message-action {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .message-action:hover {
+            color: #3498db;
+        }
+
+        .message.own .message-action:hover {
+            color: white;
+        }
+
+        .reply-indicator {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reply-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reply-cancel {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Formulario de comentarios */
+        .comment-form {
+            padding: 1.5rem;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            min-height: 80px;
+            transition: border-color 0.3s;
+        }
+
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .char-counter {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Paginación */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination button {
+            background: white;
+            color: #2c3e50;
+            border: 1px solid #ddd;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .pagination button:disabled {
+            color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-weight: bold;
+            color: #2c3e50;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Estados vacíos */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .principal {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
+            
+            .page-title h1 {
+                font-size: 2rem;
+            }
+            
+            .forums-container {
+                gap: 1.5rem;
+            }
+            
+            .chat-container {
+                height: 500px;
+            }
+            
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">📚</div>
+            <h1>Foros de Lectura</h1>
+        </div>
+        <div class="header-actions">
+            <a href="ranking.html" class="header-btn">
+                <span>🏆</span> Ranking
+            </a>
+            <a href="perfil.html" class="header-btn">
+                <span>👤</span> Mi Perfil
+            </a>
+        </div>
+    </header>
+
+    <div class="principal">
+        <div class="page-title">
+            <h1>¡NUESTROS FOROS!</h1>
+            <p>Participa en nuestra comunidad de lectores.</p>
+        </div>
+
+        <div class="forums-container">
+            <div class="forums-list">
+                <h2><span>📂</span> Foros Disponibles</h2>
+                <div id="forums">
+                    <!-- Los foros se cargarán aquí con JavaScript -->
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2 id="current-forum-title">Selecciona un foro</h2>
+                    <p id="current-forum-desc">Haz clic en un foro para ver sus conversaciones</p>
+                </div>
+                
+                <div class="chat-messages" id="forum-chat">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💬</div>
+                        <h3>No hay foro seleccionado</h3>
+                        <p>Selecciona un foro de la lista para ver sus mensajes</p>
+                    </div>
+                </div>
+                
+                <div class="comment-form">
+                    <div id="reply-indicator" class="reply-indicator" style="display: none;">
+                        <div class="reply-info">
+                            <span>↩️</span>
+                            <span>Respondiendo a <strong id="reply-to-user">Usuario</strong></span>
+                        </div>
+                        <button id="cancel-reply" class="reply-cancel">✕</button>
+                    </div>
+                    
+                    <form id="comment-form">
+                        <textarea id="comment" name="comment" rows="3" placeholder="Escribe tu comentario..." maxlength="500"></textarea>
+                        <div class="form-actions">
+                            <div class="char-counter">
+                                <span id="char-count">0</span>/500 caracteres
+                            </div>
+                            <button type="submit" class="submit-btn" id="submit-btn" disabled>
+                                <span>📤</span> Enviar Comentario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <button id="prevPageBtn" disabled>
+                <span>◀</span> Anterior
+            </button>
+            <span class="page-info" id="pageInfo">Página 1 de 3</span>
+            <button id="nextPageBtn">
+                Siguiente <span>▶</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo para los foros
+        const forumsData = [
+            {
+                id: 1,
+                title: "Recomendaciones de Libros",
+                description: "Comparte tus libros favoritos y descubre nuevas lecturas",
+                icon: "📚",
+                messages: [
+                    {
+                        id: 101,
+                        user: "María González",
+                        avatar: "MG",
+                        text: "¿Alguien ha leído 'Cien años de soledad'? ¡Es una obra maestra!",
+                        time: "10:30 AM",
+                        likes: 5,
+                        replies: [
+                            {
+                                id: 201,
+                                user: "Carlos López",
+                                avatar: "CL",
+                                text: "Sí, es increíble. Me encantó cómo García Márquez mezcla realidad y fantasía.",
+                                time: "11:15 AM",
+                                likes: 3
+                            }
+                        ]
+                    },
+                    {
+                        id: 102,
+                        user: "Ana Martínez",
+                        avatar: "AM",
+                        text: "Estoy buscando libros de ciencia ficción. ¿Recomendaciones?",
+                        time: "09:45 AM",
+                        likes: 2,
+                        replies: []
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Club de Lectura",
+                description: "Discute el libro del mes con otros lectores",
+                icon: "👥",
+                messages: [
+                    {
+                        id: 103,
+                        user: "Pedro Sánchez",
+                        avatar: "PS",
+                        text: "Este mes estamos leyendo 'El amor en los tiempos del cólera'. ¿Qué opinan?",
+                        time: "Ayer, 4:20 PM",
+                        likes: 7,
+                        replies: [
+                            {
+                                id: 202,
+                                user: "Laura Ruiz",
+                                avatar: "LR",
+                                text: "Me está gustando mucho, aunque el ritmo es un poco lento al principio.",
+                                time: "Ayer, 5:45 PM",
+                                likes: 2
+                            },
+                            {
+                                id: 203,
+                                user: "Roberto Díaz",
+                                avatar: "RD",
+                                text: "Es mi primer libro de García Márquez y me está encantando su prosa.",
+                                time: "Hoy, 9:15 AM",
+                                likes: 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Novedades Literarias",
+                description: "Mantente al día con los últimos lanzamientos",
+                icon: "🆕",
+                messages: [
+                    {
+                        id: 104,
+                        user: "Editorial Luna",
+                        avatar: "EL",
+                        text: "Acaba de salir 'La ciudad de los espejos', la nueva novela de Carlos Ruiz Zafón",
+                        time: "2 días atrás",
+                        likes: 12,
+                        replies: []
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "Escritores Principiantes",
+                description: "Comparte tus escritos y recibe feedback",
+                icon: "✍️",
+                messages: [
+                    {
+                        id: 105,
+                        user: "Sofía Torres",
+                        avatar: "ST",
+                        text: "Estoy escribiendo mi primera novela y me gustaría compartir el primer capítulo para recibir opiniones.",
+                        time: "3 días atrás",
+                        likes: 4,
+                        replies: []
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "Clásicos de la Literatura",
+                description: "Debate sobre las obras que marcaron la historia",
+                icon: "🏛️",
+                messages: [
+                    {
+                        id: 106,
+                        user: "Miguel Ángel",
+                        avatar: "MA",
+                        text: "¿Cuál consideran que es la obra más importante de Shakespeare?",
+                        time: "1 semana atrás",
+                        likes: 8,
+                        replies: [
+                            {
+                                id: 204,
+                                user: "Elena Vargas",
+                                avatar: "EV",
+                                text: "Para mí, 'Hamlet' es insuperable. La profundidad psicológica del personaje es asombrosa.",
+                                time: "6 días atrás",
+                                likes: 5
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Estado de la aplicación
+        let currentForumId = null;
+        let currentPage = 1;
+        const messagesPerPage = 5;
+        let replyingTo = null;
+
+        // Elementos del DOM
+        const forumsContainer = document.getElementById('forums');
+        const forumChat = document.getElementById('forum-chat');
+        const currentForumTitle = document.getElementById('current-forum-title');
+        const currentForumDesc = document.getElementById('current-forum-desc');
+        const commentForm = document.getElementById('comment-form');
+        const commentInput = document.getElementById('comment');
+        const submitBtn = document.getElementById('submit-btn');
+        const charCount = document.getElementById('char-count');
+        const replyIndicator = document.getElementById('reply-indicator');
+        const replyToUser = document.getElementById('reply-to-user');
+        const cancelReplyBtn = document.getElementById('cancel-reply');
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const pageInfo = document.getElementById('pageInfo');
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            renderForums();
+            setupEventListeners();
+        });
+
+        // Renderizar la lista de foros
+        function renderForums() {
+            forumsContainer.innerHTML = '';
+            
+            forumsData.forEach(forum => {
+                const totalMessages = forum.messages.reduce((total, msg) => 
+                    total + 1 + msg.replies.length, 0);
+                
+                const forumElement = document.createElement('div');
+                forumElement.className = 'forum-item';
+                forumElement.innerHTML = `
+                    <div class="forum-icon">${forum.icon}</div>
+                    <div class="forum-content">
+                        <h3>${forum.title}</h3>
+                        <p>${forum.description}</p>
+                        <div class="forum-stats">
+                            <span>💬 ${totalMessages} mensajes</span>
+                            <span>👥 ${getRandomInt(50, 500)} miembros</span>
+                        </div>
+                    </div>
+                `;
+                
+                forumElement.addEventListener('click', () => selectForum(forum.id));
+                forumsContainer.appendChild(forumElement);
+            });
+        }
+
+        // Seleccionar un foro
+        function selectForum(forumId) {
+            currentForumId = forumId;
+            currentPage = 1;
+            
+            // Actualizar estilos de los foros
+            document.querySelectorAll('.forum-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.forum-item')[forumId - 1].classList.add('active');
+            
+            // Actualizar información del foro seleccionado
+            const forum = forumsData.find(f => f.id === forumId);
+            currentForumTitle.textContent = forum.title;
+            currentForumDesc.textContent = forum.description;
+            
+            // Renderizar mensajes
+            renderMessages();
+            
+            // Habilitar el formulario
+            submitBtn.disabled = false;
+            
+            // Actualizar paginación
+            updatePagination();
+        }
+
+        // Renderizar mensajes del foro actual
+        function renderMessages() {
+            if (!currentForumId) return;
+            
+            const forum = forumsData.find(f => f.id === currentForumId);
+            if (!forum) return;
+            
+            // Calcular qué mensajes mostrar según la página actual
+            const allMessages = getAllMessages(forum);
+            const startIndex = (currentPage - 1) * messagesPerPage;
+            const endIndex = startIndex + messagesPerPage;
+            const messagesToShow = allMessages.slice(startIndex, endIndex);
+            
+            forumChat.innerHTML = '';
+            
+            if (messagesToShow.length === 0) {
+                forumChat.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💬</div>
+                        <h3>No hay mensajes</h3>
+                        <p>Sé el primero en comentar en este foro</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            messagesToShow.forEach(msgData => {
+                const messageElement = createMessageElement(msgData);
+                forumChat.appendChild(messageElement);
+            });
+        }
+
+        // Obtener todos los mensajes (incluyendo respuestas) como una lista plana
+        function getAllMessages(forum) {
+            const allMessages = [];
+            
+            forum.messages.forEach(msg => {
+                // Agregar el mensaje principal
+                allMessages.push({
+                    ...msg,
+                    isReply: false,
+                    parentId: null
+                });
+                
+                // Agregar las respuestas
+                msg.replies.forEach(reply => {
+                    allMessages.push({
+                        ...reply,
+                        isReply: true,
+                        parentId: msg.id
+                    });
+                });
+            });
+            
+            return allMessages;
+        }
+
+        // Crear elemento HTML para un mensaje
+        function createMessageElement(msgData) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${msgData.isReply ? 'reply' : ''} fade-in`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${msgData.avatar}</div>
+                <div class="message-content">
+                    <div class="message-user">${msgData.user}</div>
+                    <div class="message-text">${msgData.text}</div>
+                    <div class="message-time">${msgData.time}</div>
+                    <div class="message-actions">
+                        <button class="message-action like-btn" data-id="${msgData.id}">
+                            <span>👍</span> ${msgData.likes}
+                        </button>
+                        <button class="message-action reply-btn" data-id="${msgData.id}" data-user="${msgData.user}">
+                            <span>↩️</span> Responder
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return messageDiv;
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Envío del formulario de comentarios
+            commentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const commentText = commentInput.value.trim();
+                
+                if (commentText && currentForumId) {
+                    addComment(commentText);
+                    commentInput.value = '';
+                    charCount.textContent = '0';
+                    submitBtn.disabled = true;
+                    
+                    // Si estábamos respondiendo, cancelar el modo respuesta
+                    if (replyingTo) {
+                        cancelReply();
+                    }
+                }
+            });
+            
+            // Contador de caracteres
+            commentInput.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = length;
+                submitBtn.disabled = length === 0 || length > 500;
+            });
+            
+            // Cancelar respuesta
+            cancelReplyBtn.addEventListener('click', cancelReply);
+            
+            // Paginación
+            prevPageBtn.addEventListener('click', goToPrevPage);
+            nextPageBtn.addEventListener('click', goToNextPage);
+            
+            // Delegación de eventos para los botones de like y reply
+            forumChat.addEventListener('click', function(e) {
+                if (e.target.closest('.like-btn')) {
+                    const button = e.target.closest('.like-btn');
+                    const messageId = parseInt(button.dataset.id);
+                    likeMessage(messageId);
+                }
+                
+                if (e.target.closest('.reply-btn')) {
+                    const button = e.target.closest('.reply-btn');
+                    const messageId = parseInt(button.dataset.id);
+                    const userName = button.dataset.user;
+                    setReplyMode(messageId, userName);
+                }
+            });
+        }
+
+        // Agregar un nuevo comentario
+        function addComment(text) {
+            if (!currentForumId) return;
+            
+            const forum = forumsData.find(f => f.id === currentForumId);
+            if (!forum) return;
+            
+            const newMessage = {
+                id: Date.now(), // ID único basado en timestamp
+                user: "Tú", // En una app real, esto vendría del usuario autenticado
+                avatar: "TÚ",
+                text: text,
+                time: "Ahora",
+                likes: 0,
+                replies: []
+            };
+            
+            if (replyingTo) {
+                // Buscar el mensaje al que se está respondiendo y agregar la respuesta
+                const parentMessage = forum.messages.find(msg => 
+                    msg.id === replyingTo || msg.replies.some(reply => reply.id === replyingTo)
+                );
+                
+                if (parentMessage) {
+                    parentMessage.replies.push(newMessage);
+                }
+            } else {
+                // Agregar como nuevo mensaje principal
+                forum.messages.unshift(newMessage);
+            }
+            
+            // Volver a renderizar los mensajes
+            renderMessages();
+        }
+
+        // Dar like a un mensaje
+        function likeMessage(messageId) {
+            if (!currentForumId) return;
+            
+            const forum = forumsData.find(f => f.id === currentForumId);
+            if (!forum) return;
+            
+            // Buscar el mensaje en los mensajes principales
+            let message = forum.messages.find(msg => msg.id === messageId);
+            
+            // Si no se encuentra, buscar en las respuestas
+            if (!message) {
+                for (const mainMsg of forum.messages) {
+                    message = mainMsg.replies.find(reply => reply.id === messageId);
+                    if (message) break;
+                }
+            }
+            
+            if (message) {
+                message.likes++;
+                renderMessages();
+            }
+        }
+
+        // Establecer modo de respuesta
+        function setReplyMode(messageId, userName) {
+            replyingTo = messageId;
+            replyToUser.textContent = userName;
+            replyIndicator.style.display = 'flex';
+            commentInput.focus();
+        }
+
+        // Cancelar modo de respuesta
+        function cancelReply() {
+            replyingTo = null;
+            replyIndicator.style.display = 'none';
+        }
+
+        // Navegar a la página anterior
+        function goToPrevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderMessages();
+                updatePagination();
+            }
+        }
+
+        // Navegar a la página siguiente
+        function goToNextPage() {
+            if (!currentForumId) return;
+            
+            const forum = forumsData.find(f => f.id === currentForumId);
+            if (!forum) return;
+            
+            const allMessages = getAllMessages(forum);
+            const totalPages = Math.ceil(allMessages.length / messagesPerPage);
+            
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderMessages();
+                updatePagination();
+            }
+        }
+
+        // Actualizar estado de la paginación
+        function updatePagination() {
+            if (!currentForumId) {
+                prevPageBtn.disabled = true;
+                nextPageBtn.disabled = true;
+                pageInfo.textContent = "Página 1 de 1";
+                return;
+            }
+            
+            const forum = forumsData.find(f => f.id === currentForumId);
+            if (!forum) return;
+            
+            const allMessages = getAllMessages(forum);
+            const totalPages = Math.ceil(allMessages.length / messagesPerPage);
+            
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages;
+            pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+        }
+
+        // Función auxiliar para números aleatorios
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    </script>
+</body>
+</html>

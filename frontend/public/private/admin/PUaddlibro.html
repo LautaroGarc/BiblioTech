@@ -7,7 +7,17 @@
     <link rel="stylesheet" href="styles/addlibro.css">
 </head>
 <body>
+
+    
     <div class="container">
+
+        <div class="btn-back">
+
+            <button id ="back-btn">← Volver</button>
+
+        </div>
+
+
         <div class="title">agregar libros</div>
         
         <form id="libroForm" onsubmit="handleSubmit(event)">
@@ -17,17 +27,8 @@
             
             <div class="two-columns">
                 <div class="form-group">
-                    <input type="text" class="input-field" placeholder="agregar portada" id="portada">
+                    <input type="url" class="input-field" placeholder="agregar portada" id="portada">
                 </div>
-                
-                <div class="form-group">
-                    <input type="text" class="input-field" placeholder="seleccionar idioma" id="idioma">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <input type="text" class="input-field" placeholder="agregar sinopsis" id="sinopsis">
-            </div>
             
             <div class="form-group">
                 <input type="text" class="input-field" placeholder="agregar autor" id="autor">
@@ -38,11 +39,13 @@
             </div>
             
             <button type="button" class="scanner-button" onclick="openScanner()">
-                escanear
+                📷 escanear
             </button>
         </form>
         
         <div class="submit-button" onclick="submitForm()"></div>
+        
+        <div id="successMessage" class="success-message"></div>
     </div>
 
     <script>
@@ -52,24 +55,60 @@
         }
 
         function submitForm() {
+            const nombre = document.getElementById('nombre').value;
+            const portada = document.getElementById('portada').value;
+            const cantidad = document.getElementById('cantidad').value;
+            const sinopsis = document.getElementById('sinopsis').value;
+            const autor = document.getElementById('autor').value;
+            const isbn = document.getElementById('isbn').value;
+
+            // Validar campos requeridos
+            if (!nombre || !cantidad) {
+                alert('Por favor completa los campos obligatorios (nombre y cantidad)');
+                return;
+            }
+            
             const formData = {
-                nombre: document.getElementById('nombre').value,
-                portada: document.getElementById('portada').value,
-                idioma: document.getElementById('idioma').value,
-                sinopsis: document.getElementById('sinopsis').value,
-                autor: document.getElementById('autor').value,
-                isbn: document.getElementById('isbn').value
+                nombre,
+                portada,
+                cantidad,
+                sinopsis,
+                autor,
+                isbn
             };
             
             console.log('Datos del libro:', formData);
-            alert('Libro agregado exitosamente!');
-            // Aquí se procesarán los datos más adelante
+            
+            // Mostrar mensaje de éxito
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = `✓ "${nombre}" agregado exitosamente con ${cantidad} unidad(es)`;
+            successMessage.classList.add('show');
+            
+            // Limpiar formulario
+            document.getElementById('libroForm').reset();
+            
+            // Ocultar mensaje después de 4 segundos
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 4000);
+            
+            // TODO: Aquí se implementaría la llamada al backend
+            // fetch('/api/add-libro', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(formData)
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     console.log('Libro agregado:', data);
+            // });
         }
 
         function openScanner() {
             console.log('Abriendo escáner...');
-            alert('Función de escáner - Por implementar');
-            // Aquí se agregará la funcionalidad del escáner
+            alert('Función de escáner - Por implementar\n\nAquí se integrará la funcionalidad para escanear códigos ISBN');
+            // TODO: Aquí se agregará la funcionalidad del escáner
+            // Por ejemplo, usando la API de Web Scanner o una librería como QuaggaJS
         }
     </script>
 </body>

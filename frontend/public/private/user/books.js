@@ -51,7 +51,7 @@ const searchInput = document.getElementById("search");
 /* Estado */
 let currentBookId = null;
 
-/* Generar tarjetas */
+/* Generar tarjetas CORREGIDO */
 function renderBooks(list) {
   container.innerHTML = "";
   list.forEach(book => {
@@ -61,7 +61,6 @@ function renderBooks(list) {
 
     const img = document.createElement("img");
     img.className = "cover";
-    // si no existe la imagen, puede mostrar una genérica
     img.src = book.cover || "covers/generic_cover.png";
     img.alt = `Portada de ${book.title}`;
 
@@ -76,51 +75,48 @@ function renderBooks(list) {
     author.className = "book-author";
     author.textContent = book.author;
 
-    const stockLine = document.createElement("p");
-    stockLine.className = "stock-line";
+    const stockLine = document.createElement("div");
+    stockLine.className = `stock-line ${book.stock > 0 ? 'stock-available' : 'stock-unavailable'}`;
 
     const indicator = document.createElement("span");
     indicator.className = "indicator";
-    indicator.style.background = book.stock > 0 ? "var(--success)" : "var(--danger)";
 
     const stockText = document.createElement("span");
-    stockText.textContent = book.stock > 0 ? `Disponible (Stock: ${book.stock})` : `Sin stock (Stock: 0)`;
+    stockText.textContent = book.stock > 0 ? `Disponible (Stock: ${book.stock})` : `Sin stock`;
 
     stockLine.appendChild(indicator);
     stockLine.appendChild(stockText);
 
+    const footer = document.createElement("div");
+    footer.className = "book-footer";
+    
+    const viewBtn = document.createElement("button");
+    viewBtn.type = "button";
+    viewBtn.className = "view-btn";
+    viewBtn.textContent = "Ver / Alquilar";
+    viewBtn.disabled = book.stock === 0;
+
+    // Agregar elementos al body
     body.appendChild(title);
     body.appendChild(author);
     body.appendChild(stockLine);
+    body.appendChild(footer);
 
-    // footer con botón (solo visual — el popup hace la acción real)
-    const footer = document.createElement("div");
-    footer.className = "book-footer";
-    const viewBtn = document.createElement("button");
-    viewBtn.type = "button";
-    viewBtn.textContent = "Ver / Alquilar";
-    viewBtn.style.padding = "8px 10px";
-    viewBtn.style.borderRadius = "8px";
-    viewBtn.style.border = "none";
-    viewBtn.style.background = "linear-gradient(90deg,var(--accent),#0b5ed7)";
-    viewBtn.style.color = "white";
-    viewBtn.style.cursor = "pointer";
-    if (book.stock === 0) viewBtn.disabled = false; // permitimos abrir popup para ver detalles, aunque sin stock el submit estará deshabilitado
-
-    footer.appendChild(viewBtn);
-
-    // Click en tarjeta o botón abre popup
+    // Agregar elementos al card
     card.appendChild(img);
     card.appendChild(body);
-    card.appendChild(footer);
+    footer.appendChild(viewBtn);
 
+    // Event listeners
     card.addEventListener("click", (e) => {
-      // evitar doble activación si se clickeó dentro un input o botón
-      if (e.target.tagName.toLowerCase() === "button") {
-        openPopup(book.id);
-      } else {
+      if (e.target === viewBtn || !e.target.closest('button')) {
         openPopup(book.id);
       }
+    });
+
+    viewBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openPopup(book.id);
     });
 
     container.appendChild(card);
@@ -136,56 +132,50 @@ function openPopup(bookId) {
   popupImg.src = book.cover || "covers/generic_cover.png";
   popupImg.alt = `Portada de ${book.title}`;
   popupTitle.textContent = book.title;
-  popupAuthor.textContent = `Autor: ${book.author}`;
+  popupAuthor.textContent = book.author;
   popupDesc.textContent = book.description;
-  updatePopupStock(book.stock);
+  
+  // Actualizar stock en popup
+  const stockClass = book.stock > 0 ? 'stock-available' : 'stock-unavailable';
+  popupStock.textContent = book.stock > 0 ? `Disponible (Stock: ${book.stock})` : `Sin stock`;
+  popupStock.className = `stock-line ${stockClass}`;
 
-  // limpiar form y feedback
+  // Limpiar form y feedback
   rentForm.reset();
   feedback.textContent = "";
+  feedback.className = "feedback";
   submitRentBtn.disabled = (book.stock === 0);
 
-  popup.setAttribute("aria-hidden", "false");
-  // bloqueo scroll
+  // Mostrar popup
+  popup.classList.add("active");
   document.body.style.overflow = "hidden";
 }
 
 /* Cerrar popup */
 function closePopup() {
-  popup.setAttribute("aria-hidden", "true");
+  popup.classList.remove("active");
   currentBookId = null;
   document.body.style.overflow = "";
-}
-
-/* Actualizar la línea de stock dentro del popup */
-function updatePopupStock(stock) {
-  const indicator = stock > 0 ? "🟢" : "🔴";
-  popupStock.textContent = `${indicator} ${stock > 0 ? "Disponible" : "Sin stock"} (Stock: ${stock})`;
 }
 
 /* Reducir stock en el array, actualizar DOM */
 function decrementStock(bookId) {
   const book = BOOKS.find(b => b.id === bookId);
-  if (!book) return;
-  if (book.stock <= 0) return;
+  if (!book || book.stock <= 0) return;
+  
   book.stock -= 1;
-  // re-render de tarjetas para actualizar indicadores
+  // Re-render de tarjetas para actualizar indicadores
   renderBooks(filterBooks(searchInput.value));
-  // actualizar popup si sigue abierto en el mismo libro
-  if (currentBookId === bookId) {
-    updatePopupStock(book.stock);
-    submitRentBtn.disabled = (book.stock === 0);
-  }
 }
 
 /* Form submit */
 rentForm.addEventListener("submit", function (e) {
   e.preventDefault();
-  feedback.textContent = "";
+  
   const book = BOOKS.find(b => b.id === currentBookId);
   if (!book) return;
 
-  // validaciones simples
+  // Validaciones
   const nombre = document.getElementById("nombre").value.trim();
   const fechaRetiro = document.getElementById("fecha-retiro").value;
   const fechaDevolucion = document.getElementById("fecha-devolucion").value;
@@ -193,40 +183,40 @@ rentForm.addEventListener("submit", function (e) {
   const turno = document.getElementById("turno").value;
 
   if (!nombre || !fechaRetiro || !fechaDevolucion || !curso || !turno) {
-    feedback.style.color = "var(--danger)";
     feedback.textContent = "Por favor completá todos los campos.";
+    feedback.className = "feedback error";
     return;
   }
 
   const dRetiro = new Date(fechaRetiro);
   const dDevol = new Date(fechaDevolucion);
   if (dDevol < dRetiro) {
-    feedback.style.color = "var(--danger)";
     feedback.textContent = "La fecha de devolución no puede ser anterior a la de retiro.";
+    feedback.className = "feedback error";
     return;
   }
 
   if (book.stock <= 0) {
-    feedback.style.color = "var(--danger)";
     feedback.textContent = "Lo sentimos, este libro no tiene stock disponible.";
+    feedback.className = "feedback error";
     submitRentBtn.disabled = true;
     return;
   }
 
-  // simulamos el "alquiler" en frontend: decrementamos el stock
+  // Simular alquiler
   decrementStock(book.id);
 
-  // mostrar feedback positivo
-  feedback.style.color = "var(--success)";
-  feedback.textContent = "Solicitud recibida. El stock fue actualizado.";
+  // Mostrar feedback positivo
+  feedback.textContent = "¡Alquiler solicitado con éxito! El stock fue actualizado.";
+  feedback.className = "feedback success";
 
-  // cerramos el popup luego de 1.2s
+  // Cerrar popup después de 1.5 segundos
   setTimeout(() => {
     closePopup();
-  }, 1200);
+  }, 1500);
 });
 
-/* Botones cerrar */
+/* Event listeners para cerrar popup */
 closePopupBtn.addEventListener("click", closePopup);
 popup.addEventListener("click", (e) => {
   if (e.target === popup) closePopup();
@@ -248,9 +238,3 @@ searchInput.addEventListener("input", (e) => {
 
 /* Inicializar */
 renderBooks(BOOKS);
-
-/* Nota:
- - Para usar portadas reales, creá la carpeta "covers" en la misma ubicación de los archivos
-   y poné imágenes con los nombres indicados (o ajustá los paths en el array BOOKS).
- - Este sistema es frontend solamente; los cambios no persisten si recargás la página.
-*/

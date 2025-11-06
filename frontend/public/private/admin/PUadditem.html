@@ -7,62 +7,82 @@
     <link rel="stylesheet" href="styles/additem.css">
 </head>
 <body>
-    <div class="container">
-        <div class="title">agregar items</div>
+
+    
+     <div class="container">
+
+        <div class="btn-back">
+
+            <button id ="back-btn">← Volver</button>
+
+        </div>
+
+        <h2>Agregar Libro o Ítem</h2>
         
-        <form id="itemForm" onsubmit="handleSubmit(event)">
-            <div class="two-columns">
-                <div class="form-group">
-                    <input type="text" class="input-field" placeholder="agregar nombre" id="nombre" required>
-                </div>
-                
-                <div class="form-group">
-                    <input type="text" class="input-field" placeholder="agregar imagen" id="imagen">
-                </div>
+        <form id="addItemForm">
+            <div class="form-group">
+                <label for="nombre">Nombre del libro o ítem</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ingrese el nombre" required>
             </div>
             
-            <div class="scanner-group">
-                <button type="button" class="scanner-button" onclick="openScanner()">
-                    escanear
-                </button>
-                
-                <button type="button" class="add-cant" onclick="addCantidad()">
-                    add<br>cant
-                </button>
+            
+            <div class="form-group">
+                <label for="imagen">URL de la imagen (opcional)</label>
+                <input type="url" id="imagen" name="imagen" placeholder="https://ejemplo.com/imagen.jpg">
             </div>
+            
+            <button type="submit">✓ Agregar Ítem</button>
         </form>
-        
-        <div class="submit-button" onclick="submitForm()"></div>
+
+        <div id="mensaje"></div>
     </div>
 
     <script>
-        function handleSubmit(event) {
-            event.preventDefault();
-            submitForm();
-        }
-
-        function submitForm() {
-            const formData = {
-                nombre: document.getElementById('nombre').value,
-                imagen: document.getElementById('imagen').value
-            };
+        document.getElementById('addItemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            console.log('Datos del item:', formData);
-            alert('Item agregado exitosamente!');
-            // Aquí se procesarán los datos más adelante
-        }
-
-        function openScanner() {
-            console.log('Abriendo escáner...');
-            alert('Función de escáner - Por implementar');
-            // Aquí se agregará la funcionalidad del escáner
-        }
-
-        function addCantidad() {
-            console.log('Agregando cantidad...');
-            alert('Función de cantidad - Por implementar');
-            // Aquí se agregará la funcionalidad de cantidad
-        }
+            const nombre = document.getElementById('nombre').value;
+            const imagen = document.getElementById('imagen').value;
+        
+            
+            const mensaje = document.getElementById('mensaje');
+            
+            // Simulación de guardado exitoso
+            console.log('Datos del nuevo ítem:', {
+                nombre,
+                imagen
+                
+            });
+            
+            // Mostrar mensaje de éxito
+            mensaje.className = 'success';
+            mensaje.textContent = `✓ ${nombre} agregado exitosamente`;
+            
+            // Limpiar formulario
+            this.reset();
+            
+            // Ocultar mensaje después de 3 segundos
+            setTimeout(() => {
+                mensaje.style.display = 'none';
+            }, 3000);
+            
+            // TODO: Aquí se implementaría la llamada al backend
+            // fetch('/api/add-item', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ nombre, cantidad, imagen, descripcion })
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     mensaje.className = 'success';
+            //     mensaje.textContent = '✓ Ítem agregado exitosamente';
+            // })
+            // .catch(error => {
+            //     mensaje.className = 'error';
+            //     mensaje.textContent = '✗ Error al agregar el ítem';
+            // });
+        });
     </script>
+   
 </body>
 </html>

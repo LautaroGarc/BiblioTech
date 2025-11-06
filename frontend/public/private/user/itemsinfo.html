@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alquiler de Items Técnicos</title>
+  <link rel="stylesheet" href="styles/itemsinfo.css">
+</head>
+<body>
+  <header>
+    <h1>Alquiler de Items Técnicos</h1>
+    <input type="text" placeholder="🔍 Buscar item..." class="search-bar">
+  </header>
+
+  <main class="items-container">
+    <div class="item" onclick="abrirPopup('Tablero de Dibujo Técnico', 'Tablero con regla paralela y soporte ajustable, ideal para dibujo técnico y arquitectura.')">
+      <img src="tablero.jpg" alt="Tablero de dibujo técnico">
+      <h3>Tablero de Dibujo Técnico</h3>
+    </div>
+
+    <div class="item" onclick="abrirPopup('Calculadora Científica', 'Calculadora científica programable con funciones trigonométricas, estadísticas y algebraicas.')">
+      <img src="calculadora.png" alt="Calculadora científica">
+      <h3>Calculadora Científica</h3>
+    </div>
+
+    <div class="item" onclick="abrirPopup('Computadora (Laptop)', 'Notebook con software técnico instalado, ideal para diseño y programación.')">
+      <img src="laptop.jpg" alt="Computadora laptop">
+      <h3>Computadora (Laptop)</h3>
+    </div>
+
+    <div class="item" onclick="abrirPopup('Juego de Reglas', 'Incluye regla T, escuadras, transportador y regla metálica para precisión.')">
+      <img src="reglas.jpeg" alt="Juego de reglas">
+      <h3>Juego de Reglas</h3>
+    </div>
+
+    <div class="item" onclick="abrirPopup('Compás', 'Compás metálico ajustable con extensión para trazos amplios y estuche de puntas.')">
+      <img src="compas.jpeg" alt="Compás">
+      <h3>Compás de Precisión</h3>
+    </div>
+    <div class="item" onclick="abrirPopup('cable HDMI', 'Cable HDMI para conectar.')">
+      <img src="hdmi.jpeg" alt="cable HDMI">
+      <h3>Compás de Precisión</h3>
+    </div>
+  </main>
+
+  <!-- Popup -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <span class="cerrar" onclick="cerrarPopup()">&times;</span>
+      <h2 id="popup-titulo"></h2>
+      <p id="popup-descripcion"></p>
+
+      <form class="book-form">
+        <h3>Formulario de Alquiler</h3>
+        <label>Nombre:</label>
+        <input type="text" placeholder="Tu nombre" required>
+
+        <label>Correo:</label>
+        <input type="email" placeholder="ejemplo@gmail.com" required>
+
+        <label>Fecha de alquiler:</label>
+        <input type="date" required>
+
+        <button type="submit">Enviar solicitud</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="itemsinfo.js"></script>
+</body>
+</html>

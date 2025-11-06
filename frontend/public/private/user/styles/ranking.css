@@ -1,166 +1,332 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
+body {
+    background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+    color: #f5f5f5;
+    min-height: 100vh;
+    line-height: 1.6;
+}
 
-        body {
-            background-color: #e6f2ff;
-            color: #333;
-            padding: 20px;  
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Calibri, sans-serif;
-        }
-        
+/* Header */
+.header {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.nav-button {
+    background: rgba(52, 152, 219, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #004085;
-        }
+.nav-button:hover {
+    background: rgba(41, 128, 185, 0.9);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
 
-        .nav-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
+.nav-button a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
 
-        .rankings-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
+#forobuttonicon {
+    width: 24px;
+    height: 24px;
+    filter: invert(1);
+}
 
-        .ranking-section {
-            background-color: #cce5ff;
-            border-radius: 10px;
-            padding: 20px;
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #3498db, #2ecc71);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
 
-        .ranking-title {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #004085;
-            font-size: 1.5rem;
-        }
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
 
-        .ranking-list {
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
+.rankings-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
 
-        .ranking-item {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            transition: transform 0.2s;
-        }
+@media (max-width: 900px) {
+    .rankings-container {
+        grid-template-columns: 1fr;
+    }
+}
 
-        .ranking-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
+/* Secciones de ranking */
+.ranking-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
 
-        .ranking-position {
-            background-color: #007bff;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 15px;
-            font-weight: bold;
-        }
+.ranking-section:hover {
+    transform: translateY(-5px);
+}
 
-        .ranking-content {
-            flex: 1;
-        }
+.ranking-section::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #3498db, #2ecc71, #3498db);
+    border-radius: 17px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
 
-        .ranking-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+.ranking-section:hover::before {
+    opacity: 0.3;
+}
 
-        .ranking-details {
-            font-size: 0.9rem;
-            color: #666;
-        }
+.ranking-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #3498db;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
 
-        /* Scrollbar personalizado */
-        .ranking-list::-webkit-scrollbar {
-            width: 8px;
-        }
+.ranking-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #3498db, #2ecc71);
+    border-radius: 3px;
+}
 
-        .ranking-list::-webkit-scrollbar-track {
-            background: #e6f2ff;
-            border-radius: 10px;
-        }
+/* Lista de ranking */
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
 
-        .ranking-list::-webkit-scrollbar-thumb {
-            background: #007bff;
-            border-radius: 10px;
-        }
+.ranking-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-        .ranking-list::-webkit-scrollbar-thumb:hover {
-            background: #0056b3;
-        }
+.ranking-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
 
-        /* Responsive para móviles */
-        @media (max-width: 768px) {
-            .rankings-container {
-                flex-direction: column;
-                align-items: center;
-            }
+.ranking-position {
+    font-size: 1.8rem;
+    font-weight: 700;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
 
-            .ranking-section {
-                width: 100%;
-                max-width: 100%;
-            }
+/* Colores para las primeras posiciones */
+.ranking-item:nth-child(1) .ranking-position {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #333;
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+}
 
-            .ranking-list {
-                max-height: 300px;
-            }
-        }
+.ranking-item:nth-child(2) .ranking-position {
+    background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+    color: #333;
+    box-shadow: 0 4px 10px rgba(192, 192, 192, 0.3);
+}
 
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
+.ranking-item:nth-child(3) .ranking-position {
+    background: linear-gradient(135deg, #cd7f32, #a56a2a);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(205, 127, 50, 0.3);
+}
 
-            .ranking-title {
-                font-size: 1.3rem;
-            }
+.ranking-item:nth-child(n+4) .ranking-position {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+}
 
-            .ranking-item {
-                padding: 10px;
-            }
-        }
+.ranking-content {
+    flex: 1;
+}
+
+.ranking-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #f5f5f5;
+}
+
+.ranking-details {
+    font-size: 0.9rem;
+    color: #bdc3c7;
+}
+
+/* Efectos de animación */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ranking-section {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+#top-books {
+    animation-delay: 0.2s;
+    opacity: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .container {
+        padding: 1rem;
+    }
+    
+    .ranking-section {
+        padding: 1.5rem;
+    }
+    
+    .ranking-position {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+}
+
+/* Efectos adicionales para mejorar la experiencia visual */
+.ranking-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.ranking-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.ranking-item:hover::before {
+    left: 100%;
+}
+
+/* Estilos para el icono SVG si decides usarlo */
+.nav-button svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    .ranking-section,
+    .ranking-item,
+    .nav-button {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* Estilos para modo de alto contraste */
+@media (prefers-contrast: high) {
+    .ranking-section {
+        background: #000;
+        border: 2px solid #fff;
+    }
+    
+    .ranking-item {
+        background: #111;
+        border: 1px solid #fff;
+    }
+    
+    .ranking-name {
+        color: #fff;
+    }
+    
+    .ranking-details {
+        color: #ccc;
+    }
+}

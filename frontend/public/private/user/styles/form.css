@@ -1,0 +1,132 @@
+/* ---- ESTILO GENERAL ---- */
+body {
+  font-family: Calibri, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #e0f7fa, #bbdefb);
+  color: #003366;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Fondo del popup */
+.popup-fondo {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 51, 102, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor del formulario */
+.popup-form {
+  background-color: #e3f2fd;
+  border-radius: 20px;
+  padding: 30px 25px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  position: relative;
+  animation: aparecer 0.3s ease;
+}
+
+/* Botón de cerrar (x) */
+.cerrar {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #0d47a1;
+  transition: color 0.2s ease;
+}
+
+.cerrar:hover {
+  color: #1565c0;
+}
+
+/* Título */
+.popup-form h2 {
+  text-align: center;
+  color: #01579b;
+  margin-bottom: 20px;
+}
+
+/* Campos del formulario */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-top: 10px;
+  color: #01579b;
+}
+
+input, textarea {
+  border: 1px solid #64b5f6;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 16px;
+  margin-top: 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #1976d2;
+}
+
+/* Botón */
+button {
+  margin-top: 18px;
+  padding: 10px;
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #0d47a1;
+}
+
+/* Animación */
+@keyframes aparecer {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .popup-form {
+    width: 92%;
+    padding: 25px;
+  }
+
+  .popup-form h2 {
+    font-size: 20px;
+  }
+
+  input, textarea {
+    font-size: 15px;
+  }
+
+  button {
+    font-size: 15px;
+  }
+}

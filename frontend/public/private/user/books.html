@@ -4,27 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Catálogo de Libros - Biblioteca</title>
-  <link rel="stylesheet" href="styles/booksaerch.css" />
+  <link rel="stylesheet" href="books.css" />
 </head>
 <body>
   <header>
     <h1>Catálogo de Libros</h1>
-    <button id ="back-btn">← Volver</button>
     <input id="search" class="search-bar" type="search" placeholder="🔍 Buscar por título o autor..." />
   </header>
 
-  <div class="barra-btn">
-
-    <button id="filter-btn" class="filter-btn">Filtrar</button>
-    <button id ="likeados-btn" class="likeados-btn">❤️</button>
-  </div>
-
-
-  <div class="books-container" id="books-container">
+  <main class="books-container" id="books-container">
     <!-- Las tarjetas se generan desde script.js -->
-  </div>
-
-
+  </main>
 
   <!-- Popup -->
   <div class="popup" id="popup" aria-hidden="true">
@@ -84,13 +74,7 @@
     </div>
   </div>
 
-  <div id="bt-back-next" class="bt-back-next">
-    <button id="back-page-btn" class="back-page-btn">← Anterior</button>
-    <span id="page-info" class="page-info">Página 1</span>
-    <button id="next-page-btn" class="next-page-btn">Siguiente →</button>
-  </div>
-  
-  <script src="booksaerch.js"></script>
+  <script src="books.js"></script>
 </body>
 </html>
 
