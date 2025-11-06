@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-const nodemailer = require('nodemailer');
+//const nodemailer = require('nodemailer');
 const { JWT_SECRET } = require('../config/config');
 const { addUser, getUsers, getUser } = require('../models/users');
 
@@ -133,9 +133,13 @@ async function login(req, res) {
 
         console.log('[LOGIN] Login exitoso para:', email, '| Accepted:', user.accepted);
 
-        res.json({
+        res.cookie('token', token, {
+            httpOnly: true,      
+            secure: true,       
+            maxAge: 24 * 60 * 60 * 1000,
+            sameSite: 'strict'
+        }).json({
             message: 'Login exitoso',
-            token,
             user: {
                 id: user.id,
                 name: user.name,
@@ -233,6 +237,7 @@ async function checkEmail(req, res) {
     }
 }
 
+/*
 async function forgotPassword(req, res) {
     try {
         const { email } = req.body;
@@ -265,6 +270,8 @@ async function forgotPassword(req, res) {
         });
     }
 }
+
+*/
 
 
 
@@ -303,6 +310,6 @@ module.exports = {
     getUsers,
     getMe,
     getUserById,
-    checkEmail,
-    forgotPassword
+    checkEmail
+    //forgotPassword
 };

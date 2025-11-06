@@ -3,6 +3,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const { isAccepted } = require('./src/models/users.js')
 const { authenticateToken, checkSession } = require('./src/middlewares/authMiddleware.js');
 
 const app = express();
@@ -33,12 +34,17 @@ app.get('/login', checkSession, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'login.html'));
 });
 
+app.get('/logout', authenticateToken, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'logout.html'));
+})
+
 app.get('/register', checkSession, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'register.html'));
 });
 
 app.get('/waiting', authenticateToken, (req, res) => {
-    if (req.user.accepted) {
+    const verf = isAccepted(req.user.id);
+    if (verf) {
         return res.redirect('/home');
     }
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'waiting.html'));
@@ -47,7 +53,8 @@ app.get('/waiting', authenticateToken, (req, res) => {
 //--- RUTAS PROTEGIDAS (requieren sesión + aceptación) ---
 
 app.get('/home', authenticateToken, (req, res) => {
-    if (!req.user.accepted) {
+    const verf = isAccepted(req.user.id)
+    if (!verf) {
         return res.redirect('/waiting');
     }
 

@@ -45,7 +45,7 @@ router.post('/check-email', checkEmail);
  * @access  Public
  * @body    { email }
  * @return  { ok: boolean }
- */
+ *
 router.post('/forgot-password', forgotPassword);
-
+*/
 module.exports = router;

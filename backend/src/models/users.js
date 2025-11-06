@@ -58,6 +58,14 @@ async function updateLvl(idUser) {
     }
 };
 
+async function isAccepted(idUser) {
+    try{
+        return await db.execute(`select accepted from users WHERE id = ?`, [idUser]);;
+    } catch (error){
+        console.error('Error en updateLvl: ', error);
+        throw error;
+    }
+};
 
 // obtener lista de usuarios
 async function getUsers() {
@@ -142,5 +150,6 @@ module.exports = {
     getUser,
     getUserWith,
     getUsersWith,
-    warnUser
+    warnUser,
+    isAccepted
 }
