@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foros</title>
+</head>
+<body>
+    <!--agregar boton de ranking-->
+    <header>
+        <div class="header">
+            <a id="rankingBtn" href="ranking.html">Ranking</a>
+        </div>
+    </header>
+    <div class="principal">
+        <h1>¡NUESTROS FOROS!</h1>
+        <h2>Participa en nuestra comunidad de lectores.</h2>
+
+        <div id="forums">
+            <!--Cargar foros existentes-->
+        </div>
+
+        <div id="forum-chat">
+            <!--Cargar mensajes-->
+        </div>
+        <div id="chat-box" style="display: none;">
+            <form id="comment-form">
+
+                <input type="hidden" id="forumId" name="forumId">
+                <input type="hidden" id="userId" name="userId">
+                <input type="hidden" id="replyId" name="replyId" value="">
+                <input type="hidden" id="isReply" name="isReply" value="false">
+
+
+                <label for="comment">Comentario</label>
+                <textarea id="comment" name="comment" rows="3" required placeholder="Escribe tu comentario..."></textarea>
+                <button type="submit" id="submit-btn">Enviar</button>
+                <button type="button" id="cancel-reply" style="display: none;">Cancelar respuesta</button>
+            </form>
+        </div>
+        <div id="pagesBtn">
+            <button id="prevPageBtn">Anterior</button>
+            <span id="pageInfo">Página 1</span>
+            <button id="nextPageBtn">Siguiente</button>
+        </div>
+    </div>
+
+    <script src="../js/forum.js"></script>
+</body>
+</html>
