@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node start.js",
-    "dev": "nodemon start.js",
+    "dev": "nodemon start.js --watch backend --watch frontend backend/server.js",
     "test": "jest"
   },
   "keywords": [

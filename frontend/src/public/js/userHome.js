@@ -45,9 +45,12 @@ async function loadBooksCarousel() {
             throw new Error(`Error HTTP: ${response.status}`);
         }
 
-        const books = await response.json();
-        console.log('[BOOKS] Libros recibidos:', books);
+        const result = await response.json();
+        console.log('[BOOKS] Respuesta completa:', result);
 
+        // La API devuelve { success: true, data: [...] }
+        const books = result.data || [];
+        
         const carouselContainer = document.querySelector('.carousel-container-books');
         
         if (!carouselContainer) {
@@ -57,6 +60,11 @@ async function loadBooksCarousel() {
 
         // Limpiar contenedor
         carouselContainer.innerHTML = '';
+
+        if (books.length === 0) {
+            showEmptyState('.carousel-container-books', 'libros');
+            return;
+        }
 
         // Crear elementos para cada libro
         books.forEach(book => {
@@ -81,26 +89,23 @@ function createBookElement(book) {
     bookDiv.setAttribute('data-book-id', book.id);
     
     bookDiv.innerHTML = `
-        <div class="book-content">
-            <div class="book-cover">
-                ${book.imagen ? 
-                    `<img src="${book.imagen}" alt="${book.titulo}" loading="lazy">` : 
-                    '📚'
-                }
-            </div>
-            <div class="book-info">
-                <h3 class="book-title">${book.titulo || 'Sin título'}</h3>
-                <p class="book-author">${book.autor || 'Autor desconocido'}</p>
-                ${book.anio ? `<p class="book-year">${book.anio}</p>` : ''}
-            </div>
+        <div class="book-cover">
+            ${book.img ? 
+                `<img src="${book.img}" alt="${book.name}" loading="lazy">` : 
+                '<div class="book-placeholder">📚</div>'
+            }
+        </div>
+        <div class="book-info">
+            <h3 class="book-title">${book.name || 'Sin título'}</h3>
+            <p class="book-author">${book.author || 'Autor desconocido'}</p>
+            ${book.review ? `<p class="book-rating">⭐ ${book.review}/5</p>` : ''}
         </div>
     `;
     
-    // Agregar evento click si es necesario
+    // Agregar evento click
     bookDiv.addEventListener('click', () => {
         console.log('[BOOK] Libro clickeado:', book.id);
-        // Aquí puedes redirigir a la página del libro o mostrar detalles
-        // window.location.href = `/book/${book.id}`;
+        window.location.href = `/books?id=${book.id}`;
     });
 
     return bookDiv;
@@ -125,8 +130,11 @@ async function loadSuppliesCarousel() {
             throw new Error(`Error HTTP: ${response.status}`);
         }
 
-        const supplies = await response.json();
-        console.log('[SUPPLIES] Supplies recibidos:', supplies);
+        const result = await response.json();
+        console.log('[SUPPLIES] Respuesta completa:', result);
+
+        // La API devuelve { success: true, data: [...] }
+        const supplies = result.data || [];
 
         const carouselContainer = document.querySelector('.carousel-container-items');
         
@@ -137,6 +145,11 @@ async function loadSuppliesCarousel() {
 
         // Limpiar contenedor
         carouselContainer.innerHTML = '';
+
+        if (supplies.length === 0) {
+            showEmptyState('.carousel-container-items', 'materiales');
+            return;
+        }
 
         // Crear elementos para cada supply
         supplies.forEach(supply => {
@@ -160,41 +173,27 @@ function createSupplyElement(supply) {
     supplyDiv.className = 'item-item';
     supplyDiv.setAttribute('data-supply-id', supply.id);
     
-    // Icono según el tipo de material
-    const getSupplyIcon = (type) => {
-        const icons = {
-            'electronico': '💻',
-            'laboratorio': '🔬',
-            'audio': '🎧',
-            'video': '📹',
-            'herramienta': '🛠️',
-            'default': '📦'
-        };
-        return icons[type?.toLowerCase()] || icons.default;
-    };
-
+    const available = (supply.total_quantity - supply.borrowed) > 0;
+    
     supplyDiv.innerHTML = `
-        <div class="supply-content">
-            <div class="supply-icon">
-                ${getSupplyIcon(supply.tipo)}
-            </div>
-            <div class="supply-info">
-                <h3 class="supply-name">${supply.nombre || 'Sin nombre'}</h3>
-                <p class="supply-type">${supply.tipo || 'Material'}</p>
-                ${supply.disponible !== undefined ? 
-                    `<p class="supply-available ${supply.disponible ? 'available' : 'unavailable'}">
-                        ${supply.disponible ? '✅ Disponible' : '❌ No disponible'}
-                    </p>` : ''
-                }
-            </div>
+        <div class="supply-cover">
+            ${supply.img ? 
+                `<img src="${supply.img}" alt="${supply.name}" loading="lazy">` : 
+                '<div class="supply-placeholder">📦</div>'
+            }
+        </div>
+        <div class="supply-info">
+            <h3 class="supply-name">${supply.name || 'Sin nombre'}</h3>
+            <p class="supply-available ${available ? 'available' : 'unavailable'}">
+                ${available ? `✅ ${supply.total_quantity - supply.borrowed} disponibles` : '❌ No disponible'}
+            </p>
         </div>
     `;
     
     // Agregar evento click
     supplyDiv.addEventListener('click', () => {
         console.log('[SUPPLY] Supply clickeado:', supply.id);
-        // Aquí puedes redirigir a la página del supply o mostrar detalles
-        // window.location.href = `/supply/${supply.id}`;
+        window.location.href = `/books?supply=${supply.id}`;
     });
 
     return supplyDiv;
@@ -221,28 +220,23 @@ function showEmptyState(containerSelector, type) {
 function initCarouselControls() {
     console.log('[CAROUSEL] Inicializando controles...');
     
-    // Controles para libros
-    const booksPrev = document.querySelector('.carousel-prev[data-carousel="books"]');
-    const booksNext = document.querySelector('.carousel-next[data-carousel="books"]');
-    const booksContainer = document.querySelector('.carousel-container-books');
+    // Obtener todos los botones de control
+    const controls = document.querySelectorAll('.carousel-controls');
     
-    // Controles para supplies
-    const suppsPrev = document.querySelector('.carousel-prev[data-carousel="supplies"]');
-    const suppsNext = document.querySelector('.carousel-next[data-carousel="supplies"]');
-    const suppsContainer = document.querySelector('.carousel-container-items');
-    
-    // Configurar eventos
-    if (booksPrev && booksNext && booksContainer) {
-        booksPrev.addEventListener('click', () => scrollCarousel(booksContainer, -300));
-        booksNext.addEventListener('click', () => scrollCarousel(booksContainer, 300));
-        console.log('[CAROUSEL] Controles de libros configurados');
-    }
-    
-    if (suppsPrev && suppsNext && suppsContainer) {
-        suppsPrev.addEventListener('click', () => scrollCarousel(suppsContainer, -300));
-        suppsNext.addEventListener('click', () => scrollCarousel(suppsContainer, 300));
-        console.log('[CAROUSEL] Controles de supplies configurados');
-    }
+    controls.forEach(controlGroup => {
+        const prevBtn = controlGroup.querySelector('.carousel-prev');
+        const nextBtn = controlGroup.querySelector('.carousel-next');
+        
+        // Encontrar el contenedor del carrusel asociado
+        const section = controlGroup.closest('.carousel-section');
+        const container = section.querySelector('.carousel-container-books, .carousel-container-items');
+        
+        if (prevBtn && nextBtn && container) {
+            prevBtn.addEventListener('click', () => scrollCarousel(container, -300));
+            nextBtn.addEventListener('click', () => scrollCarousel(container, 300));
+            console.log('[CAROUSEL] Controles configurados para:', section.id);
+        }
+    });
 }
 
 /**

@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Redirigir si ya hay sesión activa
-    if (redirectIfAuthenticated()) {
-        return; // Ya redirigió, no continuar
-    }
+   
 
     const loginForm = document.querySelector('.loginForm');
     const forgotForm = document.querySelector('.forgotPass');

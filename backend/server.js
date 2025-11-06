@@ -102,6 +102,10 @@ app.get('/plus', authenticateToken, (req, res) => {
     }
 });
 
+app.get('/userActivity', authenticateToken, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'userActivity.html'));
+})
+
 //--- RUTAS API ---
 app.use('/api/auth', require('./src/routes/authRoutes.js'));
 app.use('/api/users', require('./src/routes/userRoutes.js'));

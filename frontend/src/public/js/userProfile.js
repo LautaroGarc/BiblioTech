@@ -29,7 +29,7 @@ async function init() {
 async function loadUserData(){
     const userName = document.getElementsByClassName('foto-perfil')
     const userImage = document.getElementsByClassName('nombre-usuario')
-    const user = await fetch('/me', {
+    const user = await fetch('/api/users/me', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
