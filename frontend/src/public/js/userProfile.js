@@ -11,6 +11,38 @@ function togglePopup() {
     }
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    init()
+});
+
+async function init() {
+    try {
+        await Promise.all([
+            loadUserData()
+        ]);
+        
+    } catch (error) {
+        console.error('[USER HOME] Error inicializando página:', error);
+    }
+}
+
+async function loadUserData(){
+    const userName = document.getElementsByClassName('foto-perfil')
+    const userImage = document.getElementsByClassName('nombre-usuario')
+    const user = await fetch('/me', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+    });
+    
+    userName.innerHTML = user.email;
+    userImage.innerHTML = user.img;
+
+
+}
+
 // Cerrar popup al hacer click fuera del contenido
 document.getElementById('popupEditarPerfil').addEventListener('click', function(e) {
     if (e.target === this) {
