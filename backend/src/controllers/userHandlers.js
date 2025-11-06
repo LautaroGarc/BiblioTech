@@ -207,6 +207,35 @@ async function getUserById(req, res) {
     }   
 }
 
+async function getMyAd(req, res) {
+    const userId = req.user.id;
+    const user = await getUser(userId);
+
+    if (!user) {
+        return res.status(404).json({ 
+            message: 'Usuario no encontrado' 
+        });
+    }
+
+    const ok = true
+    if (user.notifications == null) {
+        ok = false
+    }
+
+    try {
+        res.json({ 
+            exists: ok,
+            data: user.notifications
+        });
+    } catch(error) {
+        console.error('[ ads ERROR ]', error);
+        res.status(500).json({ 
+            message: 'ads error',
+            exists: false
+        });
+    }
+}
+
 async function checkEmail(req, res) {
     try {
         console.log('[CHECK EMAIL] Body recibido:', req.body);
@@ -310,6 +339,7 @@ module.exports = {
     getUsers,
     getMe,
     getUserById,
-    checkEmail
+    checkEmail,
+    getMyAd
     //forgotPassword
 };

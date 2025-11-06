@@ -106,7 +106,7 @@ app.get('/plus', authenticateToken, (req, res) => {
 app.use('/api/auth', require('./src/routes/authRoutes.js'));
 app.use('/api/users', require('./src/routes/userRoutes.js'));
 app.use('/api/admin', require('./src/routes/adminRoutes.js'));
-app.use('/api/items', require('./src/routes/itemRoutes.js'));
+app.use('/api', require('./src/routes/itemRoutes.js'));
 app.use('/api/loans', require('./src/routes/loanRoutes.js'));
 app.use('/api/forums', require('./src/routes/forumRoutes.js'));
 

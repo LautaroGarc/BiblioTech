@@ -279,35 +279,35 @@ class ItemController{
             });
         }
     }
+
     static async bookCarrousel(req, res) {
         try {
-            const books = getCarrouselBooks()
+            const books = await getCarrouselBooks();
             res.json({
                 success: true,
-                books: books
-            })
+                data: books 
+            });
         } catch(error) {
-            console.error('[CARROUSEL SUPPLY ERROR]', error);
+            console.error('[CARROUSEL BOOK ERROR]', error);
             res.status(500).json({
                 success: false,
-                message: ''
+                message: 'Error al obtener libros del carrusel'
             });
         }
     }
 
     static async suppCarrousel(req, res) {
         try {
-            const supps = getCarrouselSupps()
-
+            const supps = await getCarrouselSupps();
             res.json({
                 success: true,
-                supps: supps
-            })
+                data: supps 
+            });
         } catch(error) {
-            console.error('[CARROUSEL BOOK ERROR]', error);
+            console.error('[CARROUSEL SUPPLY ERROR]', error);
             res.status(500).json({
                 success: false,
-                message: ''
+                message: 'Error al obtener útiles del carrusel'
             });
         }
     }

@@ -4,20 +4,28 @@ const router = express.Router();
 const ItemController = require('../controllers/itemHandlers');
 const { authenticateToken, isAdmin } = require('../middlewares/authMiddleware');
 
-router.get('/api/books', ItemController.getAllBooks); 
-router.get('/api/books/:id', ItemController.getBookById);
-router.get('/api/books/search', ItemController.searchBooks);
-router.get('/api/books/recommendations', authenticateToken, ItemController.getRecommendations);
+// ⚠️ IMPORTANTE: Las rutas específicas ANTES de las rutas con parámetros
 
-router.post('/api/books', authenticateToken, isAdmin, ItemController.createBook);
-router.put('/api/books/:id', authenticateToken, isAdmin, ItemController.updateBook);
+// Rutas de carrousel (PRIMERO)
+router.get('/books/carrousel', ItemController.bookCarrousel);
+router.get('/supps/carrousel', ItemController.suppCarrousel);
 
-router.get('/api/supps', ItemController.getAllSupplies);
-router.get('/api/supps/:id', ItemController.getSupplyById); 
-router.post('/api/supps', authenticateToken, isAdmin, ItemController.createSupply);
-router.put('/api/supps/:id', authenticateToken, isAdmin, ItemController.updateSupply);
+// Rutas de búsqueda y recomendaciones
+router.get('/books/search', ItemController.searchBooks);
+router.get('/books/recommendations', authenticateToken, ItemController.getRecommendations);
 
-router.get('/api/books/carrousel', ItemController.bookCarrousel);
-router.get('/api/supps/carrousel', ItemController.suppCarrousel);
+// Rutas generales
+router.get('/books', ItemController.getAllBooks); 
+router.get('/supps', ItemController.getAllSupplies);
+
+// Rutas con parámetros (AL FINAL)
+router.get('/books/:id', ItemController.getBookById);
+router.get('/supps/:id', ItemController.getSupplyById);
+
+// Rutas de modificación (admin)
+router.post('/books', authenticateToken, isAdmin, ItemController.createBook);
+router.put('/books/:id', authenticateToken, isAdmin, ItemController.updateBook);
+router.post('/supps', authenticateToken, isAdmin, ItemController.createSupply);
+router.put('/supps/:id', authenticateToken, isAdmin, ItemController.updateSupply);
 
 module.exports = router;

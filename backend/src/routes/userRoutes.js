@@ -4,7 +4,8 @@ const router = express.Router();
 const {
     getMe,
     getUserById,
-    getUsers
+    getUsers,
+    getMyAd
 } = require('../controllers/userHandlers');
 
 const { authenticateToken, isAdmin } = require('../middlewares/authMiddleware');
@@ -15,6 +16,8 @@ const { authenticateToken, isAdmin } = require('../middlewares/authMiddleware');
  * @access  Private
  */
 router.get('/me', authenticateToken, getMe);
+
+router.get('/me/ad', authenticateToken, getMyAd)
 
 /**
  * @route   GET /api/users/:id

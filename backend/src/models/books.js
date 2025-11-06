@@ -13,10 +13,15 @@ async function getBook(bookId) {
 
 async function getCarrouselBooks() {
     try {
-        const [books] = await db.execute(`SELECT id, name, img, review, quant, likes, author, gender FROM books WHERE borrowed = False`);
-        return books[0]
+        const [books] = await db.execute(
+            `SELECT id, name, img, review, quant, likes, author, gender 
+             FROM books 
+             WHERE borrowed = False 
+             LIMIT 10`
+        );
+        return books;
     } catch (error) {
-        console.error('error en getBook:', error);
+        console.error('error en getCarrouselBooks:', error);
         throw error;
     }
 }

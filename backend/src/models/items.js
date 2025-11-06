@@ -120,9 +120,15 @@ async function deleteItem(itemId) {
 
 async function getCarrouselSupps() {
     try {
-
+        const [supplies] = await db.execute(
+            `SELECT id, name, img, barCode, total_quantity, borrowed 
+             FROM supplies 
+             WHERE (total_quantity - borrowed) > 0
+             LIMIT 10`
+        );
+        return supplies;
     } catch (error) {
-        console.error('error en getBook:', error);
+        console.error('error en getCarrouselSupps:', error);
         throw error;
     }
 }

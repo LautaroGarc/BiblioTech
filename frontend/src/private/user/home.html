@@ -24,17 +24,19 @@
             <p id="descripcion">Tu biblioteca digital de confianza</p><!--descripcion principal-->
         </section>
 
+        <section id="ad"></section>
+
         <section id="book-carousel" class = "carousel-section"> <!--book-carousel = para identificar el carrusel de libros,   
                                                                 "carousel-section" para aplicar estilos comunes a todos los carruseles-->
             
           <h2 class="carousel-title">Top Libros</h2><!--aplica estilo en ambos titulos de los carruseles-->
             <div class="carousel-container-books"><!--contiene los libros (funcion de ) -->       
-              
+              <!---->       
             </div>
             
             <div class="carousel-controls"> <!--botones para navegar el carrusel-->
-                <button class="carousel-prev"></button><!-- boton anterior(funcion de boton izquierdo)-->
-                <button class="carousel-next"></button><!-- boton siguiente(funcion de boton derecho) -->
+                <button class="carousel-prev" data-carousel="books">‹</button>
+                <button class="carousel-next" data-carousel="books">›</button>
             </div>
 
         </section>
@@ -44,12 +46,13 @@
             
           <h2 class="carousel-title">Útiles Escolares</h2><!--aplica estilo en ambos titulos de los carruseles -->
             
-            <div class="carousel-container-items"><!--contiene los items-->                            
+            <div class="carousel-container-items"><!--contiene los items--> 
+              <!---->                           
             </div>
 
             <div class="carousel-controls"><!--botones para navegar el carrusel-->
-                <button class="carousel-prev"></button><!-- boton anterior(funcion de boton izquierdo)-->
-                <button class="carousel-next"></button><!-- boton siguiente(funcion de boton derecho) -->
+                <button class="carousel-prev" data-carousel="supplies">‹</button>
+                <button class="carousel-next" data-carousel="supplies">›</button>
             </div>
 
         </section>   
@@ -80,6 +83,6 @@
 <!-- placeholder (opcional) -->
 <div id="nav-placeholder"></div>
 
-<script></script>
+<script src="/js/userHome.js"></script>
 </body>
 </html>
