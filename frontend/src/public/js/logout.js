@@ -127,10 +127,46 @@ function redirectToLogin() {
  * Función para hacer logout desde cualquier parte de la aplicación
  * (Útil para llamar desde otros archivos JS)
  */
-function logout() {
-    console.log('[LOGOUT] Ejecutando logout global...');
-    performLogout();
+async function logout() {
+    try {
+        // Llamada al endpoint de logout
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            // Limpiar localStorage
+            localStorage.clear();
+            
+            // Limpiar sessionStorage
+            sessionStorage.clear();
+            
+            // Limpiar todas las cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+
+            // Redireccionar a login
+            window.location.href = '/login.html';
+        } else {
+            console.error('Error al cerrar sesión');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 // Hacer la función disponible globalmente
 window.logout = logout;
+
+// Exportar las funciones para testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        clearAllCookies,
+        clearLocalStorage,
+        clearSessionStorage,
+        logout,
+        performLogout
+    };
+}

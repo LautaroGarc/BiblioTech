@@ -24,6 +24,7 @@ app.use('/css', express.static(path.join(__dirname, '..', 'frontend', 'src', 'pu
 app.use('/js', express.static(path.join(__dirname, '..', 'frontend', 'src', 'public', 'js')));
 app.use('/assets', express.static(path.join(__dirname, '..', 'frontend', 'src', 'assets')));
 
+app.use('/private', authenticateToken, express.static(path.join(__dirname, 'frontend', 'src', 'private')));
 //--- RUTAS PÚBLICAS (con redirección inteligente) ---
 
 app.get('/', checkSession, (req, res) => {
@@ -42,38 +43,23 @@ app.get('/register', checkSession, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'register.html'));
 });
 
-app.get('/waiting', authenticateToken, (req, res) => {
-    const verf = 1 == isAccepted(req.user.id);
-    if (verf) {
-        return res.redirect('/home');
-    }
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'waiting.html'));
-});
-
 //--- RUTAS PROTEGIDAS (requieren sesión + aceptación) ---
 
 app.get('/home', authenticateToken, (req, res) => {
-    const verf = 1 == isAccepted(req.user.id)
-    if (!verf) {
-        return res.redirect('/waiting');
-    }
 
     const userType = req.user.type;
     
     switch(userType) {
         case 'admin':
-            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'home.html'));
+            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'home', 'home.html'));
         case 'user':
-            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'home.html'));
+            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'home', 'home.html'));
         default:
             return res.status(403).json({ message: 'Acceso denegado' });
     }
 });
 
 app.get('/profile', authenticateToken, (req, res) => {
-    if (!req.user.accepted) {
-        return res.redirect('/waiting');
-    }
 
     const userType = req.user.type;
     
@@ -85,9 +71,6 @@ app.get('/profile', authenticateToken, (req, res) => {
 });
 
 app.get('/books', authenticateToken, (req, res) => {
-    if (!req.user.accepted) {
-        return res.redirect('/waiting');
-    }
 
     const userType = req.user.type;
     
@@ -99,25 +82,16 @@ app.get('/books', authenticateToken, (req, res) => {
 });
 
 app.get('/forum', authenticateToken, (req, res) => {
-    if (!req.user.accepted) {
-        return res.redirect('/waiting');
-    }
 
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'forum.html'));
 });
 
 app.get('/search', authenticateToken, (req, res) => {
-    if (!req.user.accepted) {
-        return res.redirect('/waiting');
-    }
 
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'search.html'));
 });
 
 app.get('/plus', authenticateToken, (req, res) => {
-    if (!req.user.accepted) {
-        return res.redirect('/waiting');
-    }
 
     const userType = req.user.type;
     

@@ -4,72 +4,68 @@
   <meta charset="utf-8">
   <title>Inicio - BiblioTech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles/home.css">
+  <link rel="stylesheet" href="home.css">
 
 </head>
 
 <body>
-
-  <header id ="header">
+  
+  <header id ="header"> <!--cabecera con campanita y logo-->
     <img src="logo.png">
-  <a href="#">
+  <a href="userActivity.html" target="_self">
     <img src="campana.png" id="campana">
   </a>
   </header>
 
-    <main id="main-content">
-
-        <section class="title-description-section">
-            <h1 id="title">BiblioTech</h1>
-            <p id="descripcion">Tu biblioteca digital de confianza</p>
+    <main id="main-content"> <!--(contiene todo los carruseles con botones + titulos + info) -->
+  
+        <section class="title-description-section"> <!--seccion de titulo y descripcion-->
+            <h1 id="title">BiblioTech</h1> <!--titulo principal-->
+            <p id="descripcion">Tu biblioteca digital de confianza</p><!--descripcion principal-->
         </section>
 
-        <section id="book-carousel" class = "carousel-section">
+        <section id="book-carousel" class = "carousel-section"> <!--book-carousel = para identificar el carrusel de libros,   
+                                                                "carousel-section" para aplicar estilos comunes a todos los carruseles-->
             
-          <h2 class="carousel-title">Top Libros</h2>
+          <h2 class="carousel-title">Top Libros</h2><!--aplica estilo en ambos titulos de los carruseles-->
           
-            <div class="carousel-container-books">        
-                <div class="book-item"></div>         
-                <div class="book-item"></div>
-                <div class="book-item"></div>     
+            <div class="carousel-container-books"><!--contiene los libros (funcion de ) -->           
             </div>
             
-            <div class="carousel-controls">
-                <button class="carousel-prev"></button>
-                <button class="carousel-next"></button>
+            <div class="carousel-controls"> <!--botones para navegar el carrusel-->
+                <button class="carousel-prev"></button><!-- boton anterior(funcion de boton izquierdo)-->
+                <button class="carousel-next"></button><!-- boton siguiente(funcion de boton derecho) -->
             </div>
 
         </section>
       
-        <section id="items-carousel" class = "carousel-section">
+        <section id="items-carousel" class = "carousel-section"><!--items-carousel = para identificar carrusel de item,
+                                                                 carousel-section = Para aplicar estilos comunes a todos los carruseles-->
             
-          <h2 class="carousel-title">Ítems</h2>
+          <h2 class="carousel-title">items</h2><!--aplica estilo en ambos titulos de los carruseles -->
             
-            <div class="carousel-container-items">          
-                <div class="item-item"></div> 
-                <div class="item-item"></div>                  
-                <div class="item-item"></div>                  
+            <div class="carousel-container-items"><!--contiene los items-->                            
             </div>
 
-            <div class="carousel-controls">
-                <button class="carousel-prev"></button>
-                <button class="carousel-next"></button>
+            <div class="carousel-controls"><!--botones para navegar el carrusel-->
+                <button class="carousel-prev"></button><!-- boton anterior(funcion de boton izquierdo)-->
+                <button class="carousel-next"></button><!-- boton siguiente(funcion de boton derecho) -->
             </div>
 
         </section>   
   
 
-        <section class="seccion-info">
+        <section class="seccion-info"><!--seccion de informacion-->
           
           <h2 class="subtitle-info">Sobre BiblioTech</h2>
           
-          <div class="info-grid">
-            <div class="info-square">
+          <div class="info-grid"> <!--contiene los cuadrados de informacion-->
+            <div class="info-square"><!--contiene solo el cuadrado de descripcion-->
               <h3 class="info-title">descripcion</h3>
               <p class="info">descripcion o introduccion de la biblioteca</p>
             </div>
 
-            <div class="info-square">
+            <div class="info-square"><!--contiene solo el cuadrado de horarios-->
               <h3 class="info-title">horarios</h3>
               <p class="info">Lunes a viernes<br>8:00 – 22:00</p>
             </div> 
@@ -79,6 +75,11 @@
 
     </main>
 
-    <nav href="../../components/navigation.html"></nav>
+<div id="nav-placeholder"></div>
+
+<!-- placeholder (opcional) -->
+<div id="nav-placeholder"></div>
+
+<script></script>
 </body>
 </html>

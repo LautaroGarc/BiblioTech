@@ -40,23 +40,6 @@ function getSession() {
     }
 }
 
-function redirectIfAuthenticated() {
-    const session = getSession();
-    
-    if (session && session.token) {
-        console.log('[AUTH] Sesión activa encontrada, redirigiendo...');
-        
-        if (session.user.accepted) {
-            window.location.href = '/home';
-        } else {
-            window.location.href = '/waiting';
-        }
-        return true;
-    }
-    
-    return false;
-}
-
 function clearSession() {
     try {
         localStorage.removeItem('userSession');
@@ -85,6 +68,5 @@ window.sessionManager = {
     getSession,
     clearSession,
     getAuthToken,
-    redirectIfAuthenticated,
     isTokenExpiringSoon
 };

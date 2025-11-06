@@ -60,7 +60,8 @@ async function updateLvl(idUser) {
 
 async function isAccepted(idUser) {
     try{
-        return await db.execute(`select accepted from users WHERE id = ?`, [idUser]);;
+        const [rows] = await db.execute('SELECT accepted FROM users WHERE id = ?', [idUser]);
+        return rows[0]?.accepted;
     } catch (error){
         console.error('Error en updateLvl: ', error);
         throw error;

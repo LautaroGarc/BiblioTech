@@ -120,11 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirigir según estado de aceptación
                 setTimeout(() => {
-                    if (data.user.accepted) {
-                        window.location.href = '/home';
-                    } else {
-                        window.location.href = '/waiting';
-                    }
+                    window.location.href = '/home';
                 }, 1500);
                 
             } else {

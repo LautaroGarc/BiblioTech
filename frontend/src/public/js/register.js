@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirigir a página de espera después de 2 segundos
                 setTimeout(() => {
-                    window.location.href = '/waiting';
+                    window.location.href = '/home';
                 }, 2000);
 
             } else {
