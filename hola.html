@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner</title>
+    <style>
+        /* Pequeños estilos para que se vea mejor */
+        #scanner-container{ max-width:900px; margin:10px auto; }
+        #qr-reader{ width:100%; height:400px; background:#000; }
+        #scanner-message{ margin-top:8px; color:#333; }
+    </style>
+</head>
+
+<body>
+    <!-- Contenedor principal del componente -->
+    <div id="scanner-container">
+        <h2>Escanear código</h2>
+        
+        <!-- Zona donde se mostrará el video de la cámara -->
+        <div id="qr-reader"></div>
+        
+        <!-- Mensaje de error o estado -->
+        <div id="scanner-message"></div>
+
+        <!-- Subir imagen local para escanear -->
+        <div style="margin-top:8px;">
+            <label for="file-input">Subir imagen (QR/Barcode): </label>
+            <input type="file" id="file-input" accept="image/*" />
+        </div>
+
+        <!-- Selector de cámaras y control -->
+        <div style="margin-top:8px;">
+            <label for="camera-select">Cámara: </label>
+            <select id="camera-select"></select>
+            <button id="start-camera">Iniciar cámara</button>
+            <button id="stop-camera">Detener cámara</button>
+        </div>
+
+        <!-- Donde aparecerá un enlace o texto del resultado si no es URL -->
+        <div id="result-link" style="margin-top:8px;"></div>
+
+        <button id="close-btn">✕</button>
+    </div>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8"></script>
+    <script src="./hola.js"></script>
+</body>
+</html>
