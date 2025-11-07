@@ -22,16 +22,16 @@ INSERT INTO medals (img, tag) VALUES
 
 use BiblioTech;
 INSERT INTO books (name, img, review, barCode, quant, timesReaded, borrowed, sinopsis, author, editorial, gender, readLevel, length, theme) VALUES
-('Cien años de soledad', 'cien_anos_soledad.jpg', 4.8, '9788437604947', 5, 23, TRUE, 'La saga de la familia Buendía en el pueblo mágico de Macondo.', 'Gabriel García Márquez', 'Alfaguara', 'Realismo Mágico', 3, 432, 'Ficción'),
-('1984', '1984_cover.jpg', 4.6, '9788499890944', 3, 18, FALSE, 'Una distopía sobre un régimen totalitario y el control absoluto.', 'George Orwell', 'Debolsillo', 'Ciencia Ficción', 4, 328, 'Política'),
-('El principito', 'principito_cover.jpg', 4.9, '9788478887194', 8, 45, TRUE, 'Un niño viaja por planetas aprendiendo sobre la vida y el amor.', 'Antoine de Saint-Exupéry', 'Salamandra', 'Fábula', 1, 96, 'Filosofía'),
-('Don Quijote de la Mancha', 'quijote_cover.jpg', 4.5, '9788467031250', 4, 12, TRUE, 'Las aventuras de un hidalgo que cree ser caballero andante.', 'Miguel de Cervantes', 'Real Academia Española', 'Clásico', 5, 863, 'Aventura'),
-('Harry Potter y la piedra filosofal', 'harry_potter_1.jpg', 4.7, '9788478884452', 6, 67, FALSE, 'Un niño descubre que es mago y asiste a la escuela Hogwarts.', 'J.K. Rowling', 'Salamandra', 'Fantasía', 2, 256, 'Magia'),
-('Orgullo y prejuicio', 'orgullo_prejuicio.jpg', 4.4, '9788491052455', 3, 28, TRUE, 'La historia de Elizabeth Bennet y el señor Darcy en la Inglaterra del siglo XIX.', 'Jane Austen', 'Alma', 'Romance', 3, 432, 'Sociedad'),
-('Crónica del pájaro que da cuerda al mundo', 'cronica_pajaro.jpg', 4.3, '9788483466189', 2, 9, FALSE, 'Un hombre busca a su esposa desaparecida en un viaje surrealista.', 'Haruki Murakami', 'Tusquets', 'Realismo Mágico', 4, 688, 'Búsqueda'),
-('Los juegos del hambre', 'juegos_hambre_1.jpg', 4.2, '9788427202122', 5, 34, TRUE, 'Katniss se ofrece como tributo en unos juegos mortales televisados.', 'Suzanne Collins', 'Molino', 'Distopía', 2, 374, 'Supervivencia'),
-('El nombre del viento', 'nombre_viento.jpg', 4.8, '9788401337208', 3, 15, FALSE, 'La historia de Kvothe, un hombre de leyenda contada en primera persona.', 'Patrick Rothfuss', 'Plaza & Janés', 'Fantasía', 4, 880, 'Magia'),
-('It', 'it_king.jpg', 4.1, '9788497593794', 2, 11, TRUE, 'Un payaso demoníaco aterroriza a un grupo de niños en un pueblo de Maine.', 'Stephen King', 'Debolsillo', 'Terror', 4, 1504, 'Miedo');
+('Cien años de soledad', 'cien_anos_soledad.jpg', 4.8, '978s8437604947', 5, 23, TRUE, 'La saga de la familia Buendía en el pueblo mágico de Macondo.', 'Gabriel García Márquez', 'Alfaguara', 'Realismo Mágico', 3, 432, 'Ficción'),
+('1984', '1984_cover.jpg', 4.6, '97884sd99890944', 3, 18, FALSE, 'Una distopía sobre un régimen totalitario y el control absoluto.', 'George Orwell', 'Debolsillo', 'Ciencia Ficción', 4, 328, 'Política'),
+('El principito', 'principito_cover.jpg', 4.9, '978847ds8887194', 8, 45, TRUE, 'Un niño viaja por planetas aprendiendo sobre la vida y el amor.', 'Antoine de Saint-Exupéry', 'Salamandra', 'Fábula', 1, 96, 'Filosofía'),
+('Don Quijote de la Mancha', 'quijote_cover.jpg', 4.5, '97884674031250', 4, 12, TRUE, 'Las aventuras de un hidalgo que cree ser caballero andante.', 'Miguel de Cervantes', 'Real Academia Española', 'Clásico', 5, 863, 'Aventura'),
+('Harry Potter y la piedra filosofal', 'harry_potter_1.jpg', 4.7, '97882478884452', 6, 67, FALSE, 'Un niño descubre que es mago y asiste a la escuela Hogwarts.', 'J.K. Rowling', 'Salamandra', 'Fantasía', 2, 256, 'Magia'),
+('Orgullo y prejuicio', 'orgullo_prejuicio.jpg', 4.4, '97883491052455', 3, 28, TRUE, 'La historia de Elizabeth Bennet y el señor Darcy en la Inglaterra del siglo XIX.', 'Jane Austen', 'Alma', 'Romance', 3, 432, 'Sociedad'),
+('Crónica del pájaro que da cuerda al mundo', 'cronica_pajaro.jpg', 4.3, '97884813466189', 2, 9, FALSE, 'Un hombre busca a su esposa desaparecida en un viaje surrealista.', 'Haruki Murakami', 'Tusquets', 'Realismo Mágico', 4, 688, 'Búsqueda'),
+('Los juegos del hambre', 'juegos_hambre_1.jpg', 4.2, '97884274202122', 5, 34, TRUE, 'Katniss se ofrece como tributo en unos juegos mortales televisados.', 'Suzanne Collins', 'Molino', 'Distopía', 2, 374, 'Supervivencia'),
+('El nombre del viento', 'nombre_viento.jpg', 4.8, '97884013537208', 3, 15, FALSE, 'La historia de Kvothe, un hombre de leyenda contada en primera persona.', 'Patrick Rothfuss', 'Plaza & Janés', 'Fantasía', 4, 880, 'Magia'),
+('It', 'it_king.jpg', 4.1, '97884971593794', 2, 11, TRUE, 'Un payaso demoníaco aterroriza a un grupo de niños en un pueblo de Maine.', 'Stephen King', 'Debolsillo', 'Terror', 4, 1504, 'Miedo');
 
 INSERT INTO supplies (name, img, barCode, borrowed, total_quantity) VALUES
 ('Laptop Dell Inspiron', 'laptop_dell.jpg', 'SUP880123456789', 1, 5),

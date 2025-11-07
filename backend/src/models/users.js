@@ -1,4 +1,4 @@
-const db = require('../../../database/database.js')
+const db = require('../config/database.js')
 
 // agregar usuario
 async function addUser(user) {

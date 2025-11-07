@@ -1,4 +1,4 @@
-const db = require('../../../database/database.js')
+const db = require('../config/database.js')
 
 //obtener libro x
 async function getBook(bookId) {

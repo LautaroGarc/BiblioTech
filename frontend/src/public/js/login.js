@@ -97,10 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    email: email,
-                    pass: pass
-                })
+                body: JSON.stringify({ email, pass })
             });
 
             const data = await response.json();
@@ -108,18 +105,25 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 showMessage('¡Login exitoso! Redirigiendo...', 'success', messageDiv);
                 
-                // CACHEAR: Guardar token y usuario en localStorage
-                saveSession(data.token, data.user);
+                // Guardar token en cookies (ya lo hace el backend)
+                // Guardar datos del usuario en localStorage
+                localStorage.setItem('userData', JSON.stringify({
+                    nombre: data.user.name,
+                    apellido: data.user.lastName,
+                    email: data.user.email,
+                    fotoPerfil: data.user.img,
+                    lvl: data.user.lvl,
+                    xp: data.user.xp || 0,
+                    type: data.user.type,
+                    id: data.user.id
+                }));
                 
-                console.log('[LOGIN] Sesión guardada en caché:', {
-                    user: data.user.email,
-                    accepted: data.user.accepted
-                });
+                console.log('[LOGIN] Datos guardados en localStorage');
                 
-                // Redirigir según estado de aceptación
+                // Redirigir a home
                 setTimeout(() => {
                     window.location.href = '/home';
-                }, 1500);
+                }, 1000);
                 
             } else {
                 showMessage(data.message || 'Error en el login', 'error', messageDiv);

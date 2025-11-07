@@ -46,8 +46,9 @@ app.get('/register', checkSession, (req, res) => {
 //--- RUTAS PROTEGIDAS (requieren sesión + aceptación) ---
 
 app.get('/home', authenticateToken, (req, res) => {
-
     const userType = req.user.type;
+    
+    console.log('[HOME] Usuario autenticado:', req.user.email, '| Tipo:', userType);
     
     switch(userType) {
         case 'admin':

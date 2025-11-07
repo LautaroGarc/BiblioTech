@@ -106,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             console.log('[REGISTER] Registrando usuario:', email);
 
-            // Verificar si el email ya existe
             const emailExists = await checkEmailExists(email);
             
             if (emailExists) {
@@ -116,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             showMessage('Registrando...', 'info');
 
-            // Realizar registro
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: {
@@ -131,30 +129,31 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const data = await response.json();
-            console.log('[REGISTER] Respuesta del servidor:', data);
 
             if (response.ok) {
-                // Registro exitoso
-                showMessage('¡Registro exitoso! Esperando aprobación...', 'success');
+                showMessage('¡Registro exitoso! Redirigiendo...', 'success');
                 
-                // Guardar sesión
-                saveSession(data.token, data.user);
-                
-                console.log('[REGISTER] Sesión guardada:', {
+                // Guardar datos del usuario en localStorage
+                localStorage.setItem('userData', JSON.stringify({
+                    nombre: data.user.name,
+                    apellido: data.user.lastName,
                     email: data.user.email,
-                    accepted: data.user.accepted,
-                    type: data.user.type
-                });
+                    fotoPerfil: data.user.img,
+                    lvl: data.user.lvl || 1,
+                    xp: 0,
+                    type: data.user.type,
+                    id: data.user.id
+                }));
                 
-                // Redirigir a página de espera después de 2 segundos
+                console.log('[REGISTER] Datos guardados en localStorage');
+                
+                // Redirigir a home
                 setTimeout(() => {
                     window.location.href = '/home';
                 }, 2000);
 
             } else {
-                // Error en el registro
                 if (data.errors && Array.isArray(data.errors)) {
-                    // Errores de validación del backend
                     const errorMessages = data.errors.map(err => err.msg).join('. ');
                     showMessage(errorMessages, 'error');
                 } else {
@@ -164,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('[REGISTER ERROR]', error);
-            showMessage('Error de conexión con el servidor. Intentá nuevamente.', 'error');
+            showMessage('Error de conexión con el servidor', 'error');
         }
     }
 
