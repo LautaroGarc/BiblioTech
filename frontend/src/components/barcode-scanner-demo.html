@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Barcode Scanner - BiblioTech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(0, 150, 255, 0.5);
+        }
+
+        .demo-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .demo-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00bfff;
+        }
+
+        .demo-section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .scan-btn {
+            background: linear-gradient(135deg, #0096ff 0%, #0066cc 100%);
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 150, 255, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scan-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 150, 255, 0.5);
+        }
+
+        .scan-btn:active {
+            transform: translateY(0);
+        }
+
+        .scan-btn::before {
+            content: '📷';
+            font-size: 1.3rem;
+        }
+
+        .result-display {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid rgba(0, 255, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .result-display.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+        }
+
+        .result-meta {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .code-example {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+
+        .code-example code {
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .integration-point {
+            background: rgba(0, 150, 255, 0.1);
+            border-left: 4px solid #0096ff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .integration-point strong {
+            color: #00bfff;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .demo-section h2 {
+                font-size: 1.2rem;
+            }
+
+            .scan-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Demostración del Escáner de Códigos de Barras</h1>
+
+        <!-- Demo 1: Admin Plus Section -->
+        <div class="demo-section">
+            <h2>1. Integración en Admin Plus (Agregar Libro)</h2>
+            <p>Esta demostración simula la funcionalidad de escanear un código de barras al agregar un nuevo libro desde el panel de administración.</p>
+            <button class="scan-btn" id="scanBtn1">Escanear para Agregar Libro</button>
+            <div class="result-display" id="result1">
+                <div class="result-label">ISBN/Código escaneado:</div>
+                <div class="result-value" id="code1"></div>
+                <div class="result-meta">
+                    <span id="format1"></span> | <span id="time1"></span>
+                </div>
+            </div>
+            <div class="code-example">
+                <code>
+// Uso en admin/plus.html<br>
+document.querySelector('#scanButton').addEventListener('click', async () => {<br>
+&nbsp;&nbsp;try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const result = await openBarcodeScanner({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onScan: (data) => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.querySelector('#isbnInput').value = data.code;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log('Escaneado:', result.code);<br>
+&nbsp;&nbsp;} catch (err) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log('Escaneo cancelado');<br>
+&nbsp;&nbsp;}<br>
+});
+                </code>
+            </div>
+        </div>
+
+        <!-- Demo 2: User Search -->
+        <div class="demo-section">
+            <h2>2. Integración en Búsqueda de Usuario</h2>
+            <p>Esta demostración muestra cómo usar el escáner para buscar libros rápidamente escaneando su código.</p>
+            <button class="scan-btn" id="scanBtn2">Escanear para Buscar</button>
+            <div class="result-display" id="result2">
+                <div class="result-label">Código buscado:</div>
+                <div class="result-value" id="code2"></div>
+                <div class="result-meta">
+                    <span id="format2"></span> | <span id="time2"></span>
+                </div>
+            </div>
+            <div class="code-example">
+                <code>
+// Uso en search.html<br>
+document.querySelector('#scanSearchBtn').addEventListener('click', () => {<br>
+&nbsp;&nbsp;openBarcodeScanner({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;onScan: async (data) => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Buscar libro por código<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const response = await fetch(`/api/books/search?code=${data.code}`);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const books = await response.json();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;displaySearchResults(books);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;onClose: () => console.log('Scanner cerrado')<br>
+&nbsp;&nbsp;});<br>
+});
+                </code>
+            </div>
+        </div>
+
+        <!-- Demo 3: Quick Loan -->
+        <div class="demo-section">
+            <h2>3. Integración en Préstamo Rápido</h2>
+            <p>Esta demostración simula el proceso de préstamo rápido escaneando el código del libro.</p>
+            <button class="scan-btn" id="scanBtn3">Escanear para Préstamo</button>
+            <div class="result-display" id="result3">
+                <div class="result-label">Código del libro:</div>
+                <div class="result-value" id="code3"></div>
+                <div class="result-meta">
+                    <span id="format3"></span> | <span id="time3"></span>
+                </div>
+            </div>
+            <div class="code-example">
+                <code>
+// Uso en user/plus.html o qrReader.html<br>
+async function quickLoan() {<br>
+&nbsp;&nbsp;try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const scanResult = await openBarcodeScanner();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Crear préstamo con el código escaneado<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const response = await fetch('/api/scan', {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method: 'POST',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers: { 'Content-Type': 'application/json' },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body: JSON.stringify({ data: scanResult.code })<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const loan = await response.json();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;alert('Préstamo creado exitosamente!');<br>
+&nbsp;&nbsp;} catch (err) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.error('Error en préstamo:', err);<br>
+&nbsp;&nbsp;}<br>
+}
+                </code>
+            </div>
+        </div>
+
+        <!-- Integration Points -->
+        <div class="demo-section">
+            <h2>📍 Puntos de Integración Principales</h2>
+            <div class="integration-point">
+                <strong>Admin Panel:</strong> /frontend/src/private/admin/plus.html - Agregar libros escaneando ISBN
+            </div>
+            <div class="integration-point">
+                <strong>User Panel:</strong> /frontend/src/private/user/plus.html - Solicitar préstamos rápidos
+            </div>
+            <div class="integration-point">
+                <strong>Search:</strong> /frontend/src/private/search.html - Búsqueda rápida por código
+            </div>
+            <div class="integration-point">
+                <strong>Books:</strong> /frontend/src/private/admin/books.html - Gestión de inventario
+            </div>
+            <div class="integration-point">
+                <strong>QR Reader:</strong> /frontend/src/private/qrReader.html - Reemplazo/complemento del lector actual
+            </div>
+        </div>
+    </div>
+
+    <!-- Include barcode scanner library -->
+    <script src="../js/barcode-scanner.js"></script>
+
+    <script>
+        // Demo 1: Admin Plus
+        document.getElementById('scanBtn1').addEventListener('click', async () => {
+            try {
+                const result = await openBarcodeScanner({
+                    onScan: (data) => {
+                        console.log('Demo 1 - Scan callback:', data);
+                    }
+                });
+                
+                // Display result
+                document.getElementById('code1').textContent = result.code;
+                document.getElementById('format1').textContent = `Formato: ${result.format}`;
+                document.getElementById('time1').textContent = new Date(result.timestamp).toLocaleTimeString();
+                document.getElementById('result1').classList.add('show');
+            } catch (err) {
+                console.log('Demo 1 - Scan cancelled:', err);
+            }
+        });
+
+        // Demo 2: User Search
+        document.getElementById('scanBtn2').addEventListener('click', async () => {
+            try {
+                const result = await openBarcodeScanner({
+                    onScan: (data) => {
+                        console.log('Demo 2 - Search with code:', data.code);
+                    }
+                });
+                
+                document.getElementById('code2').textContent = result.code;
+                document.getElementById('format2').textContent = `Formato: ${result.format}`;
+                document.getElementById('time2').textContent = new Date(result.timestamp).toLocaleTimeString();
+                document.getElementById('result2').classList.add('show');
+            } catch (err) {
+                console.log('Demo 2 - Search cancelled:', err);
+            }
+        });
+
+        // Demo 3: Quick Loan
+        document.getElementById('scanBtn3').addEventListener('click', async () => {
+            try {
+                const result = await openBarcodeScanner({
+                    onScan: async (data) => {
+                        console.log('Demo 3 - Creating loan for code:', data.code);
+                        // Here you would call the /api/scan endpoint
+                    }
+                });
+                
+                document.getElementById('code3').textContent = result.code;
+                document.getElementById('format3').textContent = `Formato: ${result.format}`;
+                document.getElementById('time3').textContent = new Date(result.timestamp).toLocaleTimeString();
+                document.getElementById('result3').classList.add('show');
+            } catch (err) {
+                console.log('Demo 3 - Loan cancelled:', err);
+            }
+        });
+
+        // Log when scanner module is loaded
+        console.log('Barcode Scanner Module loaded successfully');
+        console.log('Available functions:', {
+            openBarcodeScanner: typeof openBarcodeScanner,
+            closeBarcodeScanner: typeof closeBarcodeScanner,
+            isScannerActive: typeof isScannerActive
+        });
+    </script>
+</body>
+</html>
