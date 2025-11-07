@@ -78,6 +78,7 @@ async function register(req, res) {
                 email: email,
                 type: 'user',
                 lvl: 1,
+                xp: 0,
                 img: newUser.img,
                 accepted: false
             }
@@ -155,6 +156,7 @@ async function login(req, res) {
                 email: user.email,
                 type: user.type,
                 lvl: user.lvl,
+                xp: user.xp || 0,
                 img: user.img,
                 accepted: user.accepted
             }
