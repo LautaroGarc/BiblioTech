@@ -60,6 +60,14 @@ async function register(req, res) {
 
         console.log('[REGISTER] Token generado para usuario:', userId);
 
+        // Establecer cookie con el token
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000, // 24 horas
+            sameSite: 'strict'
+        });
+
         res.status(201).json({
             message: 'Usuario registrado exitosamente. Esperando aprobación del administrador.',
             token,
@@ -134,9 +142,9 @@ async function login(req, res) {
         console.log('[LOGIN] Login exitoso para:', email, '| Accepted:', user.accepted);
 
         res.cookie('token', token, {
-            httpOnly: true,      
-            secure: true,       
-            maxAge: 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000, // 24 horas
             sameSite: 'strict'
         }).json({
             message: 'Login exitoso',

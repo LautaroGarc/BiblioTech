@@ -138,9 +138,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     nombre: data.user.name,
                     apellido: data.user.lastName,
                     email: data.user.email,
-                    fotoPerfil: data.user.img,
+                    fotoPerfil: data.user.img || '/assets/profiles/azul.png',
                     lvl: data.user.lvl || 1,
-                    xp: 0,
+                    exp: 0,
                     type: data.user.type,
                     id: data.user.id
                 }));
