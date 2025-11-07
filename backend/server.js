@@ -12,8 +12,11 @@ app.use(express.urlencoded({ extended: true }));
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'src', 'public')));
 app.use('/css', express.static(path.join(__dirname, '..', 'frontend', 'src', 'public', 'css')));
+app.use('/css', express.static(path.join(__dirname, '..', 'frontend', 'src', 'css')));
 app.use('/js', express.static(path.join(__dirname, '..', 'frontend', 'src', 'public', 'js')));
+app.use('/js', express.static(path.join(__dirname, '..', 'frontend', 'src', 'js')));
 app.use('/assets', express.static(path.join(__dirname, '..', 'frontend', 'src', 'assets')));
+app.use('/components', express.static(path.join(__dirname, '..', 'frontend', 'src', 'components')));
 
 //--- RUTAS PÚBLICAS (con redirección inteligente) ---
 
