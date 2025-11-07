@@ -63,8 +63,11 @@
         </div>
     </div>
 
-    <!-- Include QuaggaJS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js"></script>
+    <!-- Include QuaggaJS Library with SRI -->
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js" 
+            integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" 
+            crossorigin="anonymous"
+            onerror="console.error('Failed to load QuaggaJS library'); alert('Error al cargar la biblioteca de escaneo. Por favor, recargue la página.');"></script>
     
     <script>
         // Scanner state
@@ -208,6 +211,8 @@
 
         // Send result to parent
         function sendResult(code, format) {
+            const origin = window.location.origin;
+            
             // Try postMessage first (for iframe usage)
             if (window.parent !== window) {
                 window.parent.postMessage({
@@ -217,7 +222,7 @@
                         format: format,
                         timestamp: new Date().toISOString()
                     }
-                }, '*');
+                }, origin);
             }
 
             // Also dispatch custom event for same-page usage
@@ -244,12 +249,14 @@
             }
             isScanning = false;
 
+            const origin = window.location.origin;
+            
             // Notify parent
             if (window.parent !== window) {
                 window.parent.postMessage({
                     type: 'BARCODE_SCANNER_CLOSED',
                     data: null
-                }, '*');
+                }, origin);
             }
 
             // Dispatch close event

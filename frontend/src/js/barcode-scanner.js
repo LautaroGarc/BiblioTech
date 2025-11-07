@@ -47,8 +47,11 @@ class BarcodeScanner {
 
             // Listen for messages from iframe
             const messageHandler = (event) => {
-                // Security: In production, validate event.origin
-                // if (event.origin !== window.location.origin) return;
+                // Security: Validate event origin
+                if (event.origin !== window.location.origin) {
+                    console.warn('Ignoring message from unauthorized origin:', event.origin);
+                    return;
+                }
 
                 if (event.data && event.data.type === 'BARCODE_SCANNED') {
                     const scanData = event.data.data;
