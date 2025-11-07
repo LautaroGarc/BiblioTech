@@ -4,6 +4,7 @@ USE bibliotech;
 CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     type ENUM('user', 'admin') NOT NULL DEFAULT 'user',
+    accepted BOOLEAN DEFAULT FALSE,
     name VARCHAR(50) NOT NULL,
     lastName VARCHAR(50) NOT NULL,
     img VARCHAR(255),

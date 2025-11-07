@@ -50,14 +50,3 @@ function performLogout() {
 
 // Función global para logout desde cualquier parte
 window.logout = performLogout;
-
-// Exportar las funciones para testing
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        clearAllCookies,
-        clearLocalStorage,
-        clearSessionStorage,
-        logout,
-        performLogout
-    };
-}

@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Redirigir si ya hay sesión activa
-   
+    if (redirectIfAuthenticated()) {
+        return;
+    }
 
     const loginForm = document.querySelector('.loginForm');
     const forgotForm = document.querySelector('.forgotPass');
@@ -111,9 +113,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     nombre: data.user.name,
                     apellido: data.user.lastName,
                     email: data.user.email,
-                    fotoPerfil: data.user.img,
-                    lvl: data.user.lvl,
-                    xp: data.user.xp || 0,
+                    fotoPerfil: data.user.img || '/assets/profiles/azul.png',
+                    lvl: data.user.lvl || 1,
+                    exp: data.user.xp || 0,
                     type: data.user.type,
                     id: data.user.id
                 }));
