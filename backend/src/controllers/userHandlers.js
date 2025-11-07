@@ -6,6 +6,14 @@ const path = require('path');
 const { JWT_SECRET } = require('../config/config');
 const { addUser, getUsers, getUser } = require('../models/users');
 
+// Cookie configuration for JWT tokens
+const COOKIE_OPTIONS = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000, // 24 horas
+    sameSite: 'strict'
+};
+
 async function register(req, res) {
     try {
         console.log('[REGISTER] Datos recibidos:', req.body);
@@ -61,12 +69,7 @@ async function register(req, res) {
         console.log('[REGISTER] Token generado para usuario:', userId);
 
         // Establecer cookie con el token
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000, // 24 horas
-            sameSite: 'strict'
-        });
+        res.cookie('token', token, COOKIE_OPTIONS);
 
         res.status(201).json({
             message: 'Usuario registrado exitosamente. Esperando aprobación del administrador.',
@@ -142,12 +145,7 @@ async function login(req, res) {
 
         console.log('[LOGIN] Login exitoso para:', email, '| Accepted:', user.accepted);
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000, // 24 horas
-            sameSite: 'strict'
-        }).json({
+        res.cookie('token', token, COOKIE_OPTIONS).json({
             message: 'Login exitoso',
             user: {
                 id: user.id,

@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     email: data.user.email,
                     fotoPerfil: data.user.img || '/assets/profiles/azul.png',
                     lvl: data.user.lvl || 1,
-                    exp: 0,
+                    exp: data.user.xp || 0,
                     type: data.user.type,
                     id: data.user.id
                 }));
