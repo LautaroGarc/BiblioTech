@@ -18,13 +18,11 @@ app.use(cors({
     credentials: true
 }));
 
-// Servir archivos estáticos
-app.use(express.static(path.join(__dirname, '..', 'frontend', 'src', 'public')));
-app.use('/css', express.static(path.join(__dirname, '..', 'frontend', 'src', 'public', 'css')));
-app.use('/js', express.static(path.join(__dirname, '..', 'frontend', 'src', 'public', 'js')));
-app.use('/assets', express.static(path.join(__dirname, '..', 'frontend', 'src', 'assets')));
+// Servir archivos estáticos desde la nueva estructura
+app.use('/css', express.static(path.join(__dirname, '..', 'frontend', 'public', 'css')));
+app.use('/js', express.static(path.join(__dirname, '..', 'frontend', 'public', 'js')));
+app.use('/assets', express.static(path.join(__dirname, '..', 'frontend', 'public', 'assets')));
 
-app.use('/private', authenticateToken, express.static(path.join(__dirname, 'frontend', 'src', 'private')));
 //--- RUTAS PÚBLICAS (con redirección inteligente) ---
 
 app.get('/', checkSession, (req, res) => {
@@ -32,15 +30,15 @@ app.get('/', checkSession, (req, res) => {
 });
 
 app.get('/login', checkSession, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'login.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'public', 'login.html'));
 });
 
 app.get('/logout', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'logout.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'public', 'logout.html'));
 })
 
 app.get('/register', checkSession, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'register.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'public', 'register.html'));
 });
 
 //--- RUTAS PROTEGIDAS (requieren sesión + aceptación) ---
@@ -52,59 +50,54 @@ app.get('/home', authenticateToken, (req, res) => {
     
     switch(userType) {
         case 'admin':
-            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'home.html'));
+            return res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'admin', 'home.html'));
         case 'user':
-            return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'home.html'));
+            return res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'user', 'home.html'));
         default:
             return res.status(403).json({ message: 'Acceso denegado' });
     }
 });
 
 app.get('/profile', authenticateToken, (req, res) => {
-
     const userType = req.user.type;
     
     if (userType === 'admin') {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'profile.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'admin', 'profile.html'));
     } else {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'profile.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'user', 'profile.html'));
     }
 });
 
 app.get('/books', authenticateToken, (req, res) => {
-
     const userType = req.user.type;
     
     if (userType === 'admin') {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'books.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'admin', 'books.html'));
     } else {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'books.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'user', 'books.html'));
     }
 });
 
 app.get('/forum', authenticateToken, (req, res) => {
-
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'forum.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'shared', 'forum.html'));
 });
 
 app.get('/search', authenticateToken, (req, res) => {
-
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'search.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'shared', 'search.html'));
 });
 
 app.get('/plus', authenticateToken, (req, res) => {
-
     const userType = req.user.type;
     
     if (userType === 'admin') {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'plus.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'admin', 'plus.html'));
     } else {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'plus.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'user', 'plus.html'));
     }
 });
 
 app.get('/userActivity', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'userActivity.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'views', 'user', 'userActivity.html'));
 })
 
 //--- RUTAS API ---
@@ -114,10 +107,12 @@ app.use('/api/admin', require('./src/routes/adminRoutes.js'));
 app.use('/api', require('./src/routes/itemRoutes.js'));
 app.use('/api/loans', require('./src/routes/loanRoutes.js'));
 app.use('/api/forums', require('./src/routes/forumRoutes.js'));
+app.use('/api/recommendations', require('./src/routes/recomendationRoutes.js'));
+app.use('/api/barcode', require('./src/routes/barcodeRoutes.js'));
 
 //--- ERROR 404 ---
 app.use('*', (req, res) => {
-    res.status(404).sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', '404.html'));
+    res.status(404).sendFile(path.join(__dirname, '..', 'frontend', 'views', 'public', '404.html'));
 });
 
 // Servidor desplegado

@@ -1,29 +1,48 @@
-const db = require('../../../database/database'); // ✅ Ruta corregida
+const db = require('../../../database/database.js')
 
 class LoanModel {
-    // Crear préstamo de libro
     static async createBookLoan(loanData) {
         const { userId, bookId, dateOut } = loanData;
         const query = `
             INSERT INTO bookLoans (userId, bookId, dateOut, state) 
-            VALUES (?, ?, ?, 'espera')
+            VALUES (?, ?, ?, 'no aprobado')
         `;
         const [result] = await db.execute(query, [userId, bookId, dateOut]);
         return result;
     }
 
-    // Crear préstamo de útil
     static async createSupplyLoan(loanData) {
         const { userId, itemId, dateOut } = loanData;
         const query = `
             INSERT INTO suppLoans (userId, itemId, dateOut, state) 
-            VALUES (?, ?, ?, 'espera')
+            VALUES (?, ?, ?, 'no aprobado')
         `;
         const [result] = await db.execute(query, [userId, itemId, dateOut]);
         return result;
     }
 
-    // Obtener préstamos activos de un usuario
+    static async approveLoan(loanId, type) {
+        const table = type === 'book' ? 'bookLoans' : 'suppLoans';
+        const query = `
+            UPDATE ${table} 
+            SET state = 'espera' 
+            WHERE id = ? AND state = 'no aprobado'
+        `;
+        const [result] = await db.execute(query, [loanId]);
+        return result;
+    }
+
+    static async pickupLoan(loanId, type) {
+        const table = type === 'book' ? 'bookLoans' : 'suppLoans';
+        const query = `
+            UPDATE ${table} 
+            SET state = 'en prestamo' 
+            WHERE id = ? AND state = 'espera'
+        `;
+        const [result] = await db.execute(query, [loanId]);
+        return result;
+    }
+
     static async getActiveLoansByUser(userId) {
         const query = `
             SELECT 
@@ -63,7 +82,6 @@ class LoanModel {
         return rows;
     }
 
-    // Devolver item
     static async returnLoan(loanId, type) {
         const table = type === 'book' ? 'bookLoans' : 'suppLoans';
         const query = `
@@ -75,7 +93,6 @@ class LoanModel {
         return result;
     }
 
-    // Verificar y actualizar préstamos atrasados
     static async checkAndUpdateOverdueLoans() {
         const bookQuery = `
             UPDATE bookLoans 
@@ -105,7 +122,6 @@ class LoanModel {
         };
     }
 
-    // Buscar item por código de barras
     static async findItemByBarcode(barcode) {
         const bookQuery = `
             SELECT 
@@ -142,7 +158,6 @@ class LoanModel {
         return null;
     }
 
-    // Historial completo de préstamos
     static async getLoanHistory(userId = null, itemId = null, type = null) {
         let whereClause = '';
         const params = [];
@@ -196,7 +211,6 @@ class LoanModel {
         return rows;
     }
 
-    // Obtener todos los préstamos (para admin)
     static async getAllLoans(filters = {}) {
         const { state, type, limit = 50, offset = 0 } = filters;
         let whereClause = '';
@@ -254,7 +268,6 @@ class LoanModel {
         return rows;
     }
 
-    // Obtener préstamos atrasados
     static async getOverdueLoans() {
         const query = `
             SELECT 

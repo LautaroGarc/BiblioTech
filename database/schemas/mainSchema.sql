@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS bookLoans (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     userId INT NOT NULL,
     bookId INT NOT NULL,
-    state ENUM('espera','en prestamo','devuelto','atrasado') NOT NULL DEFAULT 'espera',
+    state ENUM('no aprobado','espera','en prestamo','devuelto','atrasado') NOT NULL DEFAULT 'espera',
     dateIn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     dateOut DATE NOT NULL,
     returned_at TIMESTAMP NULL,
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS suppLoans (
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     userId INT NOT NULL,
     itemId INT NOT NULL,
-    state ENUM('espera','en prestamo','devuelto','atrasado') NOT NULL DEFAULT 'espera',
+    state ENUM('no aprobado','espera','en prestamo','devuelto','atrasado') NOT NULL DEFAULT 'espera',
     dateIn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     dateOut DATE NOT NULL,
     returned_at TIMESTAMP NULL,
@@ -123,4 +123,16 @@ CREATE TABLE IF NOT EXISTS suppLoans (
     FOREIGN KEY (itemId) REFERENCES supplies(id) ON DELETE CASCADE,
     INDEX idx_user_supplies (userId, state),
     INDEX idx_due_date (dateOut)
+);
+
+CREATE TABLE IF NOT EXISTS bookInteractions (
+    id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    userId INT NOT NULL,
+    bookId INT NOT NULL,
+    type ENUM('like', 'view') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (bookId) REFERENCES books(id) ON DELETE CASCADE,
+    INDEX idx_user_book (userId, bookId),
+    INDEX idx_type (type)
 );

@@ -1,16 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const {
-    register,
-    login,
-    logout,
-    checkEmail,
-    forgotPassword
-} = require('../controllers/userHandlers');
-
-const { authenticateToken } = require('../middlewares/authMiddleware');
-const { validateRegister, validateLogin } = require('../middlewares/validationMiddleware');
+const UserController = require('../controllers/userHandlers');
+const ValidationMiddleware = require('../middlewares/validationMiddleware');
 
 /**
  * @route   POST /api/auth/register
@@ -19,7 +11,7 @@ const { validateRegister, validateLogin } = require('../middlewares/validationMi
  * @body    { name, lastName, email, pass }
  * @return  { token, user }
  */
-router.post('/register', validateRegister, register);
+router.post('/register', ValidationMiddleware.validateRegister, UserController.register);
 
 /**
  * @route   POST /api/auth/login
@@ -28,7 +20,7 @@ router.post('/register', validateRegister, register);
  * @body    { email, pass }
  * @return  { token, user }
  */
-router.post('/login', validateLogin, login);
+router.post('/login', ValidationMiddleware.validateLogin, UserController.login);
 
 /**
  * @route   POST /api/auth/check-email
@@ -37,7 +29,7 @@ router.post('/login', validateLogin, login);
  * @body    { email }
  * @return  { exists: boolean }
  */
-router.post('/check-email', checkEmail);
+router.post('/check-email', UserController.checkEmail);
 
 /**
  * @route   POST /api/auth/forgot-password
@@ -46,6 +38,26 @@ router.post('/check-email', checkEmail);
  * @body    { email }
  * @return  { ok: boolean }
  *
-router.post('/forgot-password', forgotPassword);
+router.post('/forgot-password', UserController.forgotPassword);
+*/
+module.exports = router;
+
+/**
+ * @route   POST /api/auth/check-email
+ * @desc    Verificar si email ya existe
+ * @access  Public
+ * @body    { email }
+ * @return  { exists: boolean }
+ */
+router.post('/check-email', UserController.checkEmail);
+
+/**
+ * @route   POST /api/auth/forgot-password
+ * @desc    Recuperar contraseña (enviar email)
+ * @access  Public
+ * @body    { email }
+ * @return  { ok: boolean }
+ *
+router.post('/forgot-password', UserController.forgotPassword);
 */
 module.exports = router;

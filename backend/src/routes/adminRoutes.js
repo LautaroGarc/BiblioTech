@@ -1,50 +1,40 @@
 const express = require('express');
 const router = express.Router();
 
-const {
-    getPendingUsers,
-    approveUser,
-    rejectUser,
-    getAllUsers,
-    warnUser,
-    deleteUser,
-    generateReports,
-    getStatistics
-} = require('../controllers/adminHandlers');
-
-const { authenticateToken, isAdmin } = require('../middlewares/authMiddleware');
+const AdminController = require('../controllers/adminHandlers');
+const AuthMiddleware = require('../middlewares/authMiddleware');
 
 // Middleware para todas las rutas de admin
-router.use(authenticateToken);
-router.use(isAdmin);
+router.use(AuthMiddleware.authenticateToken);
+router.use(AuthMiddleware.isAdmin);
 
 /**
  * @route   GET /api/admin/users/pending
  * @desc    Obtener usuarios pendientes de aprobación
  * @access  Private (Admin)
  */
-router.get('/users/pending', getPendingUsers);
+router.get('/users/pending', AdminController.getPendingUsers);
 
 /**
  * @route   PUT /api/admin/users/:id/approve
  * @desc    Aprobar usuario
  * @access  Private (Admin)
  */
-router.put('/users/:id/approve', approveUser);
+router.put('/users/:id/approve', AdminController.approveUser);
 
 /**
  * @route   PUT /api/admin/users/:id/reject
  * @desc    Rechazar usuario
  * @access  Private (Admin)
  */
-router.put('/users/:id/reject', rejectUser);
+router.put('/users/:id/reject', AdminController.rejectUser);
 
 /**
  * @route   GET /api/admin/users
  * @desc    Obtener todos los usuarios
  * @access  Private (Admin)
  */
-router.get('/users', getAllUsers);
+router.get('/users', AdminController.getAllUsers);
 
 /**
  * @route   PUT /api/admin/users/:id/warn
@@ -52,14 +42,14 @@ router.get('/users', getAllUsers);
  * @access  Private (Admin)
  * @body    { warningLevel, reason }
  */
-router.put('/users/:id/warn', warnUser);
+router.put('/users/:id/warn', AdminController.warnUser);
 
 /**
  * @route   DELETE /api/admin/users/:id
  * @desc    Eliminar usuario
  * @access  Private (Admin)
  */
-router.delete('/users/:id', deleteUser);
+router.delete('/users/:id', AdminController.deleteUser);
 
 /**
  * @route   GET /api/admin/reports
@@ -67,13 +57,73 @@ router.delete('/users/:id', deleteUser);
  * @access  Private (Admin)
  * @query   type, startDate, endDate
  */
-router.get('/reports', generateReports);
+router.get('/reports', AdminController.generateReports);
 
 /**
  * @route   GET /api/admin/statistics
  * @desc    Obtener estadísticas generales
  * @access  Private (Admin)
  */
-router.get('/statistics', getStatistics);
+router.get('/statistics', AdminController.getStatistics);
+
+module.exports = router;
+
+/**
+ * @route   GET /api/admin/users/pending
+ * @desc    Obtener usuarios pendientes de aprobación
+ * @access  Private (Admin)
+ */
+router.get('/users/pending', AdminController.getPendingUsers);
+
+/**
+ * @route   PUT /api/admin/users/:id/approve
+ * @desc    Aprobar usuario
+ * @access  Private (Admin)
+ */
+router.put('/users/:id/approve', AdminController.approveUser);
+
+/**
+ * @route   PUT /api/admin/users/:id/reject
+ * @desc    Rechazar usuario
+ * @access  Private (Admin)
+ */
+router.put('/users/:id/reject', AdminController.rejectUser);
+
+/**
+ * @route   GET /api/admin/users
+ * @desc    Obtener todos los usuarios
+ * @access  Private (Admin)
+ */
+router.get('/users', AdminController.getAllUsers);
+
+/**
+ * @route   PUT /api/admin/users/:id/warn
+ * @desc    Advertir usuario
+ * @access  Private (Admin)
+ * @body    { warningLevel, reason }
+ */
+router.put('/users/:id/warn', AdminController.warnUser);
+
+/**
+ * @route   DELETE /api/admin/users/:id
+ * @desc    Eliminar usuario
+ * @access  Private (Admin)
+ */
+router.delete('/users/:id', AdminController.deleteUser);
+
+/**
+ * @route   GET /api/admin/reports
+ * @desc    Generar reportes estadísticos
+ * @access  Private (Admin)
+ * @query   type, startDate, endDate
+ */
+router.get('/reports', AdminController.generateReports);
+
+/**
+ * @route   GET /api/admin/statistics
+ * @desc    Obtener estadísticas generales
+ * @access  Private (Admin)
+ */
+router.get('/statistics', AdminController.getStatistics);
 
 module.exports = router;

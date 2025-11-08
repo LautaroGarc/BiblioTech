@@ -23,7 +23,7 @@
     <!-- ...existing code... -->
   </main>
 
-  <div id="nav-placeholder"></div>
+  <!-- Ya no hay barra de navegación aquí; se carga externamente si es necesario -->
 
   <!-- IMPORTANTE: Cargar authCheck PRIMERO -->
   <script src="/js/authCheck.js"></script>
@@ -36,13 +36,7 @@
         `${userData.nombre} ${userData.apellido}`;
     }
     
-    // Cargar navegación
-    fetch('/components/navigation.html')
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('nav-placeholder').innerHTML = data;
-      })
-      .catch(error => console.error('Error cargando navegación:', error));
+    // Ya no cargamos navegación aquí; ahora es externa
   </script>
 </body>
 </html>

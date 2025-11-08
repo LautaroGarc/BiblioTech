@@ -1,30 +1,22 @@
 const express = require('express');
 const router = express.Router();
 
-const {
-    getForums,
-    createForum,
-    getForumMessages,
-    postMessage,
-    replyToMessage,
-    deleteMessage
-} = require('../controllers/forumHandlers');
-
-const { authenticateToken, isAdmin } = require('../middlewares/authMiddleware');
+const ForumController = require('../controllers/forumHandlers');
+const AuthMiddleware = require('../middlewares/authMiddleware');
 
 /**
  * @route   GET /api/forums
  * @desc    Obtener todos los foros
  * @access  Private
  */
-router.get('/', authenticateToken, getForums);
+router.get('/', AuthMiddleware.authenticateToken, ForumController.getForums);
 
 /**
  * @route   POST /api/forums
  * @desc    Crear nuevo foro
  * @access  Private (Admin)
  */
-router.post('/', authenticateToken, isAdmin, createForum);
+router.post('/', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, ForumController.createForum);
 
 /**
  * @route   GET /api/forums/:id/messages
@@ -32,7 +24,7 @@ router.post('/', authenticateToken, isAdmin, createForum);
  * @access  Private
  * @query   page, limit
  */
-router.get('/:id/messages', authenticateToken, getForumMessages);
+router.get('/:id/messages', AuthMiddleware.authenticateToken, ForumController.getForumMessages);
 
 /**
  * @route   POST /api/forums/:id/messages
@@ -40,7 +32,7 @@ router.get('/:id/messages', authenticateToken, getForumMessages);
  * @access  Private
  * @body    { text }
  */
-router.post('/:id/messages', authenticateToken, postMessage);
+router.post('/:id/messages', AuthMiddleware.authenticateToken, ForumController.postMessage);
 
 /**
  * @route   POST /api/forums/:id/messages/:msgId/reply
@@ -48,13 +40,46 @@ router.post('/:id/messages', authenticateToken, postMessage);
  * @access  Private
  * @body    { text }
  */
-router.post('/:id/messages/:msgId/reply', authenticateToken, replyToMessage);
+router.post('/:id/messages/:msgId/reply', AuthMiddleware.authenticateToken, ForumController.replyToMessage);
 
 /**
  * @route   DELETE /api/forums/:id/messages/:msgId
  * @desc    Eliminar mensaje (admin o dueño)
  * @access  Private
  */
-router.delete('/:id/messages/:msgId', authenticateToken, deleteMessage);
+router.delete('/:id/messages/:msgId', AuthMiddleware.authenticateToken, ForumController.deleteMessage);
+
+module.exports = router;
+
+/**
+ * @route   GET /api/forums/:id/messages
+ * @desc    Obtener mensajes de un foro
+ * @access  Private
+ * @query   page, limit
+ */
+router.get('/:id/messages', authenticateToken, ForumController.getForumMessages);
+
+/**
+ * @route   POST /api/forums/:id/messages
+ * @desc    Publicar mensaje en foro
+ * @access  Private
+ * @body    { text }
+ */
+router.post('/:id/messages', authenticateToken, ForumController.postMessage);
+
+/**
+ * @route   POST /api/forums/:id/messages/:msgId/reply
+ * @desc    Responder a un mensaje
+ * @access  Private
+ * @body    { text }
+ */
+router.post('/:id/messages/:msgId/reply', authenticateToken, ForumController.replyToMessage);
+
+/**
+ * @route   DELETE /api/forums/:id/messages/:msgId
+ * @desc    Eliminar mensaje (admin o dueño)
+ * @access  Private
+ */
+router.delete('/:id/messages/:msgId', authenticateToken, ForumController.deleteMessage);
 
 module.exports = router;
