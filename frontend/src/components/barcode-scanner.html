@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner - BiblioTech</title>
+    <link rel="stylesheet" href="/css/barcode-scanner.css">
+</head>
+<body>
+    <div class="barcode-scanner-overlay">
+        <div class="barcode-scanner-container">
+            <!-- Header -->
+            <div class="barcode-scanner-header">
+                <h2 class="barcode-scanner-title">Escanear Código de Barras</h2>
+                <button class="barcode-scanner-close" id="closeScanner" aria-label="Cerrar scanner">×</button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="barcode-scanner-loading">
+                <div class="barcode-scanner-spinner"></div>
+                <p style="color: #fff;">Iniciando cámara...</p>
+            </div>
+
+            <!-- Messages -->
+            <div id="scannerMessage" class="barcode-scanner-message barcode-scanner-hidden">
+                <p id="messageText"></p>
+            </div>
+
+            <!-- Result Display -->
+            <div id="scannerResult" class="barcode-scanner-result barcode-scanner-hidden">
+                <div class="barcode-scanner-result-label">Código escaneado:</div>
+                <div class="barcode-scanner-result-code" id="resultCode"></div>
+                <div class="barcode-scanner-result-format" id="resultFormat"></div>
+            </div>
+
+            <!-- Video Container -->
+            <div id="videoContainer" class="barcode-scanner-video-container barcode-scanner-hidden">
+                <video id="barcode-scanner-video" autoplay playsinline></video>
+                <canvas id="barcode-scanner-canvas"></canvas>
+                <div class="barcode-scanner-indicator">
+                    <div class="barcode-scanner-line"></div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="barcode-scanner-buttons">
+                <button class="barcode-scanner-btn barcode-scanner-btn-secondary" id="cancelBtn">
+                    Cancelar
+                </button>
+                <button class="barcode-scanner-btn barcode-scanner-btn-primary barcode-scanner-hidden" id="retryBtn">
+                    Reintentar
+                </button>
+            </div>
+
+            <!-- Supported Formats -->
+            <div class="barcode-scanner-formats">
+                <span class="barcode-scanner-format-badge">EAN-13</span>
+                <span class="barcode-scanner-format-badge">EAN-8</span>
+                <span class="barcode-scanner-format-badge">Code 128</span>
+                <span class="barcode-scanner-format-badge">Code 39</span>
+                <span class="barcode-scanner-format-badge">UPC</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include QuaggaJS Library with SRI -->
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js" 
+            integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" 
+            crossorigin="anonymous"
+            onerror="console.error('Failed to load QuaggaJS library'); alert('Error al cargar la biblioteca de escaneo. Por favor, recargue la página.');"></script>
+    
+    <script>
+        // Scanner state
+        let isScanning = false;
+        let scannerInitialized = false;
+
+        // Elements
+        const videoContainer = document.getElementById('videoContainer');
+        const loadingState = document.getElementById('loadingState');
+        const messageEl = document.getElementById('scannerMessage');
+        const messageText = document.getElementById('messageText');
+        const resultEl = document.getElementById('scannerResult');
+        const resultCode = document.getElementById('resultCode');
+        const resultFormat = document.getElementById('resultFormat');
+        const closeBtn = document.getElementById('closeScanner');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const retryBtn = document.getElementById('retryBtn');
+
+        // Show message
+        function showMessage(msg, type = 'info') {
+            messageText.textContent = msg;
+            messageEl.className = `barcode-scanner-message ${type}`;
+            messageEl.classList.remove('barcode-scanner-hidden');
+        }
+
+        // Hide message
+        function hideMessage() {
+            messageEl.classList.add('barcode-scanner-hidden');
+        }
+
+        // Show result
+        function showResult(code, format) {
+            resultCode.textContent = code;
+            resultFormat.textContent = `Formato: ${format}`;
+            resultEl.classList.remove('barcode-scanner-hidden');
+        }
+
+        // Initialize Scanner
+        function initScanner() {
+            loadingState.classList.remove('barcode-scanner-hidden');
+            hideMessage();
+            resultEl.classList.add('barcode-scanner-hidden');
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#videoContainer'),
+                    constraints: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: "environment"
+                    },
+                },
+                decoder: {
+                    readers: [
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_128_reader",
+                        "code_39_reader",
+                        "upc_reader",
+                        "upc_e_reader"
+                    ],
+                    debug: {
+                        drawBoundingBox: false,
+                        showFrequency: false,
+                        drawScanline: false,
+                        showPattern: false
+                    }
+                },
+                locate: true,
+                locator: {
+                    patchSize: "medium",
+                    halfSample: true
+                },
+                numOfWorkers: navigator.hardwareConcurrency || 4,
+                frequency: 10,
+            }, function(err) {
+                loadingState.classList.add('barcode-scanner-hidden');
+                
+                if (err) {
+                    console.error('Error initializing Quagga:', err);
+                    handleError(err);
+                    return;
+                }
+                
+                console.log('Quagga initialized successfully');
+                videoContainer.classList.remove('barcode-scanner-hidden');
+                showMessage('Apunte la cámara al código de barras', 'info');
+                isScanning = true;
+                scannerInitialized = true;
+                Quagga.start();
+            });
+
+            // Handle detected barcodes
+            Quagga.onDetected(onBarcodeDetected);
+        }
+
+        // Handle barcode detection
+        function onBarcodeDetected(result) {
+            if (!isScanning) return;
+
+            const code = result.codeResult.code;
+            const format = result.codeResult.format;
+
+            console.log('Barcode detected:', code, format);
+
+            // Validate the code (simple validation)
+            if (code && code.length >= 8) {
+                isScanning = false;
+                Quagga.stop();
+                
+                showResult(code, format);
+                showMessage('¡Código escaneado exitosamente!', 'success');
+                retryBtn.classList.remove('barcode-scanner-hidden');
+
+                // Send result to parent window
+                sendResult(code, format);
+            }
+        }
+
+        // Handle errors
+        function handleError(error) {
+            console.error('Scanner error:', error);
+            
+            let errorMessage = 'Error al iniciar la cámara';
+            
+            if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                errorMessage = 'Permiso de cámara denegado. Por favor, habilite el acceso a la cámara.';
+            } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+                errorMessage = 'No se encontró una cámara disponible.';
+            } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+                errorMessage = 'La cámara está en uso por otra aplicación.';
+            } else if (error.name === 'OverconstrainedError') {
+                errorMessage = 'No se pudo satisfacer los requisitos de la cámara.';
+            }
+            
+            showMessage(errorMessage, 'error');
+            retryBtn.classList.remove('barcode-scanner-hidden');
+        }
+
+        // Send result to parent
+        function sendResult(code, format) {
+            const origin = window.location.origin;
+            
+            // Try postMessage first (for iframe usage)
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'BARCODE_SCANNED',
+                    data: {
+                        code: code,
+                        format: format,
+                        timestamp: new Date().toISOString()
+                    }
+                }, origin);
+            }
+
+            // Also dispatch custom event for same-page usage
+            const event = new CustomEvent('barcode-scanned', {
+                detail: {
+                    code: code,
+                    format: format,
+                    timestamp: new Date().toISOString()
+                }
+            });
+            window.dispatchEvent(event);
+
+            // Auto-close after 2 seconds
+            setTimeout(() => {
+                closeScanner();
+            }, 2000);
+        }
+
+        // Close scanner
+        function closeScanner() {
+            if (scannerInitialized) {
+                Quagga.stop();
+                scannerInitialized = false;
+            }
+            isScanning = false;
+
+            const origin = window.location.origin;
+            
+            // Notify parent
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'BARCODE_SCANNER_CLOSED',
+                    data: null
+                }, origin);
+            }
+
+            // Dispatch close event
+            const event = new CustomEvent('barcode-scanner-closed', { detail: null });
+            window.dispatchEvent(event);
+
+            // If in iframe, can't close self, parent needs to handle
+            // For standalone, could redirect
+            if (window.parent === window) {
+                window.history.back();
+            }
+        }
+
+        // Retry scanning
+        function retryScanning() {
+            resultEl.classList.add('barcode-scanner-hidden');
+            hideMessage();
+            retryBtn.classList.add('barcode-scanner-hidden');
+            isScanning = false;
+            
+            if (scannerInitialized) {
+                Quagga.stop();
+                scannerInitialized = false;
+            }
+            
+            videoContainer.classList.add('barcode-scanner-hidden');
+            
+            setTimeout(() => {
+                initScanner();
+            }, 300);
+        }
+
+        // Event listeners
+        closeBtn.addEventListener('click', closeScanner);
+        cancelBtn.addEventListener('click', closeScanner);
+        retryBtn.addEventListener('click', retryScanning);
+
+        // Handle visibility change (pause when hidden)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && isScanning) {
+                Quagga.pause();
+            } else if (!document.hidden && isScanning && scannerInitialized) {
+                Quagga.start();
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                initScanner();
+            }, 100);
+        });
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (scannerInitialized) {
+                Quagga.stop();
+            }
+        });
+    </script>
+</body>
+</html>
