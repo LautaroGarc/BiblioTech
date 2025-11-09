@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[USER HOME] Inicializando página de inicio...');
-    
-    // Inicializar la página
     initHomePage();
 });
 
@@ -10,13 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 async function initHomePage() {
     try {
-        // Cargar datos en paralelo
         await Promise.all([
+            loadLoansCarousel(),
             loadBooksCarousel(),
             loadSuppliesCarousel()
         ]);
         
-        // Inicializar controles de carrusel
         initCarouselControls();
         
         console.log('[USER HOME] Página inicializada correctamente');
@@ -24,6 +20,125 @@ async function initHomePage() {
     } catch (error) {
         console.error('[USER HOME] Error inicializando página:', error);
     }
+}
+
+/**
+ * Carga los préstamos activos del usuario
+ */
+async function loadLoansCarousel() {
+    try {
+        console.log('[LOANS] Cargando préstamos activos...');
+        
+        const response = await fetch('/api/loans/me', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('[LOANS] Respuesta completa:', result);
+
+        const loans = result.data || [];
+        
+        const carouselContainer = document.querySelector('.carousel-container-loans');
+        
+        if (!carouselContainer) {
+            console.error('[LOANS] No se encontró el contenedor de préstamos');
+            return;
+        }
+
+        // Limpiar contenedor
+        carouselContainer.innerHTML = '';
+
+        if (loans.length === 0) {
+            showEmptyLoanState('.carousel-container-loans');
+            return;
+        }
+
+        // Crear elementos para cada préstamo
+        loans.forEach(loan => {
+            const loanElement = createLoanElement(loan);
+            carouselContainer.appendChild(loanElement);
+        });
+
+        console.log(`[LOANS] ${loans.length} préstamos cargados en el carrusel`);
+
+    } catch (error) {
+        console.error('[LOANS] Error cargando préstamos:', error);
+        showEmptyLoanState('.carousel-container-loans');
+    }
+}
+
+/**
+ * Crea un elemento HTML para un préstamo
+ */
+function createLoanElement(loan) {
+    const loanDiv = document.createElement('div');
+    loanDiv.className = 'loan-item';
+    loanDiv.setAttribute('data-loan-id', loan.id);
+    loanDiv.setAttribute('data-loan-type', loan.type);
+    
+    // Mapeo de estados a clases CSS y textos
+    const stateInfo = {
+        'no aprobado': { class: 'not-approved', icon: '⏳', text: 'Pendiente de Aprobación' },
+        'espera': { class: 'waiting', icon: '📦', text: 'Listo para Retiro' },
+        'en prestamo': { class: 'borrowed', icon: '📚', text: 'En Préstamo' },
+        'atrasado': { class: 'overdue', icon: '⚠️', text: 'Atrasado' },
+        'devuelto': { class: 'returned', icon: '✅', text: 'Devuelto' }
+    };
+    
+    const state = stateInfo[loan.state] || { class: 'unknown', icon: '❓', text: loan.state };
+    
+    // Formatear fechas
+    const dateIn = new Date(loan.dateIn).toLocaleDateString('es-ES');
+    const dateOut = new Date(loan.dateOut).toLocaleDateString('es-ES');
+    
+    loanDiv.innerHTML = `
+        <div class="loan-status ${state.class}">
+            <span class="status-icon">${state.icon}</span>
+            <span class="status-text">${state.text}</span>
+        </div>
+        <div class="loan-item-info">
+            <div class="loan-image">
+                ${loan.img ? 
+                    `<img src="/assets/items/${loan.img}" alt="${loan.itemName}" loading="lazy">` : 
+                    '<div class="loan-placeholder">📦</div>'
+                }
+            </div>
+            <div class="loan-details">
+                <h3 class="loan-item-name">${loan.itemName || 'Sin nombre'}</h3>
+                <p class="loan-type">${loan.type === 'book' ? '📖 Libro' : '✏️ Material'}</p>
+                <p class="loan-dates">
+                    <span class="date-label">Solicitado:</span> ${dateIn}<br>
+                    <span class="date-label">Devolución:</span> ${dateOut}
+                </p>
+            </div>
+        </div>
+    `;
+    
+    return loanDiv;
+}
+
+/**
+ * Muestra estado vacío cuando no hay préstamos
+ */
+function showEmptyLoanState(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <p class="empty-message">No tienes préstamos activos en este momento</p>
+            <p class="empty-submessage">¡Explora nuestra biblioteca y solicita un préstamo!</p>
+        </div>
+    `;
 }
 
 /**
@@ -91,8 +206,8 @@ function createBookElement(book) {
     bookDiv.innerHTML = `
         <div class="book-cover">
             ${book.img ? 
-                `<img src="${book.img}" alt="${book.name}" loading="lazy">` : 
-                '<div class="book-placeholder">📚</div>'
+                `<img src="/assets/items/${book.img}" alt="${book.name}" loading="lazy">` : 
+                '<div class="book-placeholder"></div>'
             }
         </div>
         <div class="book-info">
@@ -105,7 +220,7 @@ function createBookElement(book) {
     // Agregar evento click
     bookDiv.addEventListener('click', () => {
         console.log('[BOOK] Libro clickeado:', book.id);
-        window.location.href = `/books?id=${book.id}`;
+        window.location.href = `/books/${book.id}`;
     });
 
     return bookDiv;
@@ -178,7 +293,7 @@ function createSupplyElement(supply) {
     supplyDiv.innerHTML = `
         <div class="supply-cover">
             ${supply.img ? 
-                `<img src="${supply.img}" alt="${supply.name}" loading="lazy">` : 
+                `<img src="/assets/items/${supply.img}" alt="${supply.name}" loading="lazy">` : 
                 '<div class="supply-placeholder">📦</div>'
             }
         </div>
@@ -193,7 +308,7 @@ function createSupplyElement(supply) {
     // Agregar evento click
     supplyDiv.addEventListener('click', () => {
         console.log('[SUPPLY] Supply clickeado:', supply.id);
-        window.location.href = `/books?supply=${supply.id}`;
+        window.location.href = `/supply/${supply.id}`;
     });
 
     return supplyDiv;
@@ -229,7 +344,7 @@ function initCarouselControls() {
         
         // Encontrar el contenedor del carrusel asociado
         const section = controlGroup.closest('.carousel-section');
-        const container = section.querySelector('.carousel-container-books, .carousel-container-items');
+        const container = section.querySelector('.carousel-container-books, .carousel-container-items, .carousel-container-loans');
         
         if (prevBtn && nextBtn && container) {
             prevBtn.addEventListener('click', () => scrollCarousel(container, -300));
@@ -256,6 +371,7 @@ function scrollCarousel(container, amount) {
  */
 async function reloadCarousels() {
     console.log('[USER HOME] Recargando carruseles...');
+    await loadLoansCarousel();
     await loadBooksCarousel();
     await loadSuppliesCarousel();
 }

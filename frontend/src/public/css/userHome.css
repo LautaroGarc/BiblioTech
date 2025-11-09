@@ -124,7 +124,8 @@ body {
 
 /* Contenedores de carrusel */
 .carousel-container-books,
-.carousel-container-items {
+.carousel-container-items,
+.carousel-container-loans {
   display: flex;
   gap: 20px;
   overflow-x: auto;
@@ -135,7 +136,8 @@ body {
 }
 
 .carousel-container-books::-webkit-scrollbar,
-.carousel-container-items::-webkit-scrollbar {
+.carousel-container-items::-webkit-scrollbar,
+.carousel-container-loans::-webkit-scrollbar {
   display: none;
 }
 
@@ -506,6 +508,227 @@ body::before {
 .empty-message {
   font-size: 1rem;
   margin: 0;
+}
+
+.empty-submessage {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* ===== ESTILOS PARA CARRUSEL DE PRÉSTAMOS ===== */
+
+.loans-section {
+  background: rgba(79, 195, 247, 0.05);
+  padding: 30px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(79, 195, 247, 0.2);
+  margin: 40px 0;
+}
+
+.loans-section .carousel-title {
+  color: #4fc3f7;
+}
+
+/* Items de préstamos */
+.loan-item {
+  flex: 0 0 320px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.loan-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Estado del préstamo */
+.loan-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loan-status .status-icon {
+  font-size: 1.2rem;
+}
+
+.loan-status .status-text {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Estados específicos con colores */
+.loan-status.not-approved {
+  background: rgba(255, 152, 0, 0.2);
+  color: #ffb74d;
+  border-color: rgba(255, 152, 0, 0.3);
+}
+
+.loan-status.waiting {
+  background: rgba(33, 150, 243, 0.2);
+  color: #64b5f6;
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+.loan-status.borrowed {
+  background: rgba(76, 175, 80, 0.2);
+  color: #81c784;
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.loan-status.overdue {
+  background: rgba(244, 67, 54, 0.2);
+  color: #e57373;
+  border-color: rgba(244, 67, 54, 0.3);
+  animation: pulse 2s infinite;
+}
+
+.loan-status.returned {
+  background: rgba(156, 39, 176, 0.2);
+  color: #ba68c8;
+  border-color: rgba(156, 39, 176, 0.3);
+}
+
+.loan-status.unknown {
+  background: rgba(158, 158, 158, 0.2);
+  color: #bdbdbd;
+  border-color: rgba(158, 158, 158, 0.3);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Información del item */
+.loan-item-info {
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.loan-image {
+  flex: 0 0 80px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.loan-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.loan-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #666;
+}
+
+.loan-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.loan-item-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.loan-type {
+  font-size: 0.85rem;
+  color: #4fc3f7;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.loan-dates {
+  font-size: 0.8rem;
+  color: #b0b0b0;
+  line-height: 1.5;
+}
+
+.date-label {
+  color: #888;
+  font-weight: 600;
+}
+
+/* Responsive para préstamos */
+@media (max-width: 768px) {
+  .loan-item {
+    flex: 0 0 280px;
+  }
+  
+  .loan-item-info {
+    padding: 12px;
+  }
+  
+  .loan-image {
+    flex: 0 0 70px;
+    height: 85px;
+  }
+  
+  .loan-item-name {
+    font-size: 1rem;
+  }
+  
+  .loans-section {
+    padding: 20px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loan-item {
+    flex: 0 0 260px;
+  }
+  
+  .loan-status {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+  
+  .loan-image {
+    flex: 0 0 60px;
+    height: 75px;
+  }
+  
+  .loan-item-name {
+    font-size: 0.95rem;
+  }
+  
+  .loan-dates {
+    font-size: 0.75rem;
+  }
 }
 }
 

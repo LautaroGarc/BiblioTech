@@ -13,6 +13,13 @@ const AuthMiddleware = require('../middlewares/authMiddleware');
 router.post('/create', AuthMiddleware.authenticateToken, LoanController.createLoan);
 
 /**
+ * @route   GET /api/loans/me
+ * @desc    Ver mis préstamos activos (usuario autenticado)
+ * @access  Private
+ */
+router.get('/me', AuthMiddleware.authenticateToken, LoanController.getMyLoans);
+
+/**
  * @route   GET /api/loans/active
  * @desc    Ver préstamos activos
  * @access  Private

@@ -51,6 +51,28 @@ class LoanController {
         }
     }
 
+    // Obtener MIS préstamos activos (usuario autenticado)
+    static async getMyLoans(req, res) {
+        try {
+            const userId = req.user.id;
+            
+            const loans = await LoanModel.getActiveLoansByUser(userId);
+            
+            res.json({
+                success: true,
+                data: loans
+            });
+
+        } catch (error) {
+            console.error('Error getting my loans:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor',
+                error: error.message
+            });
+        }
+    }
+
     // Obtener préstamos activos
     static async getActiveLoans(req, res) {
         try {
