@@ -42,16 +42,6 @@ class UserModel {
         }
     }
 
-    static async isAccepted(idUser) {
-        try {
-            const [rows] = await db.execute('SELECT accepted FROM users WHERE id = ?', [idUser]);
-            return rows[0]?.accepted;
-        } catch (error) {
-            console.error('Error en updateLvl: ', error);
-            throw error;
-        }
-    }
-
     static async getUsers() {
         try {
             const [result] = await db.execute(`SELECT * FROM users`);

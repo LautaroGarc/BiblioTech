@@ -1,14 +1,14 @@
-INSERT INTO users (accepted, type, name, lastName, img, email, pass, forumMod, lvl, xp, warning) VALUES
-(TRUE, 'admin', 'Ana', 'García', 'ana_profile.jpg', 'ana.garcia@bibliotech.com', '$2y$10$exampleHash123', TRUE, 5, 1250, 0),
-(TRUE, 'user', 'Carlos', 'Martínez', 'carlos_profile.jpg', 'carlos.martinez@email.com', '$2y$10$exampleHash456', FALSE, 3, 450, 0),
-(TRUE, 'user', 'María', 'López', 'maria_profile.jpg', 'maria.lopez@email.com', '$2y$10$exampleHash789', TRUE, 4, 890, 1),
-(FALSE, 'user', 'Juan', 'Rodríguez', NULL, 'juan.rodriguez@email.com', '$2y$10$exampleHash012', FALSE, 1, 50, 0),
-(TRUE, 'user', 'Laura', 'Hernández', 'laura_profile.jpg', 'laura.hernandez@email.com', '$2y$10$exampleHash345', FALSE, 2, 210, 0),
-(TRUE, 'admin', 'Pedro', 'Sánchez', 'pedro_profile.jpg', 'pedro.sanchez@bibliotech.com', '$2y$10$exampleHash678', TRUE, 6, 1800, 0),
-(TRUE, 'user', 'Sofía', 'Ramírez', 'sofia_profile.jpg', 'sofia.ramirez@email.com', '$2y$10$exampleHash901', FALSE, 3, 520, 2),
-(TRUE, 'user', 'Diego', 'Fernández', NULL, 'diego.fernandez@email.com', '$2y$10$exampleHash234', FALSE, 1, 80, 0),
-(FALSE, 'user', 'Elena', 'Torres', 'elena_profile.jpg', 'elena.torres@email.com', '$2y$10$exampleHash567', FALSE, 2, 190, 0),
-(TRUE, 'user', 'Miguel', 'Díaz', 'miguel_profile.jpg', 'miguel.diaz@email.com', '$2y$10$exampleHash890', FALSE, 4, 720, 1);
+INSERT INTO users (type, name, lastName, img, email, pass, forumMod, lvl, xp, warning) VALUES
+( 'admin', 'Ana', 'García', 'ana_profile.jpg', 'ana.garcia@bibliotech.com', '$2y$10$exampleHash123', TRUE, 5, 1250, 0),
+( 'user', 'Carlos', 'Martínez', 'carlos_profile.jpg', 'carlos.martinez@email.com', '$2y$10$exampleHash456', FALSE, 3, 450, 0),
+( 'user', 'María', 'López', 'maria_profile.jpg', 'maria.lopez@email.com', '$2y$10$exampleHash789', TRUE, 4, 890, 1),
+( 'user', 'Juan', 'Rodríguez', NULL, 'juan.rodriguez@email.com', '$2y$10$exampleHash012', FALSE, 1, 50, 0),
+( 'user', 'Laura', 'Hernández', 'laura_profile.jpg', 'laura.hernandez@email.com', '$2y$10$exampleHash345', FALSE, 2, 210, 0),
+( 'admin', 'Pedro', 'Sánchez', 'pedro_profile.jpg', 'pedro.sanchez@bibliotech.com', '$2y$10$exampleHash678', TRUE, 6, 1800, 0),
+( 'user', 'Sofía', 'Ramírez', 'sofia_profile.jpg', 'sofia.ramirez@email.com', '$2y$10$exampleHash901', FALSE, 3, 520, 2),
+( 'user', 'Diego', 'Fernández', NULL, 'diego.fernandez@email.com', '$2y$10$exampleHash234', FALSE, 1, 80, 0),
+( 'user', 'Elena', 'Torres', 'elena_profile.jpg', 'elena.torres@email.com', '$2y$10$exampleHash567', FALSE, 2, 190, 0),
+( 'user', 'Miguel', 'Díaz', 'miguel_profile.jpg', 'miguel.diaz@email.com', '$2y$10$exampleHash890', FALSE, 4, 720, 1);
 
 INSERT INTO medals (img, tag) VALUES
 ('medal_lector_bronce.png', 'Lector Bronce'),

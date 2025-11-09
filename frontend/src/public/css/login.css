@@ -322,6 +322,10 @@ body::before {
 
 /* Responsive */
 @media (max-width: 480px) {
+  body {
+    padding: 0px 20px 20px 20px;
+  }
+  
   .login-container {
     padding: 0 15px;
   }
@@ -331,7 +335,7 @@ body::before {
   }
   
   img {
-    width: 160px;
+    width: 75px;
     margin-bottom: 30px;
   }
   

@@ -1,9 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Redirigir si ya hay sesión activa
-    if (redirectIfAuthenticated()) {
-        return;
-    }
-
     const registerForm = document.querySelector('.registerForm');
     const messageDiv = document.getElementById('msg');
 
@@ -120,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     name: firstName,
                     lastName: lastName,
@@ -174,6 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({ email: email })
             });
 

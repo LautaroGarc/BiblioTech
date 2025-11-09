@@ -49,13 +49,12 @@ class UserController {
             const userId = result.insertId;
             console.log('[REGISTER] Usuario creado con ID:', userId);
 
-            // Token incluye accepted: false
+            // Token + cookie de sesión
             const token = jwt.sign(
                 { 
                     id: userId,
                     email: email,
-                    type: 'user',
-                    accepted: false
+                    type: 'user'
                 },
                 JWT_SECRET,
                 { expiresIn: '24h' }
@@ -63,8 +62,18 @@ class UserController {
 
             console.log('[REGISTER] Token generado para usuario:', userId);
 
+            const isProduction = process.env.NODE_ENV === 'production';
+            const cookieOptions = {
+                httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                maxAge: 24 * 60 * 60 * 1000
+            };
+
+            res.cookie('token', token, cookieOptions);
+
             res.status(201).json({
-                message: 'Usuario registrado exitosamente. Esperando aprobación del administrador.',
+                message: 'Usuario registrado exitosamente.',
                 token,
                 user: {
                     id: userId,
@@ -73,8 +82,7 @@ class UserController {
                     email: email,
                     type: 'user',
                     lvl: 1,
-                    img: newUser.img,
-                    accepted: false
+                    img: newUser.img
                 }
             });
 
@@ -127,21 +135,23 @@ class UserController {
                 { 
                     id: user.id,
                     email: user.email,
-                    type: user.type,
-                    accepted: user.accepted
+                    type: user.type
                 },
                 JWT_SECRET,
                 { expiresIn: '24h' }
             );
 
-            console.log('[LOGIN] Login exitoso para:', email, '| Accepted:', user.accepted);
+            console.log('[LOGIN] Login exitoso para:', email);
 
-            res.cookie('token', token, {
-                httpOnly: true,      
-                secure: true,       
-                maxAge: 24 * 60 * 60 * 1000,
-                sameSite: 'strict'
-            }).json({
+            const isProduction = process.env.NODE_ENV === 'production';
+            const cookieOptions = {
+                httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                maxAge: 24 * 60 * 60 * 1000
+            };
+
+            res.cookie('token', token, cookieOptions).json({
                 message: 'Login exitoso',
                 user: {
                     id: user.id,
@@ -150,8 +160,7 @@ class UserController {
                     email: user.email,
                     type: user.type,
                     lvl: user.lvl,
-                    img: user.img,
-                    accepted: user.accepted
+                    img: user.img
                 }
             });
 

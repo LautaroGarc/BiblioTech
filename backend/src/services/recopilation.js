@@ -2,7 +2,7 @@
 
 const { getUser } = require('../models/users');
 const { getBooks } = require('../models/books');
-const db = require('../config/database'); // Assuming a database connection module
+const db = require('../../../database/database'); // Assuming a database connection module
 
 // funciones intermedias que interactuan con el PREFERENCES --> users
 

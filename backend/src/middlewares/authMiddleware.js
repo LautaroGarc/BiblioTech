@@ -7,8 +7,7 @@ class AuthMiddleware {
             {
                 id: user.id,
                 email: user.email,
-                type: user.type,
-                accepted: user.accepted
+                type: user.type
             },
             JWT_SECRET,
             { expiresIn: '24h' } // ← 24 horas de expiración
@@ -76,12 +75,8 @@ class AuthMiddleware {
                 return next(); // Token inválido → permitir acceso
             }
 
-            // Token válido → redirigir según estado
-            if (user.accepted) {
-                return res.redirect('/home');
-            } else {
-                return res.redirect('/waiting');
-            }
+            // Token válido → redirigir a home
+            return res.redirect('/home');
         });
     }
 

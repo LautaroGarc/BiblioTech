@@ -336,7 +336,7 @@ button { animation-delay: 0.5s; }
   }
   
   .logo {
-    width: 160px;
+    width: 75px;
     margin-bottom: 25px;
   }
   
@@ -351,7 +351,7 @@ button { animation-delay: 0.5s; }
 
 @media (max-width: 380px) {
   body {
-    padding: 15px;
+    padding: 10px 15px 15px 15px;
   }
   
   h2 {

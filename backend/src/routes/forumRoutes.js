@@ -50,36 +50,3 @@ router.post('/:id/messages/:msgId/reply', AuthMiddleware.authenticateToken, Foru
 router.delete('/:id/messages/:msgId', AuthMiddleware.authenticateToken, ForumController.deleteMessage);
 
 module.exports = router;
-
-/**
- * @route   GET /api/forums/:id/messages
- * @desc    Obtener mensajes de un foro
- * @access  Private
- * @query   page, limit
- */
-router.get('/:id/messages', authenticateToken, ForumController.getForumMessages);
-
-/**
- * @route   POST /api/forums/:id/messages
- * @desc    Publicar mensaje en foro
- * @access  Private
- * @body    { text }
- */
-router.post('/:id/messages', authenticateToken, ForumController.postMessage);
-
-/**
- * @route   POST /api/forums/:id/messages/:msgId/reply
- * @desc    Responder a un mensaje
- * @access  Private
- * @body    { text }
- */
-router.post('/:id/messages/:msgId/reply', authenticateToken, ForumController.replyToMessage);
-
-/**
- * @route   DELETE /api/forums/:id/messages/:msgId
- * @desc    Eliminar mensaje (admin o dueño)
- * @access  Private
- */
-router.delete('/:id/messages/:msgId', authenticateToken, ForumController.deleteMessage);
-
-module.exports = router;

@@ -1,4 +1,4 @@
-const db = require('../config/database.js')
+db = require('../../../database/database.js')
 
 class MedalModel {
     static async addMedal(medal) {

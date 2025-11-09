@@ -1,7 +1,7 @@
 const { getBooks, getBook } = require('../models/books');
 const { editUser } = require('../models/users');
 const { collectAllUserData, getReadBooksDetails } = require('../services/recopilation');
-const db = require('../config/database'); // Assuming a database connection module
+const db = require('../../../database/database'); // Assuming a database connection module
 
 class RecommendationController {
     static async getSimilarBooks(req, res) {

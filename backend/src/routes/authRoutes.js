@@ -41,23 +41,3 @@ router.post('/check-email', UserController.checkEmail);
 router.post('/forgot-password', UserController.forgotPassword);
 */
 module.exports = router;
-
-/**
- * @route   POST /api/auth/check-email
- * @desc    Verificar si email ya existe
- * @access  Public
- * @body    { email }
- * @return  { exists: boolean }
- */
-router.post('/check-email', UserController.checkEmail);
-
-/**
- * @route   POST /api/auth/forgot-password
- * @desc    Recuperar contraseña (enviar email)
- * @access  Public
- * @body    { email }
- * @return  { ok: boolean }
- *
-router.post('/forgot-password', UserController.forgotPassword);
-*/
-module.exports = router;

@@ -1,56 +1,7 @@
 const { getUsers, getUser, editUser, deleteUser: deleteUserModel, warnUser: warnUserModel } = require('../models/users');
-const db = require('../config/database');
+const db = require('../../../database/database');
 
 class AdminController {
-    static async getPendingUsers(req, res) {
-        try {
-            const users = await getUsers();
-            const pending = users.filter(u => !u.accepted);
-            res.json({
-                success: true,
-                count: pending.length,
-                data: pending
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error al obtener usuarios pendientes'
-            });
-        }
-    }
-
-    static async approveUser(req, res) {
-        try {
-            const userId = req.params.id;
-            await editUser(userId, 'accepted', true);
-            res.json({
-                success: true,
-                message: 'Usuario aprobado exitosamente'
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error al aprobar usuario'
-            });
-        }
-    }
-
-    static async rejectUser(req, res) {
-        try {
-            const userId = req.params.id;
-            await deleteUserModel(userId);
-            res.json({
-                success: true,
-                message: 'Usuario rechazado exitosamente'
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error al rechazar usuario'
-            });
-        }
-    }
-
     static async getAllUsers(req, res) {
         try {
             const users = await getUsers();
@@ -193,8 +144,6 @@ class AdminController {
             const [userStats] = await db.execute(`
                 SELECT 
                     COUNT(*) as totalUsers,
-                    SUM(CASE WHEN accepted = TRUE THEN 1 ELSE 0 END) as acceptedUsers,
-                    SUM(CASE WHEN accepted = FALSE THEN 1 ELSE 0 END) as pendingUsers,
                     SUM(CASE WHEN type = 'admin' THEN 1 ELSE 0 END) as adminUsers
                 FROM users
             `);

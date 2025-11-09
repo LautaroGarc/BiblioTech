@@ -1,4 +1,4 @@
-const db = require('../config/database.js')
+const db = require('../../../database/database.js')
 
 class ItemModel {
     //obtener todos los supplies
