@@ -14,6 +14,7 @@ async function initHomePage() {
         ]);
         
         initCarouselControls();
+        initPopups();
         
         console.log('[USER HOME] Página inicializada correctamente');
         
@@ -166,6 +167,9 @@ async function loadBooksCarousel() {
         // La API devuelve { success: true, data: [...] }
         const books = result.data || [];
         
+        // Guardar datos para popups
+        booksData = books;
+        
         const carouselContainer = document.querySelector('.carousel-container-books');
         
         if (!carouselContainer) {
@@ -220,7 +224,7 @@ function createBookElement(book) {
     // Agregar evento click
     bookDiv.addEventListener('click', () => {
         console.log('[BOOK] Libro clickeado:', book.id);
-        window.location.href = `/books/${book.id}`;
+        openBookPopup(book.id);
     });
 
     return bookDiv;
@@ -250,6 +254,9 @@ async function loadSuppliesCarousel() {
 
         // La API devuelve { success: true, data: [...] }
         const supplies = result.data || [];
+        
+        // Guardar datos para popups
+        suppliesData = supplies;
 
         const carouselContainer = document.querySelector('.carousel-container-items');
         
@@ -308,7 +315,7 @@ function createSupplyElement(supply) {
     // Agregar evento click
     supplyDiv.addEventListener('click', () => {
         console.log('[SUPPLY] Supply clickeado:', supply.id);
-        window.location.href = `/supply/${supply.id}`;
+        openSupplyPopup(supply.id);
     });
 
     return supplyDiv;
@@ -378,5 +385,216 @@ async function reloadCarousels() {
 
 // Hacer funciones disponibles globalmente si es necesario
 window.reloadCarousels = reloadCarousels;
+
+// Variables globales para popups
+let booksData = [];
+let suppliesData = [];
+let currentBookId = null;
+let currentSupplyId = null;
+
+// Elementos del DOM para popups
+const bookPopup = document.getElementById('bookPopup');
+const supplyPopup = document.getElementById('suppPopup');
+const closeBookPopupBtn = document.querySelector('#bookPopup .close-btn');
+const closeSupplyPopupBtn = document.querySelector('#suppPopup .close-btn');
+const reserveBookBtn = document.getElementById('reserveBookBtn');
+const reserveSupplyBtn = document.getElementById('reserveSuppBtn');
+
+// Inicializar popups
+function initPopups() {
+    if (closeBookPopupBtn) {
+        closeBookPopupBtn.addEventListener('click', closeBookPopup);
+    }
+    if (closeSupplyPopupBtn) {
+        closeSupplyPopupBtn.addEventListener('click', closeSupplyPopup);
+    }
+    if (bookPopup) {
+        bookPopup.addEventListener('click', function(e) {
+            if (e.target === bookPopup) {
+                closeBookPopup();
+            }
+        });
+    }
+    if (supplyPopup) {
+        supplyPopup.addEventListener('click', function(e) {
+            if (e.target === supplyPopup) {
+                closeSupplyPopup();
+            }
+        });
+    }
+    if (reserveBookBtn) {
+        reserveBookBtn.addEventListener('click', handleBookReserve);
+    }
+    if (reserveSupplyBtn) {
+        reserveSupplyBtn.addEventListener('click', handleSupplyReserve);
+    }
+}
+
+/**
+ * Función para abrir popup de libro
+ */
+function openBookPopup(bookId) {
+    const book = booksData.find(b => b.id === bookId);
+    if (!book) return;
+
+    currentBookId = bookId;
+
+    document.getElementById('bookPopupImage').src = book.img ? `/assets/items/${book.img}` : '/assets/icons/book-placeholder.png';
+    document.getElementById('bookPopupTitle').textContent = book.name;
+    document.getElementById('bookPopupAuthor').textContent = `Por ${book.author}`;
+    document.getElementById('bookPopupSinopsis').textContent = book.sinopsis || 'Sin sinopsis disponible';
+    document.getElementById('bookPopupEditorial').textContent = book.editorial || 'N/A';
+    document.getElementById('bookPopupGender').textContent = book.gender || 'N/A';
+    document.getElementById('bookPopupLength').textContent = book.length ? `${book.length} páginas` : 'N/A';
+    document.getElementById('bookPopupStock').textContent = book.quant > 0 ? `${book.quant} disponibles` : 'No disponible';
+
+    if (book.quant > 0) {
+        reserveBookBtn.disabled = false;
+        reserveBookBtn.textContent = 'Reservar Libro';
+    } else {
+        reserveBookBtn.disabled = true;
+        reserveBookBtn.textContent = 'No Disponible';
+    }
+
+    bookPopup.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Función para abrir popup de suministro
+ */
+function openSupplyPopup(supplyId) {
+    const supply = suppliesData.find(s => s.id === supplyId);
+    if (!supply) return;
+
+    currentSupplyId = supplyId;
+
+    document.getElementById('suppPopupImage').src = supply.img ? `/assets/items/${supply.img}` : '/assets/icons/supply-placeholder.png';
+    document.getElementById('suppPopupTitle').textContent = supply.name;
+        document.getElementById('suppPopupDescription').textContent = supply.description || 'Sin descripción disponible';
+    document.getElementById('suppPopupStock').textContent = (supply.total_quantity - supply.borrowed) > 0 ? `${supply.total_quantity - supply.borrowed} disponibles` : 'No disponible';
+
+    if ((supply.total_quantity - supply.borrowed) > 0) {
+        reserveSupplyBtn.disabled = false;
+        reserveSupplyBtn.textContent = 'Reservar Material';
+    } else {
+        reserveSupplyBtn.disabled = true;
+        reserveSupplyBtn.textContent = 'No Disponible';
+    }
+
+    supplyPopup.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Función para cerrar popup de libro
+ */
+function closeBookPopup() {
+    bookPopup.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    currentBookId = null;
+}
+
+/**
+ * Función para cerrar popup de suministro
+ */
+function closeSupplyPopup() {
+    supplyPopup.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    currentSupplyId = null;
+}
+
+/**
+ * Función para manejar reserva de libro
+ */
+async function handleBookReserve() {
+    if (!currentBookId) return;
+
+    try {
+        reserveBookBtn.disabled = true;
+        reserveBookBtn.textContent = 'Procesando...';
+
+        const response = await fetch('/api/loans/book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                bookId: currentBookId,
+                dateOut: calculateReturnDate()
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('¡Reserva exitosa! Puedes retirar el libro en la biblioteca.');
+            closeBookPopup();
+            // Recargar carruseles para actualizar datos
+            await reloadCarousels();
+        } else {
+            alert(data.message || 'Error al realizar la reserva');
+            reserveBookBtn.disabled = false;
+            reserveBookBtn.textContent = 'Reservar Libro';
+        }
+    } catch (error) {
+        console.error('[BOOK RESERVE ERROR]', error);
+        alert('Error de conexión. Intenta de nuevo.');
+        reserveBookBtn.disabled = false;
+        reserveBookBtn.textContent = 'Reservar Libro';
+    }
+}
+
+/**
+ * Función para manejar reserva de suministro
+ */
+async function handleSupplyReserve() {
+    if (!currentSupplyId) return;
+
+    try {
+        reserveSupplyBtn.disabled = true;
+        reserveSupplyBtn.textContent = 'Procesando...';
+
+        const response = await fetch('/api/loans/supply', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                supplyId: currentSupplyId,
+                dateOut: calculateReturnDate()
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('¡Reserva exitosa! Puedes retirar el material en la biblioteca.');
+            closeSupplyPopup();
+            // Recargar carruseles para actualizar datos
+            await reloadCarousels();
+        } else {
+            alert(data.message || 'Error al realizar la reserva');
+            reserveSupplyBtn.disabled = false;
+            reserveSupplyBtn.textContent = 'Reservar Material';
+        }
+    } catch (error) {
+        console.error('[SUPPLY RESERVE ERROR]', error);
+        alert('Error de conexión. Intenta de nuevo.');
+        reserveSupplyBtn.disabled = false;
+        reserveSupplyBtn.textContent = 'Reservar Material';
+    }
+}
+
+/**
+ * Función auxiliar para calcular fecha de devolución (30 días)
+ */
+function calculateReturnDate() {
+    const date = new Date();
+    date.setDate(date.getDate() + 30);
+    return date.toISOString().split('T')[0];
+}
 
 console.log('[USER HOME] Script cargado correctamente');

@@ -82,6 +82,72 @@
   <!-- Cargar barra de navegación -->
   <div id="nav-placeholder"></div>
 
+  <!-- Popups para información de libros y supplies -->
+  <div id="bookPopup" class="popup">
+    <div class="popup-content">
+      <button class="close-btn" id="closeBookPopup">&times;</button>
+      <div class="popup-body">
+        <div class="popup-left">
+          <img id="bookPopupImage" src="" alt="Portada del libro">
+        </div>
+        <div class="popup-right">
+          <h2 id="bookPopupTitle"></h2>
+          <p class="author" id="bookPopupAuthor"></p>
+          <p class="sinopsis" id="bookPopupSinopsis"></p>
+          
+          <div class="book-meta">
+            <div class="meta-item">
+              <div class="meta-label">Editorial</div>
+              <div class="meta-value" id="bookPopupEditorial"></div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Género</div>
+              <div class="meta-value" id="bookPopupGender"></div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Páginas</div>
+              <div class="meta-value" id="bookPopupLength"></div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Disponibles</div>
+              <div class="meta-value" id="bookPopupStock"></div>
+            </div>
+          </div>
+
+          <button class="reserve-btn" id="reserveBookBtn">Reservar Libro</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="suppPopup" class="popup">
+    <div class="popup-content">
+      <button class="close-btn" id="closeSuppPopup">&times;</button>
+      <div class="popup-body">
+        <div class="popup-left">
+          <img id="suppPopupImage" src="" alt="Imagen del supply">
+        </div>
+        <div class="popup-right">
+          <h2 id="suppPopupTitle"></h2>
+          <p class="description" id="suppPopupDescription"></p>
+          
+          <div class="supp-meta">
+            <div class="meta-item">
+              <div class="meta-label">Código de Barras</div>
+              <div class="meta-value" id="suppPopupBarcode"></div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Disponibles</div>
+              <div class="meta-value" id="suppPopupStock"></div>
+            </div>
+          </div>
+
+          <button class="reserve-btn" id="reserveSuppBtn">Reservar Material</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="/js/userHome.js"></script>
   <script>
     // Cargar la barra de navegación
