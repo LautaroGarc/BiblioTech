@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     let currentBookIndex = 0;
     let userLikes = new Set();
     let currentBookId = null;
+    let isScrolling = false;
+    let scrollTimeout;
 
     // Obtener datos del usuario
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -23,6 +25,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Cargar likes del usuario
     await loadUserLikes();
 
+    // Control de scroll modular (más preciso)
+    setupScrollControl();
+
     // Event listeners
     closePopupBtn.addEventListener('click', closePopup);
     popup.addEventListener('click', function(e) {
@@ -32,6 +37,94 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     reserveBtn.addEventListener('click', handleReserve);
+
+    // Función para controlar el scroll modular
+    function setupScrollControl() {
+        let lastScrollTop = 0;
+        let isSnapping = false;
+
+        booksFeed.addEventListener('scroll', function() {
+            if (isSnapping) return;
+
+            clearTimeout(scrollTimeout);
+            
+            scrollTimeout = setTimeout(() => {
+                const scrollTop = booksFeed.scrollTop;
+                const cardHeight = booksFeed.clientHeight - 80;
+                const currentIndex = Math.round(scrollTop / cardHeight);
+                
+                // Snap al elemento más cercano
+                isSnapping = true;
+                booksFeed.scrollTo({
+                    top: currentIndex * cardHeight,
+                    behavior: 'smooth'
+                });
+
+                setTimeout(() => {
+                    isSnapping = false;
+                }, 500);
+            }, 150);
+        });
+
+        // Control con rueda del mouse más suave
+        booksFeed.addEventListener('wheel', function(e) {
+            if (isSnapping) {
+                e.preventDefault();
+                return;
+            }
+
+            e.preventDefault();
+            
+            const delta = Math.sign(e.deltaY);
+            const cardHeight = booksFeed.clientHeight - 80;
+            const currentScroll = booksFeed.scrollTop;
+            const currentIndex = Math.round(currentScroll / cardHeight);
+            const newIndex = Math.max(0, Math.min(books.length - 1, currentIndex + delta));
+
+            if (newIndex !== currentIndex) {
+                isSnapping = true;
+                booksFeed.scrollTo({
+                    top: newIndex * cardHeight,
+                    behavior: 'smooth'
+                });
+
+                setTimeout(() => {
+                    isSnapping = false;
+                }, 500);
+            }
+        }, { passive: false });
+
+        // Control táctil mejorado
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        booksFeed.addEventListener('touchstart', function(e) {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        booksFeed.addEventListener('touchend', function(e) {
+            touchEndY = e.changedTouches[0].clientY;
+            const diff = touchStartY - touchEndY;
+
+            if (Math.abs(diff) > 50) {
+                const delta = diff > 0 ? 1 : -1;
+                const cardHeight = booksFeed.clientHeight - 80;
+                const currentScroll = booksFeed.scrollTop;
+                const currentIndex = Math.round(currentScroll / cardHeight);
+                const newIndex = Math.max(0, Math.min(books.length - 1, currentIndex + delta));
+
+                isSnapping = true;
+                booksFeed.scrollTo({
+                    top: newIndex * cardHeight,
+                    behavior: 'smooth'
+                });
+
+                setTimeout(() => {
+                    isSnapping = false;
+                }, 500);
+            }
+        }, { passive: true });
+    }
 
     // Función para cargar libros
     async function loadBooks() {
@@ -83,6 +176,17 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             const isLiked = userLikes.has(book.id);
             const stockAvailable = book.quant > 0;
+            
+            // Calcular cantidad de likes
+            let likesCount = 0;
+            if (book.likes) {
+                try {
+                    const likesArray = typeof book.likes === 'string' ? JSON.parse(book.likes) : book.likes;
+                    likesCount = Array.isArray(likesArray) ? likesArray.length : 0;
+                } catch (e) {
+                    likesCount = 0;
+                }
+            }
 
             bookCard.innerHTML = `
                 <img src="${book.img || '/assets/icons/book-placeholder.png'}" 
@@ -93,16 +197,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 <div class="book-info">
                     <h2 class="book-title">${book.name}</h2>
                     <p class="book-author">${book.author}</p>
-                    
-                    <div class="book-actions">
-                        <button class="like-btn ${isLiked ? 'liked' : ''}" 
-                                data-book-id="${book.id}"
-                                title="${isLiked ? 'Quitar like' : 'Me gusta'}">
-                            <img src="/assets/icons/heart${isLiked ? '-filled' : ''}.png" 
-                                 alt="Like" 
-                                 class="like-icon">
-                        </button>
-                    </div>
+                </div>
+
+                <div class="book-actions">
+                    <button class="like-btn ${isLiked ? 'liked' : ''}" 
+                            data-book-id="${book.id}"
+                            title="${isLiked ? 'Quitar like' : 'Me gusta'}">
+                        <img src="/assets/icons/${isLiked ? 'liked' : 'like'}.png" 
+                             alt="Like" 
+                             class="like-icon">
+                        <span class="like-count">${likesCount}</span>
+                    </button>
                 </div>
             `;
 
@@ -160,14 +265,20 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
 
             if (response.ok) {
+                const likeIcon = button.querySelector('.like-icon');
+                const likeCountSpan = button.querySelector('.like-count');
+                let currentCount = parseInt(likeCountSpan.textContent) || 0;
+
                 if (isLiked) {
                     userLikes.delete(bookId);
                     button.classList.remove('liked');
-                    button.querySelector('.like-icon').src = '/assets/icons/heart.png';
+                    likeIcon.src = '/assets/icons/like.png';
+                    likeCountSpan.textContent = Math.max(0, currentCount - 1);
                 } else {
                     userLikes.add(bookId);
                     button.classList.add('liked');
-                    button.querySelector('.like-icon').src = '/assets/icons/heart-filled.png';
+                    likeIcon.src = '/assets/icons/liked.png';
+                    likeCountSpan.textContent = currentCount + 1;
                 }
             }
         } catch (error) {

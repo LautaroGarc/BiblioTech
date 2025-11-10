@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Útiles Escolares - BiblioTech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/userSupplies.css">
+</head>
+<body>
+  
+  <!-- Header -->
+  <header class="header">
+    <button class="back-button" onclick="window.history.back()">
+      <span class="back-icon">←</span>
+    </button>
+    <h1 class="page-title">Útiles Escolares</h1>
+    <div class="header-spacer"></div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="main-content">
+    
+    <!-- Grid de supplies -->
+    <section class="supplies-grid" id="supplies-grid">
+      <!-- Los supplies se cargan dinámicamente aquí -->
+    </section>
+
+    <!-- Estado de carga -->
+    <div class="loading-state" id="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando útiles...</p>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" id="empty-state" style="display: none;">
+      <div class="empty-icon">📦</div>
+      <p class="empty-message">No hay útiles disponibles en este momento</p>
+    </div>
+
+  </main>
+
+  <!-- Modal de información del supply -->
+  <div class="modal" id="supply-modal">
+    <div class="modal-overlay" onclick="closeSupplyModal()"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeSupplyModal()">✕</button>
+      
+      <div class="modal-body" id="modal-body">
+        <!-- Contenido dinámico -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra de navegación -->
+  <div id="nav-placeholder"></div>
+
+  <script src="/js/userSupplies.js"></script>
+  <script>
+    // Cargar la barra de navegación
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('nav-placeholder').innerHTML = data;
+      })
+      .catch(error => console.error('Error cargando navegación:', error));
+  </script>
+</body>
+</html>

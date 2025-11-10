@@ -62,9 +62,9 @@ app.get('/profile', authenticateToken, (req, res) => {
     const userType = req.user.type;
     
     if (userType === 'admin') {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'admin', 'profile.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'users.html'));
     } else {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'user', 'profile.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'profile.html'));
     }
 });
 
@@ -72,13 +72,14 @@ app.get('/books', authenticateToken, (req, res) => {
     const userType = req.user.type;
     
     if (userType === 'admin') {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'books.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'stats.html'));
     } else {
         return res.sendFile(path.join(__dirname, '..', 'frontend', 'src','private', 'user', 'books.html'));
     }
 });
 
 app.get('/forum', authenticateToken, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'forum.html'));
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'forum.html'));
 });
 
@@ -87,9 +88,6 @@ app.get('/ranking', authenticateToken, (req, res) => {
 });
 
 app.get('/search', authenticateToken, (req, res) => {
-    if (userType === 'admin') {
-        return res.redirect('/404');
-    }
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'shared', 'search.html'));
 });
 
@@ -97,9 +95,9 @@ app.get('/plus', authenticateToken, (req, res) => {
     const userType = req.user.type;
     
     if (userType === 'admin') {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'admin', 'plus.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'plus.html'));
     } else {
-        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'user', 'plus.html'));
+        return res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'plus.html'));
     }
 });
 
