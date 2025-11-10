@@ -1,5 +1,5 @@
 const db = require('../../../database/database');
-const { createComment, deleteComment } = require('../models/forum');
+const ForumChatModel = require('../models/forumChat');
 
 class ForumController {
     // Obtener todos los foros
@@ -166,7 +166,7 @@ class ForumController {
                 date: new Date()
             };
             
-            const result = await createComment(comment);
+            const result = await ForumChatModel.createComment(comment);
             
             res.status(201).json({
                 success: true,
@@ -266,7 +266,7 @@ class ForumController {
                 });
             }
             
-            await deleteComment(messageId);
+            await ForumChatModel.deleteComment(messageId);
             
             res.json({
                 success: true,

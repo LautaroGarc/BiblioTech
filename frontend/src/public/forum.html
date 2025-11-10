@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foro - BiblioTech</title>
+    <link rel="stylesheet" href="/css/forum.css">
+    <link rel="stylesheet" href="/css/navigation.css">
+</head>
+<body>
+    <!-- Header común -->
+    <header id="forum-header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="/assets/logo.png" alt="BiblioTech" class="logo">
+            </div>
+            <div class="header-actions">
+                <button id="ranking-btn" class="ranking-btn">
+                    <img src="/assets/icons/ranking.png" alt="Ranking">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor principal -->
+    <main id="forum-container">
+        <!-- Vista de lista de foros -->
+        <section id="forums-list" class="forum-section active">
+            <h1 class="section-title">Foros Disponibles</h1>
+            <div id="forums-grid" class="forums-grid">
+                <!-- Los foros se cargarán aquí dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Vista del foro seleccionado -->
+        <section id="forum-chat" class="forum-section">
+            <div class="chat-header">
+                <button id="back-to-forums" class="back-btn">
+                    <img src="/assets/icons/back.png" alt="Volver">
+                </button>
+                <h2 id="forum-title" class="forum-title"></h2>
+            </div>
+
+            <div id="messages-container" class="messages-container">
+                <div id="messages-list" class="messages-list">
+                    <!-- Los mensajes se cargarán aquí -->
+                </div>
+                <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Cargando mensajes...</p>
+                </div>
+            </div>
+
+            <div class="message-input-container">
+                <form id="message-form" class="message-form">
+                    <textarea
+                        id="message-input"
+                        class="message-input"
+                        placeholder="Escribe tu mensaje..."
+                        maxlength="500"
+                        rows="1"
+                    ></textarea>
+                    <button type="submit" id="send-btn" class="send-btn" disabled>
+                        <img src="/assets/icons/send.png" alt="Enviar">
+                    </button>
+                </form>
+                <div id="char-counter" class="char-counter">0/500</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/js/sessionManager.js"></script>
+    <script src="/js/forum.js"></script>
+</body>
+</html>

@@ -79,10 +79,17 @@ app.get('/books', authenticateToken, (req, res) => {
 });
 
 app.get('/forum', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'shared', 'forum.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'forum.html'));
+});
+
+app.get('/ranking', authenticateToken, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'ranking.html'));
 });
 
 app.get('/search', authenticateToken, (req, res) => {
+    if (userType === 'admin') {
+        return res.redirect('/404');
+    }
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'shared', 'search.html'));
 });
 
@@ -97,6 +104,9 @@ app.get('/plus', authenticateToken, (req, res) => {
 });
 
 app.get('/userActivity', authenticateToken, (req, res) => {
+    if (userType === 'admin') {
+        return res.redirect('/404');
+    }
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'user', 'userActivity.html'));
 })
 
