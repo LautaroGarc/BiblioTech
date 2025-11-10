@@ -88,7 +88,11 @@ app.get('/ranking', authenticateToken, (req, res) => {
 });
 
 app.get('/search', authenticateToken, (req, res) => {
+    if (userType === 'admin') {
+        return res.redirect('/404');
+    }
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'shared', 'search.html'));
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'search.html'));
 });
 
 app.get('/plus', authenticateToken, (req, res) => {
