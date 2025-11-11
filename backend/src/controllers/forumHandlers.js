@@ -162,8 +162,7 @@ class ForumController {
             const comment = {
                 userId,
                 forumId,
-                text: text.trim(),
-                date: new Date()
+                text: text.trim()
             };
             
             const result = await ForumChatModel.createComment(comment);
@@ -173,7 +172,8 @@ class ForumController {
                 message: 'Mensaje publicado exitosamente',
                 data: {
                     id: result.insertId,
-                    ...comment
+                    ...comment,
+                    created_at: new Date()
                 }
             });
         } catch (error) {

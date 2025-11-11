@@ -134,8 +134,8 @@
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
       border: 2px solid rgba(255, 255, 255, 0.3);
-      width: 55px;
-      height: 55px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -144,11 +144,17 @@
       justify-content: center;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .like-btn:hover {
       transform: scale(1.1);
       background: rgba(255, 255, 255, 0.25);
+    }
+
+    .like-btn:active {
+      transform: scale(0.95);
     }
 
     .like-btn.liked {
@@ -167,18 +173,21 @@
       height: 28px;
       transition: transform 0.3s ease;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      pointer-events: none;
     }
 
     .like-btn.liked .like-icon {
       transform: scale(1.1);
+      filter: drop-shadow(0 2px 8px rgba(255, 64, 129, 0.6));
     }
 
     .like-count {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: #fff;
-      font-weight: 600;
-      margin-top: 4px;
+      font-weight: 700;
+      margin-top: 2px;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
     }
 
     .loading {
@@ -428,6 +437,7 @@
   <!-- Barra de navegación -->
   <div id="nav-placeholder"></div>
 
+  <script src="/js/loanHelper.js"></script>
   <script src="/js/userBooks.js"></script>
   <script>
     // Cargar la barra de navegación

@@ -102,6 +102,7 @@ body {
 /* Lista de foros */
 #forums-list {
     padding: 20px;
+    padding-bottom: 100px; /* Espacio para la barra de navegación */
 }
 
 .section-title {
@@ -171,7 +172,7 @@ body {
 }
 
 /* Vista del chat */
-#forum-chat {
+#forum-chat.active {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 80px);
@@ -225,7 +226,7 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    padding-bottom: 100px; /* Espacio para el input */
+    padding-bottom: 180px; /* Espacio para el input + navegación */
     scroll-behavior: smooth;
 }
 
@@ -328,7 +329,7 @@ body {
 /* Input de mensaje */
 .message-input-container {
     position: fixed;
-    bottom: 0;
+    bottom: 60px; /* Espacio para la barra de navegación */
     left: 0;
     right: 0;
     background: var(--secondary-bg);
@@ -336,6 +337,12 @@ body {
     border-top: 1px solid var(--border-color);
     padding: 16px 20px;
     z-index: 50;
+    display: none; /* Oculto por defecto */
+}
+
+/* Mostrar input solo cuando el chat está activo */
+#forum-chat.active .message-input-container {
+    display: block;
 }
 
 .message-form {
@@ -498,8 +505,10 @@ body {
     .message-input-container {
         padding: 20px 40px;
         position: static;
+        bottom: auto;
         background: var(--secondary-bg);
         border-top: 1px solid var(--border-color);
+        /* display se controla por #forum-chat.active */
     }
 
     #forum-chat {
@@ -510,6 +519,10 @@ body {
     .messages-container {
         height: 60vh;
         max-height: 600px;
+    }
+    
+    .messages-list {
+        padding-bottom: 40px; /* Menos padding en desktop */
     }
 }
 

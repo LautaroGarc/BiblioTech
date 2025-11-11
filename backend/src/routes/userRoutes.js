@@ -77,4 +77,11 @@ router.get('/:id', UserController.getUserById);
  */
 router.get('/', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, UserController.getAllUsers);
 
+/**
+ * @route   GET /api/users/me/ads
+ * @desc    Obtener anuncios del usuario actual
+ * @access  Private
+ */
+router.get('/me/ads', AuthMiddleware.authenticateToken, UserController.getMyAd);
+
 module.exports = router;

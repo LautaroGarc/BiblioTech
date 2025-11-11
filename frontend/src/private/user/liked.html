@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libros Likeados - BiblioTech</title>
+  <link rel="stylesheet" href="/css/liked.css">
+</head>
+<body>
+
+  <!-- Header Component -->
+  <div id="header-container"></div>
+
+  <main class="liked-container">
+    <div class="page-header">
+      <button class="back-btn" onclick="window.history.back()">
+        <span>←</span>
+      </button>
+      <h1>Libros Likeados</h1>
+    </div>
+
+    <div id="books-grid" class="books-grid">
+      <!-- Los libros se cargarán dinámicamente -->
+    </div>
+
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-icon">❤️</div>
+      <h2>No tienes libros guardados</h2>
+      <p>Explora nuestra colección y guarda tus favoritos</p>
+      <button class="explore-btn" onclick="window.location.href='/search'">
+        Explorar libros
+      </button>
+    </div>
+  </main>
+
+  <!-- Navigation Component -->
+  <div id="navigation-container"></div>
+
+  <script src="/js/liked.js"></script>
+  <script>
+    // Load header component
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error loading header:', error));
+
+    // Load navigation component
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('navigation-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error loading navigation:', error));
+  </script>
+</body>
+</html>

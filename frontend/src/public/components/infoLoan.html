@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .loan-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .loan-popup-overlay.active {
+            display: flex;
+        }
+
+        .loan-popup-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .loan-popup-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .loan-popup-close:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .loan-popup-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .loan-popup-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        .loan-status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .loan-status-badge.no-aprobado {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .loan-status-badge.espera {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .loan-status-badge.en-prestamo {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .loan-status-badge.atrasado {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .loan-status-badge.devuelto {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .loan-detail-section {
+            margin: 20px 0;
+        }
+
+        .loan-detail-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .loan-detail-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loan-detail-value {
+            color: #333;
+            flex: 1;
+        }
+
+        .loan-detail-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        .loan-item-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .loan-item-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .loan-item-info {
+            flex: 1;
+        }
+
+        .loan-item-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .loan-item-type {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .loan-popup-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .loan-action-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .loan-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loan-approve-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .loan-approve-btn:hover:not(:disabled) {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .loan-reject-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .loan-reject-btn:hover:not(:disabled) {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .loan-cancel-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .loan-cancel-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .loan-date-warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .loan-date-danger {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #721c24;
+        }
+
+        .user-warning-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background-color: #fff3cd;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .user-warning-indicator.high {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div id="loanPopup" class="loan-popup-overlay">
+        <div class="loan-popup-content">
+            <button class="loan-popup-close" onclick="closeLoanPopup()">&times;</button>
+            
+            <div class="loan-popup-header">
+                <h2 class="loan-popup-title">Detalles del Préstamo</h2>
+                <span id="loanStatusBadge" class="loan-status-badge"></span>
+            </div>
+
+            <div class="loan-item-preview">
+                <img id="loanItemImg" class="loan-item-img" src="" alt="Item">
+                <div class="loan-item-info">
+                    <h3 id="loanItemName" class="loan-item-name"></h3>
+                    <p id="loanItemType" class="loan-item-type"></p>
+                </div>
+            </div>
+
+            <div class="loan-detail-section">
+                <div class="loan-detail-row">
+                    <span class="loan-detail-label">
+                        <span class="loan-detail-icon">👤</span>
+                        Usuario:
+                    </span>
+                    <span id="loanUserName" class="loan-detail-value"></span>
+                </div>
+
+                <div class="loan-detail-row">
+                    <span class="loan-detail-label">
+                        <span class="loan-detail-icon">📧</span>
+                        Email:
+                    </span>
+                    <span id="loanUserEmail" class="loan-detail-value"></span>
+                </div>
+
+                <div class="loan-detail-row">
+                    <span class="loan-detail-label">
+                        <span class="loan-detail-icon">🆔</span>
+                        ID Préstamo:
+                    </span>
+                    <span id="loanId" class="loan-detail-value"></span>
+                </div>
+
+                <div class="loan-detail-row">
+                    <span class="loan-detail-label">
+                        <span class="loan-detail-icon">📅</span>
+                        Fecha Solicitud:
+                    </span>
+                    <span id="loanDateIn" class="loan-detail-value"></span>
+                </div>
+
+                <div class="loan-detail-row">
+                    <span class="loan-detail-label">
+                        <span class="loan-detail-icon">📆</span>
+                        Fecha Devolución:
+                    </span>
+                    <span id="loanDateOut" class="loan-detail-value"></span>
+                </div>
+
+                <div id="loanReturnedAt" class="loan-detail-row" style="display: none;">
+                    <span class="loan-detail-label">
+                        <span class="loan-detail-icon">✅</span>
+                        Devuelto:
+                    </span>
+                    <span id="loanReturnedAtValue" class="loan-detail-value"></span>
+                </div>
+
+                <div id="userWarningSection" style="display: none;">
+                    <div class="loan-detail-row">
+                        <span class="loan-detail-label">
+                            <span class="loan-detail-icon">⚠️</span>
+                            Advertencias:
+                        </span>
+                        <span id="userWarnings" class="loan-detail-value"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loanDateAlert"></div>
+
+            <div id="loanPopupActions" class="loan-popup-actions">
+                <!-- Botones se generan dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLoanData = null;
+
+        function openLoanPopup(loanData, userData = null) {
+            currentLoanData = loanData;
+            
+            // Título y badge de estado
+            const statusBadge = document.getElementById('loanStatusBadge');
+            statusBadge.textContent = getStatusText(loanData.state);
+            statusBadge.className = `loan-status-badge ${loanData.state}`;
+
+            // Información del item
+            document.getElementById('loanItemImg').src = loanData.img || '/assets/default-item.png';
+            document.getElementById('loanItemName').textContent = loanData.itemName;
+            document.getElementById('loanItemType').textContent = loanData.type === 'book' ? 'Libro' : 'Útil Escolar';
+
+            // Información del usuario
+            document.getElementById('loanUserName').textContent = `${loanData.userName} ${loanData.userLastName}`;
+            document.getElementById('loanUserEmail').textContent = loanData.userEmail || 'No disponible';
+            
+            // Información del préstamo
+            document.getElementById('loanId').textContent = `#${loanData.id}`;
+            document.getElementById('loanDateIn').textContent = formatDate(loanData.dateIn);
+            document.getElementById('loanDateOut').textContent = formatDate(loanData.dateOut);
+
+            // Fecha de devolución si existe
+            const returnedAtSection = document.getElementById('loanReturnedAt');
+            if (loanData.returned_at) {
+                returnedAtSection.style.display = 'flex';
+                document.getElementById('loanReturnedAtValue').textContent = formatDate(loanData.returned_at);
+            } else {
+                returnedAtSection.style.display = 'none';
+            }
+
+            // Advertencias del usuario
+            if (userData && userData.warning > 0) {
+                document.getElementById('userWarningSection').style.display = 'block';
+                const warningClass = userData.warning >= 3 ? 'high' : '';
+                document.getElementById('userWarnings').innerHTML = 
+                    `<span class="user-warning-indicator ${warningClass}">${userData.warning} advertencia(s)</span>`;
+            } else {
+                document.getElementById('userWarningSection').style.display = 'none';
+            }
+
+            // Alerta de fecha
+            const dateAlert = document.getElementById('loanDateAlert');
+            dateAlert.innerHTML = '';
+            
+            if (loanData.state === 'atrasado') {
+                const daysOverdue = calculateDaysOverdue(loanData.dateOut);
+                dateAlert.innerHTML = `
+                    <div class="loan-date-danger">
+                        <strong>⚠️ Préstamo Atrasado:</strong> ${daysOverdue} día(s) de retraso
+                    </div>
+                `;
+            } else if (loanData.state === 'en prestamo') {
+                const daysUntilDue = calculateDaysUntilDue(loanData.dateOut);
+                if (daysUntilDue <= 3 && daysUntilDue > 0) {
+                    dateAlert.innerHTML = `
+                        <div class="loan-date-warning">
+                            <strong>⏰ Próximo a vencer:</strong> ${daysUntilDue} día(s) restantes
+                        </div>
+                    `;
+                }
+            }
+
+            // Generar botones según el estado
+            generateActionButtons(loanData);
+
+            // Mostrar popup
+            document.getElementById('loanPopup').classList.add('active');
+        }
+
+        function closeLoanPopup() {
+            document.getElementById('loanPopup').classList.remove('active');
+            currentLoanData = null;
+        }
+
+        function generateActionButtons(loanData) {
+            const actionsDiv = document.getElementById('loanPopupActions');
+            actionsDiv.innerHTML = '';
+
+            if (loanData.state === 'no aprobado') {
+                // Solicitud pendiente - mostrar aprobar
+                actionsDiv.innerHTML = `
+                    <button class="loan-action-btn loan-approve-btn" onclick="approveLoan()">
+                        ✓ Aprobar Préstamo
+                    </button>
+                    <button class="loan-action-btn loan-cancel-btn" onclick="closeLoanPopup()">
+                        Cancelar
+                    </button>
+                `;
+            } else if (loanData.state === 'espera') {
+                // Esperando retiro
+                actionsDiv.innerHTML = `
+                    <button class="loan-action-btn loan-cancel-btn" onclick="closeLoanPopup()">
+                        Cerrar
+                    </button>
+                `;
+            } else if (loanData.state === 'en prestamo' || loanData.state === 'atrasado') {
+                // En préstamo - permitir marcar como devuelto (aunque normalmente se hace con barcode)
+                actionsDiv.innerHTML = `
+                    <button class="loan-action-btn loan-approve-btn" onclick="markAsReturned()">
+                        ✓ Marcar como Devuelto
+                    </button>
+                    <button class="loan-action-btn loan-cancel-btn" onclick="closeLoanPopup()">
+                        Cancelar
+                    </button>
+                `;
+            } else {
+                // Devuelto - solo cerrar
+                actionsDiv.innerHTML = `
+                    <button class="loan-action-btn loan-cancel-btn" onclick="closeLoanPopup()">
+                        Cerrar
+                    </button>
+                `;
+            }
+        }
+
+        async function approveLoan() {
+            if (!currentLoanData) return;
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Aprobando...';
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/loans/${currentLoanData.id}/approve`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: currentLoanData.type
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Préstamo aprobado exitosamente');
+                    closeLoanPopup();
+                    
+                    // Recargar la lista si existe la función
+                    if (typeof loadLoans === 'function') {
+                        loadLoans();
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                    btn.disabled = false;
+                    btn.textContent = '✓ Aprobar Préstamo';
+                }
+            } catch (error) {
+                console.error('Error aprobando préstamo:', error);
+                alert('Error al aprobar préstamo');
+                btn.disabled = false;
+                btn.textContent = '✓ Aprobar Préstamo';
+            }
+        }
+
+        async function markAsReturned() {
+            if (!currentLoanData) return;
+
+            if (!confirm('¿Confirmar que el item fue devuelto?')) {
+                return;
+            }
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Procesando...';
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/loans/return', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        loanId: currentLoanData.id,
+                        type: currentLoanData.type
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Item marcado como devuelto');
+                    closeLoanPopup();
+                    
+                    if (typeof loadLoans === 'function') {
+                        loadLoans();
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                    btn.disabled = false;
+                    btn.textContent = '✓ Marcar como Devuelto';
+                }
+            } catch (error) {
+                console.error('Error marcando devolución:', error);
+                alert('Error al marcar devolución');
+                btn.disabled = false;
+                btn.textContent = '✓ Marcar como Devuelto';
+            }
+        }
+
+        function getStatusText(state) {
+            const statusMap = {
+                'no aprobado': 'Pendiente',
+                'espera': 'Listo para Retirar',
+                'en prestamo': 'En Préstamo',
+                'atrasado': 'Atrasado',
+                'devuelto': 'Devuelto'
+            };
+            return statusMap[state] || state;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'No disponible';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-AR', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function calculateDaysOverdue(dateOut) {
+            const today = new Date();
+            const dueDate = new Date(dateOut);
+            const diffTime = today - dueDate;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function calculateDaysUntilDue(dateOut) {
+            const today = new Date();
+            const dueDate = new Date(dateOut);
+            const diffTime = dueDate - today;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        // Cerrar al hacer click fuera del popup
+        document.getElementById('loanPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLoanPopup();
+            }
+        });
+    </script>
+</body>
+</html>

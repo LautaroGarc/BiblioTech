@@ -1,4 +1,9 @@
+console.log('[FORUM] Script cargado');
+console.log('[FORUM] Pathname actual:', window.location.pathname);
+console.log('[FORUM] UserData:', localStorage.getItem('userData'));
+
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[FORUM] DOMContentLoaded disparado');
     initForum();
 });
 
@@ -16,25 +21,20 @@ let liveUpdateInterval = null;
  * Función principal de inicialización
  */
 async function initForum() {
+    console.log('[FORUM] initForum() llamada');
     try {
-        // Verificar autenticación
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        if (!userData) {
-            console.error('[FORUM] No hay datos de usuario');
-            window.location.href = '/login';
-            return;
-        }
-
+        console.log('[FORUM] Inicializando event listeners...');
         // Inicializar event listeners
         initEventListeners();
 
+        console.log('[FORUM] Cargando lista de foros...');
         // Cargar lista de foros
         await loadForums();
 
-        console.log('[FORUM] Módulo inicializado correctamente');
+        console.log('[FORUM] ✓ Módulo inicializado correctamente');
 
     } catch (error) {
-        console.error('[FORUM] Error inicializando:', error);
+        console.error('[FORUM] ✗ Error inicializando:', error);
     }
 }
 
@@ -42,25 +42,46 @@ async function initForum() {
  * Inicializar event listeners
  */
 function initEventListeners() {
+    console.log('[FORUM] Configurando event listeners...');
+    
     // Botón de ranking
-    document.getElementById('ranking-btn').addEventListener('click', () => {
-        window.location.href = '/ranking';
-    });
+    const rankingBtn = document.getElementById('ranking-btn');
+    if (rankingBtn) {
+        rankingBtn.addEventListener('click', () => {
+            console.log('[FORUM] Click en ranking-btn');
+            window.location.href = '/ranking';
+        });
+    }
 
     // Botón volver
-    document.getElementById('back-to-forums').addEventListener('click', showForumsList);
+    const backBtn = document.getElementById('back-to-forums');
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            console.log('[FORUM] Click en back-to-forums');
+            showForumsList();
+        });
+    }
 
     // Formulario de mensaje
-    document.getElementById('message-form').addEventListener('submit', handleSendMessage);
+    const messageForm = document.getElementById('message-form');
+    if (messageForm) {
+        messageForm.addEventListener('submit', handleSendMessage);
+    }
 
     // Input de mensaje
     const messageInput = document.getElementById('message-input');
-    messageInput.addEventListener('input', updateCharCounter);
-    messageInput.addEventListener('keydown', handleKeyPress);
+    if (messageInput) {
+        messageInput.addEventListener('input', updateCharCounter);
+        messageInput.addEventListener('keydown', handleKeyPress);
+    }
 
     // Scroll infinito
     const messagesContainer = document.getElementById('messages-list');
-    messagesContainer.addEventListener('scroll', handleScroll);
+    if (messagesContainer) {
+        messagesContainer.addEventListener('scroll', handleScroll);
+    }
+    
+    console.log('[FORUM] Event listeners configurados ✓');
 }
 
 /**
@@ -69,6 +90,7 @@ function initEventListeners() {
 async function loadForums() {
     try {
         console.log('[FORUMS] Cargando foros...');
+        console.log('[FORUMS] URL:', '/api/forums');
 
         const response = await fetch('/api/forums', {
             method: 'GET',
@@ -78,12 +100,18 @@ async function loadForums() {
             credentials: 'include'
         });
 
+        console.log('[FORUMS] Response status:', response.status);
+        console.log('[FORUMS] Response OK:', response.ok);
+
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[FORUMS] Error response:', errorText);
             throw new Error(`Error HTTP: ${response.status}`);
         }
 
         const result = await response.json();
-        console.log('[FORUMS] Respuesta:', result);
+        console.log('[FORUMS] Respuesta completa:', result);
+        console.log('[FORUMS] Cantidad de foros:', result.data ? result.data.length : 0);
 
         const forums = result.data || [];
 
@@ -102,15 +130,17 @@ async function loadForums() {
         }
 
         // Crear tarjetas de foros
-        forums.forEach(forum => {
+        forums.forEach((forum, index) => {
+            console.log(`[FORUMS] Creando card para foro ${index + 1}:`, forum.name);
             const forumCard = createForumCard(forum);
             forumsGrid.appendChild(forumCard);
         });
 
-        console.log(`[FORUMS] ${forums.length} foros cargados`);
+        console.log(`[FORUMS] ✓ ${forums.length} foros cargados y renderizados`);
+        console.log('[FORUMS] Contenido del grid:', forumsGrid.innerHTML.substring(0, 200));
 
     } catch (error) {
-        console.error('[FORUMS] Error cargando foros:', error);
+        console.error('[FORUMS] ✗ Error cargando foros:', error);
         showError('Error al cargar los foros. Intenta de nuevo.');
     }
 }
@@ -140,8 +170,12 @@ function createForumCard(forum) {
     `;
 
     // Event listener
-    card.addEventListener('click', () => openForum(forum.id, forum.name));
+    card.addEventListener('click', () => {
+        console.log(`[FORUM] Click en foro "${forum.name}" (ID: ${forum.id})`);
+        openForum(forum.id, forum.name);
+    });
 
+    console.log(`[FORUM] Card creada para "${forum.name}"`);
     return card;
 }
 

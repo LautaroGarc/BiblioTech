@@ -5,10 +5,10 @@
     <span class="nav-label">Inicio</span>
   </a>
   <a href="/books" class="nav-item" id="nav-books">
-    <img src="/assets/icons/book.png" alt="Books" class="nav-icon">
+    <img src="/assets/icons/search.png" alt="Books" class="nav-icon">
     <span class="nav-label">Libros</span>
   </a>
-  <a href="/plus" class="nav-item" id="nav-plus">
+  <a href="/plus" class="nav-item nav-plus" id="nav-plus">
     <img src="/assets/icons/plus.png" alt="Plus" class="nav-icon">
     <span class="nav-label"></span>
   </a>
@@ -49,6 +49,20 @@
   
   .nav-item:hover {
     transform: scale(1.1);
+  }
+  
+  /* Estilos específicos para el botón plus */
+  .nav-plus {
+    transform: scale(1.6);
+  }
+  
+  .nav-plus:hover {
+    transform: scale(1.5);
+  }
+  
+  .nav-plus .nav-icon {
+    width: 28px;
+    height: 28px;
   }
   
   .nav-icon {

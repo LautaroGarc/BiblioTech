@@ -96,3 +96,14 @@ class UserModel {
 }
 
 module.exports = UserModel;
+
+// Export individual functions for backward compatibility
+module.exports.addUser = UserModel.addUser;
+module.exports.editUser = UserModel.editUser;
+module.exports.deleteUser = UserModel.deleteUser;
+module.exports.updateLvl = UserModel.updateLvl;
+module.exports.getUsers = UserModel.getUsers;
+module.exports.getUserWith = UserModel.getUserWith;
+module.exports.getUsersWith = UserModel.getUsersWith;
+module.exports.getUser = UserModel.getUser;
+module.exports.warnUser = UserModel.warnUser;

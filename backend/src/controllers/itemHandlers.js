@@ -13,6 +13,9 @@ const {
     editItem,
     getCarrouselSupps
 } = require('../models/items');
+
+const UserModel = require('../models/users');
+
 class ItemController{
 // ========== HANDLERS DE LIBROS ==========
 
@@ -195,6 +198,142 @@ class ItemController{
         }
     }
 
+    static async likeBook(req, res) {
+        try {
+            const userId = req.user.id;
+            const { bookId } = req.body;
+
+            if (!bookId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ID de libro requerido'
+                });
+            }
+
+            // Verificar que el libro existe
+            const book = await getBook(bookId);
+            if (!book) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Libro no encontrado'
+                });
+            }
+
+            // Obtener likes actuales del libro
+            let bookLikes = [];
+            try {
+                bookLikes = book.likes ? JSON.parse(book.likes) : [];
+            } catch (e) {
+                bookLikes = [];
+            }
+
+            // Verificar si ya tiene like
+            if (bookLikes.includes(userId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Ya has dado like a este libro'
+                });
+            }
+
+            // Agregar like al libro
+            bookLikes.push(userId);
+            await editBook(bookId, 'likes', JSON.stringify(bookLikes));
+
+            // Obtener likes del usuario
+            const user = await UserModel.getUser(userId);
+            let userLikes = [];
+            try {
+                userLikes = user.likes ? JSON.parse(user.likes) : [];
+            } catch (e) {
+                userLikes = [];
+            }
+
+            // Agregar libro a likes del usuario
+            if (!userLikes.includes(parseInt(bookId))) {
+                userLikes.push(parseInt(bookId));
+                await UserModel.editUser(userId, 'likes', JSON.stringify(userLikes));
+            }
+
+            res.json({
+                success: true,
+                message: 'Like agregado exitosamente',
+                likesCount: bookLikes.length
+            });
+        } catch (error) {
+            console.error('[LIKE BOOK ERROR]', error);
+            console.error('[LIKE BOOK ERROR] Stack:', error.stack);
+            console.error('[LIKE BOOK ERROR] Message:', error.message);
+            res.status(500).json({
+                success: false,
+                message: 'Error al dar like al libro',
+                error: error.message
+            });
+        }
+    }
+
+    static async unlikeBook(req, res) {
+        try {
+            const userId = req.user.id;
+            const { bookId } = req.body;
+
+            if (!bookId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ID de libro requerido'
+                });
+            }
+
+            // Verificar que el libro existe
+            const book = await getBook(bookId);
+            if (!book) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Libro no encontrado'
+                });
+            }
+
+            // Obtener likes actuales del libro
+            let bookLikes = [];
+            try {
+                bookLikes = book.likes ? JSON.parse(book.likes) : [];
+            } catch (e) {
+                bookLikes = [];
+            }
+
+            // Quitar like del libro
+            bookLikes = bookLikes.filter(id => id !== userId);
+            await editBook(bookId, 'likes', JSON.stringify(bookLikes));
+
+            // Obtener likes del usuario
+            const user = await UserModel.getUser(userId);
+            let userLikes = [];
+            try {
+                userLikes = user.likes ? JSON.parse(user.likes) : [];
+            } catch (e) {
+                userLikes = [];
+            }
+
+            // Quitar libro de likes del usuario
+            userLikes = userLikes.filter(id => id !== parseInt(bookId));
+            await UserModel.editUser(userId, 'likes', JSON.stringify(userLikes));
+
+            res.json({
+                success: true,
+                message: 'Like removido exitosamente',
+                likesCount: bookLikes.length
+            });
+        } catch (error) {
+            console.error('[UNLIKE BOOK ERROR]', error);
+            console.error('[UNLIKE BOOK ERROR] Stack:', error.stack);
+            console.error('[UNLIKE BOOK ERROR] Message:', error.message);
+            res.status(500).json({
+                success: false,
+                message: 'Error al quitar like del libro',
+                error: error.message
+            });
+        }
+    }
+
     // ========== HANDLERS DE ÚTILES ==========
 
     static async getAllSupplies(req, res) {
@@ -338,6 +477,62 @@ class ItemController{
             res.status(500).json({
                 success: false,
                 message: 'Error al actualizar útil'
+            });
+        }
+    }
+
+    static async deleteBook(req, res) {
+        try {
+            const bookId = req.params.id;
+            
+            const book = await getBook(bookId);
+            if (!book) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Libro no encontrado'
+                });
+            }
+
+            const { deleteBook: deleteBookModel } = require('../models/books');
+            await deleteBookModel(bookId);
+
+            res.json({
+                success: true,
+                message: 'Libro eliminado exitosamente'
+            });
+        } catch (error) {
+            console.error('[DELETE BOOK ERROR]', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al eliminar libro'
+            });
+        }
+    }
+
+    static async deleteSupply(req, res) {
+        try {
+            const supplyId = req.params.id;
+            
+            const supply = await getItem(supplyId);
+            if (!supply) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Útil no encontrado'
+                });
+            }
+
+            const { deleteItem } = require('../models/items');
+            await deleteItem(supplyId);
+
+            res.json({
+                success: true,
+                message: 'Útil eliminado exitosamente'
+            });
+        } catch (error) {
+            console.error('[DELETE SUPPLY ERROR]', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al eliminar útil'
             });
         }
     }

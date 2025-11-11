@@ -497,7 +497,7 @@ class UserController {
             
             if (!fs.existsSync(assetsPath)) {
                 console.log('[CHOOSE IMG] Directorio no existe, usando default');
-                return '/assets/profiles/azul.png';
+                return 'user-default.jpg';
             }
             
             const photos = fs.readdirSync(assetsPath);
@@ -507,16 +507,40 @@ class UserController {
             
             if (imageFiles.length === 0) {
                 console.log('[CHOOSE IMG] No hay imágenes, usando default');
-                return '/assets/profiles/azul.png';
+                return 'user-default.jpg';
             }
             
             const randomImage = imageFiles[Math.floor(Math.random() * imageFiles.length)];
             console.log('[CHOOSE IMG] Imagen seleccionada:', randomImage);
-            return `/assets/profiles/${randomImage}`;
+            return randomImage;
             
         } catch (error) {
             console.error('[CHOOSE IMG ERROR]', error.message);
-            return '/assets/profiles/azul.png';
+            return 'user-default.jpg';
+        }
+    }
+
+    static async logout(req, res) {
+        try {
+            console.log('[LOGOUT] Cerrando sesión para usuario:', req.user.email);
+
+            // Limpiar la cookie del token
+            const isProduction = process.env.NODE_ENV === 'production';
+            res.clearCookie('token', {
+                httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                path: '/'
+            });
+
+            res.json({ message: 'Logout exitoso' });
+
+        } catch (error) {
+            console.error('[ LOGOUT ERROR ]', error);
+            res.status(500).json({ 
+                message: 'Error al cerrar sesión',
+                error: error.message 
+            });
         }
     }
 }

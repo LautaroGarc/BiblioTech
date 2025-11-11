@@ -1,3 +1,24 @@
+/**
+ * Función auxiliar para normalizar rutas de imágenes
+ * Maneja casos donde la ruta puede venir con o sin el prefijo /assets/items/
+ */
+function normalizeImagePath(imgPath) {
+    if (!imgPath) return null;
+    
+    // Si ya incluye /assets/, usar tal cual
+    if (imgPath.startsWith('/assets/')) {
+        return imgPath;
+    }
+    
+    // Si incluye assets/ sin la barra inicial, agregar la barra
+    if (imgPath.startsWith('assets/')) {
+        return '/' + imgPath;
+    }
+    
+    // Si es solo el nombre del archivo, agregar el prefijo completo
+    return `/assets/items/${imgPath}`;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     initHomePage();
 });
@@ -7,10 +28,14 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 async function initHomePage() {
     try {
+        // Cargar información del usuario primero
+        await loadUserInfo();
+        
         await Promise.all([
             loadLoansCarousel(),
             loadBooksCarousel(),
-            loadSuppliesCarousel()
+            loadSuppliesCarousel(),
+            loadPopups()
         ]);
         
         initCarouselControls();
@@ -20,6 +45,45 @@ async function initHomePage() {
         
     } catch (error) {
         console.error('[USER HOME] Error inicializando página:', error);
+    }
+}
+
+/**
+ * Carga los popups desde components
+ */
+async function loadPopups() {
+    try {
+        console.log('[POPUPS] Cargando popups desde components...');
+        
+        const [bookPopupHtml, suppPopupHtml] = await Promise.all([
+            fetch('/components/infoBook.html').then(r => r.text()),
+            fetch('/components/infoSupp.html').then(r => r.text())
+        ]);
+        
+        const bookPlaceholder = document.getElementById('book-popup-placeholder');
+        const suppPlaceholder = document.getElementById('supp-popup-placeholder');
+        
+        if (bookPlaceholder) {
+            bookPlaceholder.innerHTML = bookPopupHtml;
+            console.log('[POPUPS] Book popup HTML insertado');
+        } else {
+            console.error('[POPUPS] No se encontró book-popup-placeholder');
+        }
+        
+        if (suppPlaceholder) {
+            suppPlaceholder.innerHTML = suppPopupHtml;
+            console.log('[POPUPS] Supply popup HTML insertado');
+        } else {
+            console.error('[POPUPS] No se encontró supp-popup-placeholder');
+        }
+        
+        // Esperar un momento para que el DOM se actualice
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+        console.log('[POPUPS] Popups cargados correctamente');
+        
+    } catch (error) {
+        console.error('[POPUPS] Error cargando popups:', error);
     }
 }
 
@@ -48,6 +112,7 @@ async function loadLoansCarousel() {
         const loans = result.data || [];
         
         const carouselContainer = document.querySelector('.carousel-container-loans');
+        const loansSection = document.getElementById('loans-carousel');
         
         if (!carouselContainer) {
             console.error('[LOANS] No se encontró el contenedor de préstamos');
@@ -58,10 +123,15 @@ async function loadLoansCarousel() {
         carouselContainer.innerHTML = '';
 
         if (loans.length === 0) {
-            showEmptyLoanState('.carousel-container-loans');
+            // Ocultar la sección completa cuando no hay préstamos
+            loansSection.classList.add('hidden');
+            console.log('[LOANS] No hay préstamos activos, sección oculta');
             return;
         }
 
+        // Mostrar la sección cuando hay préstamos
+        loansSection.classList.remove('hidden');
+        
         // Crear elementos para cada préstamo
         loans.forEach(loan => {
             const loanElement = createLoanElement(loan);
@@ -72,7 +142,11 @@ async function loadLoansCarousel() {
 
     } catch (error) {
         console.error('[LOANS] Error cargando préstamos:', error);
-        showEmptyLoanState('.carousel-container-loans');
+        // Ocultar la sección en caso de error
+        const loansSection = document.getElementById('loans-carousel');
+        if (loansSection) {
+            loansSection.classList.add('hidden');
+        }
     }
 }
 
@@ -100,46 +174,66 @@ function createLoanElement(loan) {
     const dateIn = new Date(loan.dateIn).toLocaleDateString('es-ES');
     const dateOut = new Date(loan.dateOut).toLocaleDateString('es-ES');
     
-    loanDiv.innerHTML = `
-        <div class="loan-status ${state.class}">
-            <span class="status-icon">${state.icon}</span>
-            <span class="status-text">${state.text}</span>
-        </div>
-        <div class="loan-item-info">
-            <div class="loan-image">
-                ${loan.img ? 
-                    `<img src="/assets/items/${loan.img}" alt="${loan.itemName}" loading="lazy">` : 
-                    '<div class="loan-placeholder">📦</div>'
-                }
-            </div>
-            <div class="loan-details">
-                <h3 class="loan-item-name">${loan.itemName || 'Sin nombre'}</h3>
-                <p class="loan-type">${loan.type === 'book' ? '📖 Libro' : '✏️ Material'}</p>
-                <p class="loan-dates">
-                    <span class="date-label">Solicitado:</span> ${dateIn}<br>
-                    <span class="date-label">Devolución:</span> ${dateOut}
-                </p>
-            </div>
-        </div>
+    // Crear estructura del estado
+    const loanStatus = document.createElement('div');
+    loanStatus.className = `loan-status ${state.class}`;
+    loanStatus.innerHTML = `
+        <span class="status-icon">${state.icon}</span>
+        <span class="status-text">${state.text}</span>
     `;
+    
+    // Crear estructura de la imagen
+    const loanImage = document.createElement('div');
+    loanImage.className = 'loan-image';
+    
+    if (loan.img) {
+        const img = document.createElement('img');
+        const imgSrc = normalizeImagePath(loan.img);
+        img.src = imgSrc;
+        img.alt = loan.itemName || 'Item';
+        img.loading = 'lazy';
+        
+        console.log(`[LOAN IMG] Valor original: "${loan.img}"`);
+        console.log(`[LOAN IMG] Intentando cargar: ${imgSrc}`);
+        
+        // Manejar error de carga de imagen
+        img.onerror = function() {
+            console.error(`[LOAN] ❌ ERROR cargando imagen: ${imgSrc}`);
+            loanImage.innerHTML = '<div class="loan-placeholder">📦</div>';
+        };
+        
+        img.onload = function() {
+            console.log(`[LOAN] ✅ Imagen cargada correctamente: ${imgSrc}`);
+        };
+        
+        loanImage.appendChild(img);
+    } else {
+        loanImage.innerHTML = '<div class="loan-placeholder">📦</div>';
+    }
+    
+    // Crear detalles del préstamo
+    const loanDetails = document.createElement('div');
+    loanDetails.className = 'loan-details';
+    loanDetails.innerHTML = `
+        <h3 class="loan-item-name">${loan.itemName || 'Sin nombre'}</h3>
+        <p class="loan-type">${loan.type === 'book' ? '📖 Libro' : '✏️ Material'}</p>
+        <p class="loan-dates">
+            <span class="date-label">Solicitado:</span> ${dateIn}<br>
+            <span class="date-label">Devolución:</span> ${dateOut}
+        </p>
+    `;
+    
+    // Crear contenedor de info
+    const loanItemInfo = document.createElement('div');
+    loanItemInfo.className = 'loan-item-info';
+    loanItemInfo.appendChild(loanImage);
+    loanItemInfo.appendChild(loanDetails);
+    
+    // Agregar todo al elemento principal
+    loanDiv.appendChild(loanStatus);
+    loanDiv.appendChild(loanItemInfo);
     
     return loanDiv;
-}
-
-/**
- * Muestra estado vacío cuando no hay préstamos
- */
-function showEmptyLoanState(containerSelector) {
-    const container = document.querySelector(containerSelector);
-    if (!container) return;
-    
-    container.innerHTML = `
-        <div class="empty-state">
-            <div class="empty-icon">📚</div>
-            <p class="empty-message">No tienes préstamos activos en este momento</p>
-            <p class="empty-submessage">¡Explora nuestra biblioteca y solicita un préstamo!</p>
-        </div>
-    `;
 }
 
 /**
@@ -149,7 +243,7 @@ async function loadBooksCarousel() {
     try {
         console.log('[BOOKS] Cargando libros del carrusel...');
         
-        const response = await fetch('/api/books/carrousel', {
+        const response = await fetch('/api/items/books/carrousel', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -166,6 +260,12 @@ async function loadBooksCarousel() {
 
         // La API devuelve { success: true, data: [...] }
         const books = result.data || [];
+        
+        // Debug: mostrar los primeros libros con sus imágenes
+        if (books.length > 0) {
+            console.log('[BOOKS] Primer libro ejemplo:', books[0]);
+            console.log('[BOOKS] Imagen del primer libro:', books[0].img);
+        }
         
         // Guardar datos para popups
         booksData = books;
@@ -187,6 +287,7 @@ async function loadBooksCarousel() {
 
         // Crear elementos para cada libro
         books.forEach(book => {
+            console.log(`[BOOKS] Creando elemento para libro: ${book.name}, img: ${book.img}`);
             const bookElement = createBookElement(book);
             carouselContainer.appendChild(bookElement);
         });
@@ -207,24 +308,93 @@ function createBookElement(book) {
     bookDiv.className = 'book-item';
     bookDiv.setAttribute('data-book-id', book.id);
     
-    bookDiv.innerHTML = `
-        <div class="book-cover">
-            ${book.img ? 
-                `<img src="/assets/items/${book.img}" alt="${book.name}" loading="lazy">` : 
-                '<div class="book-placeholder"></div>'
-            }
-        </div>
-        <div class="book-info">
-            <h3 class="book-title">${book.name || 'Sin título'}</h3>
-            <p class="book-author">${book.author || 'Autor desconocido'}</p>
-            ${book.review ? `<p class="book-rating">⭐ ${book.review}/5</p>` : ''}
-        </div>
+    // Crear estructura del libro
+    const bookCover = document.createElement('div');
+    bookCover.className = 'book-cover';
+    
+    if (book.img) {
+        const img = document.createElement('img');
+        const imgSrc = normalizeImagePath(book.img);
+        img.src = imgSrc;
+        img.alt = book.name || 'Libro';
+        img.loading = 'lazy';
+        
+        console.log(`[BOOK IMG] Valor original: "${book.img}"`);
+        console.log(`[BOOK IMG] Intentando cargar: ${imgSrc} para libro: ${book.name}`);
+        
+        // Manejar error de carga de imagen
+        img.onerror = function() {
+            console.error(`[BOOK] ❌ ERROR cargando imagen: ${imgSrc}`);
+            console.error(`[BOOK] URL completa: ${window.location.origin}${imgSrc}`);
+            bookCover.innerHTML = '<div class="book-placeholder">📚</div>';
+        };
+        
+        img.onload = function() {
+            console.log(`[BOOK] ✅ Imagen cargada correctamente: ${imgSrc}`);
+        };
+        
+        bookCover.appendChild(img);
+    } else {
+        console.warn(`[BOOK] Sin imagen para libro: ${book.name}`);
+        bookCover.innerHTML = '<div class="book-placeholder">📚</div>';
+    }
+    
+    const bookInfo = document.createElement('div');
+    bookInfo.className = 'book-info';
+    bookInfo.innerHTML = `
+        <h3 class="book-title">${book.name || 'Sin título'}</h3>
+        <p class="book-author">${book.author || 'Autor desconocido'}</p>
+        ${book.review ? `<p class="book-rating">⭐ ${book.review}/5</p>` : ''}
     `;
     
-    // Agregar evento click
-    bookDiv.addEventListener('click', () => {
-        console.log('[BOOK] Libro clickeado:', book.id);
-        openBookPopup(book.id);
+    bookDiv.appendChild(bookCover);
+    bookDiv.appendChild(bookInfo);
+    
+    // Variables para detectar arrastre vs click
+    let isDragging = false;
+    let startX, startY;
+    
+    // Agregar evento mousedown/touchstart
+    bookDiv.addEventListener('mousedown', (e) => {
+        isDragging = false;
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+    
+    bookDiv.addEventListener('touchstart', (e) => {
+        isDragging = false;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+    
+    // Detectar movimiento
+    bookDiv.addEventListener('mousemove', (e) => {
+        if (startX !== undefined) {
+            const diffX = Math.abs(e.clientX - startX);
+            const diffY = Math.abs(e.clientY - startY);
+            if (diffX > 5 || diffY > 5) {
+                isDragging = true;
+            }
+        }
+    });
+    
+    bookDiv.addEventListener('touchmove', (e) => {
+        if (startX !== undefined) {
+            const diffX = Math.abs(e.touches[0].clientX - startX);
+            const diffY = Math.abs(e.touches[0].clientY - startY);
+            if (diffX > 5 || diffY > 5) {
+                isDragging = true;
+            }
+        }
+    });
+    
+    // Agregar evento click - solo si no hubo arrastre
+    bookDiv.addEventListener('click', (e) => {
+        if (!isDragging) {
+            e.preventDefault();
+            console.log('[BOOK] Libro clickeado:', book.id);
+            openBookPopup(book.id);
+        }
     });
 
     return bookDiv;
@@ -237,7 +407,7 @@ async function loadSuppliesCarousel() {
     try {
         console.log('[SUPPLIES] Cargando supplies del carrusel...');
         
-        const response = await fetch('/api/supps/carrousel', {
+        const response = await fetch('/api/items/supps/carrousel', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -254,6 +424,12 @@ async function loadSuppliesCarousel() {
 
         // La API devuelve { success: true, data: [...] }
         const supplies = result.data || [];
+        
+        // Debug: mostrar los primeros supplies con sus imágenes
+        if (supplies.length > 0) {
+            console.log('[SUPPLIES] Primer supply ejemplo:', supplies[0]);
+            console.log('[SUPPLIES] Imagen del primer supply:', supplies[0].img);
+        }
         
         // Guardar datos para popups
         suppliesData = supplies;
@@ -297,25 +473,94 @@ function createSupplyElement(supply) {
     
     const available = (supply.total_quantity - supply.borrowed) > 0;
     
-    supplyDiv.innerHTML = `
-        <div class="supply-cover">
-            ${supply.img ? 
-                `<img src="/assets/items/${supply.img}" alt="${supply.name}" loading="lazy">` : 
-                '<div class="supply-placeholder">📦</div>'
-            }
-        </div>
-        <div class="supply-info">
-            <h3 class="supply-name">${supply.name || 'Sin nombre'}</h3>
-            <p class="supply-available ${available ? 'available' : 'unavailable'}">
-                ${available ? `✅ ${supply.total_quantity - supply.borrowed} disponibles` : '❌ No disponible'}
-            </p>
-        </div>
+    // Crear estructura del supply
+    const supplyCover = document.createElement('div');
+    supplyCover.className = 'supply-cover';
+    
+    if (supply.img) {
+        const img = document.createElement('img');
+        const imgSrc = normalizeImagePath(supply.img);
+        img.src = imgSrc;
+        img.alt = supply.name || 'Material';
+        img.loading = 'lazy';
+        
+        console.log(`[SUPPLY IMG] Valor original: "${supply.img}"`);
+        console.log(`[SUPPLY IMG] Intentando cargar: ${imgSrc} para supply: ${supply.name}`);
+        
+        // Manejar error de carga de imagen
+        img.onerror = function() {
+            console.error(`[SUPPLY] ❌ ERROR cargando imagen: ${imgSrc}`);
+            console.error(`[SUPPLY] URL completa: ${window.location.origin}${imgSrc}`);
+            supplyCover.innerHTML = '<div class="supply-placeholder">📦</div>';
+        };
+        
+        img.onload = function() {
+            console.log(`[SUPPLY] ✅ Imagen cargada correctamente: ${imgSrc}`);
+        };
+        
+        supplyCover.appendChild(img);
+    } else {
+        console.warn(`[SUPPLY] Sin imagen para supply: ${supply.name}`);
+        supplyCover.innerHTML = '<div class="supply-placeholder">📦</div>';
+    }
+    
+    const supplyInfo = document.createElement('div');
+    supplyInfo.className = 'supply-info';
+    supplyInfo.innerHTML = `
+        <h3 class="supply-name">${supply.name || 'Sin nombre'}</h3>
+        <p class="supply-available ${available ? 'available' : 'unavailable'}">
+            ${available ? `✅ ${supply.total_quantity - supply.borrowed} disponibles` : '❌ No disponible'}
+        </p>
     `;
     
-    // Agregar evento click
-    supplyDiv.addEventListener('click', () => {
-        console.log('[SUPPLY] Supply clickeado:', supply.id);
-        openSupplyPopup(supply.id);
+    supplyDiv.appendChild(supplyCover);
+    supplyDiv.appendChild(supplyInfo);
+    
+    // Variables para detectar arrastre vs click
+    let isDragging = false;
+    let startX, startY;
+    
+    // Agregar evento mousedown/touchstart
+    supplyDiv.addEventListener('mousedown', (e) => {
+        isDragging = false;
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+    
+    supplyDiv.addEventListener('touchstart', (e) => {
+        isDragging = false;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+    
+    // Detectar movimiento
+    supplyDiv.addEventListener('mousemove', (e) => {
+        if (startX !== undefined) {
+            const diffX = Math.abs(e.clientX - startX);
+            const diffY = Math.abs(e.clientY - startY);
+            if (diffX > 5 || diffY > 5) {
+                isDragging = true;
+            }
+        }
+    });
+    
+    supplyDiv.addEventListener('touchmove', (e) => {
+        if (startX !== undefined) {
+            const diffX = Math.abs(e.touches[0].clientX - startX);
+            const diffY = Math.abs(e.touches[0].clientY - startY);
+            if (diffX > 5 || diffY > 5) {
+                isDragging = true;
+            }
+        }
+    });
+    
+    // Agregar evento click - solo si no hubo arrastre
+    supplyDiv.addEventListener('click', (e) => {
+        if (!isDragging) {
+            e.preventDefault();
+            console.log('[SUPPLY] Supply clickeado:', supply.id);
+            openSupplyPopup(supply.id);
+        }
     });
 
     return supplyDiv;
@@ -354,11 +599,29 @@ function initCarouselControls() {
         const container = section.querySelector('.carousel-container-books, .carousel-container-items, .carousel-container-loans');
         
         if (prevBtn && nextBtn && container) {
-            prevBtn.addEventListener('click', () => scrollCarousel(container, -300));
-            nextBtn.addEventListener('click', () => scrollCarousel(container, 300));
+            prevBtn.addEventListener('click', () => {
+                closePopupsIfOpen();
+                scrollCarousel(container, -300);
+            });
+            nextBtn.addEventListener('click', () => {
+                closePopupsIfOpen();
+                scrollCarousel(container, 300);
+            });
             console.log('[CAROUSEL] Controles configurados para:', section.id);
         }
     });
+}
+
+/**
+ * Cierra popups si están abiertos
+ */
+function closePopupsIfOpen() {
+    if (bookPopup && bookPopup.classList.contains('active')) {
+        closeBookPopup();
+    }
+    if (supplyPopup && supplyPopup.classList.contains('active')) {
+        closeSupplyPopup();
+    }
 }
 
 /**
@@ -392,21 +655,60 @@ let suppliesData = [];
 let currentBookId = null;
 let currentSupplyId = null;
 
-// Elementos del DOM para popups
-const bookPopup = document.getElementById('bookPopup');
-const supplyPopup = document.getElementById('suppPopup');
-const closeBookPopupBtn = document.querySelector('#bookPopup .close-btn');
-const closeSupplyPopupBtn = document.querySelector('#suppPopup .close-btn');
-const reserveBookBtn = document.getElementById('reserveBookBtn');
-const reserveSupplyBtn = document.getElementById('reserveSuppBtn');
+// Variables para elementos del DOM (se inicializan en initPopups)
+let bookPopup, supplyPopup, closeBookPopupBtn, closeSupplyPopupBtn, reserveBookBtn, reserveSupplyBtn;
 
 // Inicializar popups
 function initPopups() {
+    console.log('[POPUPS] Inicializando popups...');
+    console.log('[POPUPS] DOM actual:', {
+        bookPlaceholder: document.getElementById('book-popup-placeholder'),
+        suppPlaceholder: document.getElementById('supp-popup-placeholder')
+    });
+    
+    // Obtener elementos del DOM
+    bookPopup = document.getElementById('bookPopup');
+    supplyPopup = document.getElementById('suppPopup');
+    
+    console.log('[POPUPS] Elementos popup encontrados:', {
+        bookPopup: bookPopup,
+        supplyPopup: supplyPopup
+    });
+    
+    closeBookPopupBtn = document.querySelector('#bookPopup .close-btn');
+    closeSupplyPopupBtn = document.querySelector('#suppPopup .close-btn');
+    reserveBookBtn = document.getElementById('reserveBookBtn');
+    reserveSupplyBtn = document.getElementById('reserveSuppBtn');
+    
+    console.log('[POPUPS] Botones encontrados:', {
+        closeBookPopupBtn: closeBookPopupBtn,
+        closeSupplyPopupBtn: closeSupplyPopupBtn,
+        reserveBookBtn: reserveBookBtn,
+        reserveSupplyBtn: reserveSupplyBtn
+    });
+    
+    // Asegurar que los popups estén completamente ocultos al inicio
+    if (bookPopup) {
+        bookPopup.classList.remove('active');
+        console.log('[POPUPS] Book popup inicializado correctamente');
+    } else {
+        console.error('[POPUPS] ❌ No se encontró el elemento bookPopup en el DOM');
+    }
+    
+    if (supplyPopup) {
+        supplyPopup.classList.remove('active');
+        console.log('[POPUPS] Supply popup inicializado correctamente');
+    } else {
+        console.error('[POPUPS] ❌ No se encontró el elemento supplyPopup en el DOM');
+    }
+    
     if (closeBookPopupBtn) {
         closeBookPopupBtn.addEventListener('click', closeBookPopup);
+        console.log('[POPUPS] Event listener agregado a closeBookPopupBtn');
     }
     if (closeSupplyPopupBtn) {
         closeSupplyPopupBtn.addEventListener('click', closeSupplyPopup);
+        console.log('[POPUPS] Event listener agregado a closeSupplyPopupBtn');
     }
     if (bookPopup) {
         bookPopup.addEventListener('click', function(e) {
@@ -428,80 +730,180 @@ function initPopups() {
     if (reserveSupplyBtn) {
         reserveSupplyBtn.addEventListener('click', handleSupplyReserve);
     }
+    
+    console.log('[POPUPS] ✅ Inicialización completada');
 }
 
 /**
  * Función para abrir popup de libro
  */
 function openBookPopup(bookId) {
+    console.log('[POPUP] Intentando abrir popup de libro, ID:', bookId);
+    console.log('[POPUP] bookPopup elemento:', bookPopup);
+    
     const book = booksData.find(b => b.id === bookId);
-    if (!book) return;
-
-    currentBookId = bookId;
-
-    document.getElementById('bookPopupImage').src = book.img ? `/assets/items/${book.img}` : '/assets/icons/book-placeholder.png';
-    document.getElementById('bookPopupTitle').textContent = book.name;
-    document.getElementById('bookPopupAuthor').textContent = `Por ${book.author}`;
-    document.getElementById('bookPopupSinopsis').textContent = book.sinopsis || 'Sin sinopsis disponible';
-    document.getElementById('bookPopupEditorial').textContent = book.editorial || 'N/A';
-    document.getElementById('bookPopupGender').textContent = book.gender || 'N/A';
-    document.getElementById('bookPopupLength').textContent = book.length ? `${book.length} páginas` : 'N/A';
-    document.getElementById('bookPopupStock').textContent = book.quant > 0 ? `${book.quant} disponibles` : 'No disponible';
-
-    if (book.quant > 0) {
-        reserveBookBtn.disabled = false;
-        reserveBookBtn.textContent = 'Reservar Libro';
-    } else {
-        reserveBookBtn.disabled = true;
-        reserveBookBtn.textContent = 'No Disponible';
+    if (!book) {
+        console.error('[POPUP] Libro no encontrado:', bookId);
+        return;
     }
 
-    bookPopup.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    console.log('[POPUP] Libro encontrado:', book);
+    console.log('[POPUP] Imagen del libro:', book.img);
+    currentBookId = bookId;
+
+    // Verificar que los elementos existan
+    const elements = {
+        image: document.getElementById('bookPopupImage'),
+        title: document.getElementById('bookPopupTitle'),
+        author: document.getElementById('bookPopupAuthor'),
+        sinopsis: document.getElementById('bookPopupSinopsis'),
+        editorial: document.getElementById('bookPopupEditorial'),
+        gender: document.getElementById('bookPopupGender'),
+        length: document.getElementById('bookPopupLength'),
+        stock: document.getElementById('bookPopupStock')
+    };
+
+    console.log('[POPUP] Elementos del popup:', elements);
+
+    // Rellenar datos - IMAGEN
+    if (elements.image) {
+        const imgSrc = book.img ? normalizeImagePath(book.img) : '/assets/icons/book-placeholder.png';
+        elements.image.src = imgSrc;
+        console.log('[POPUP BOOK] Valor original:', book.img);
+        console.log('[POPUP BOOK] Asignando imagen del popup:', imgSrc);
+        
+        elements.image.onerror = function() {
+            console.error('[POPUP BOOK] ❌ ERROR cargando imagen del popup:', imgSrc);
+            elements.image.src = '/assets/icons/book-placeholder.png';
+        };
+        
+        elements.image.onload = function() {
+            console.log('[POPUP BOOK] ✅ Imagen del popup cargada:', imgSrc);
+        };
+    }
+    
+    if (elements.title) elements.title.textContent = book.name;
+    if (elements.author) elements.author.textContent = `Por ${book.author}`;
+    if (elements.sinopsis) elements.sinopsis.textContent = book.sinopsis || 'Sin sinopsis disponible';
+    if (elements.editorial) elements.editorial.textContent = book.editorial || 'N/A';
+    if (elements.gender) elements.gender.textContent = book.gender || 'N/A';
+    if (elements.length) elements.length.textContent = book.length ? `${book.length} páginas` : 'N/A';
+    if (elements.stock) elements.stock.textContent = book.quant > 0 ? `${book.quant} disponibles` : 'No disponible';
+
+    if (reserveBookBtn) {
+        if (book.quant > 0) {
+            reserveBookBtn.disabled = false;
+            reserveBookBtn.textContent = 'Reservar Libro';
+        } else {
+            reserveBookBtn.disabled = true;
+            reserveBookBtn.textContent = 'No Disponible';
+        }
+    }
+
+    // Abrir popup
+    if (bookPopup) {
+        console.log('[POPUP] Abriendo popup de libro...');
+        bookPopup.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        console.log('[POPUP] ✅ Popup de libro abierto');
+    } else {
+        console.error('[POPUP] ❌ Elemento bookPopup no encontrado!');
+    }
 }
 
 /**
  * Función para abrir popup de suministro
  */
 function openSupplyPopup(supplyId) {
+    console.log('[POPUP] Intentando abrir popup de supply, ID:', supplyId);
+    console.log('[POPUP] supplyPopup elemento:', supplyPopup);
+    
     const supply = suppliesData.find(s => s.id === supplyId);
-    if (!supply) return;
-
-    currentSupplyId = supplyId;
-
-    document.getElementById('suppPopupImage').src = supply.img ? `/assets/items/${supply.img}` : '/assets/icons/supply-placeholder.png';
-    document.getElementById('suppPopupTitle').textContent = supply.name;
-        document.getElementById('suppPopupDescription').textContent = supply.description || 'Sin descripción disponible';
-    document.getElementById('suppPopupStock').textContent = (supply.total_quantity - supply.borrowed) > 0 ? `${supply.total_quantity - supply.borrowed} disponibles` : 'No disponible';
-
-    if ((supply.total_quantity - supply.borrowed) > 0) {
-        reserveSupplyBtn.disabled = false;
-        reserveSupplyBtn.textContent = 'Reservar Material';
-    } else {
-        reserveSupplyBtn.disabled = true;
-        reserveSupplyBtn.textContent = 'No Disponible';
+    if (!supply) {
+        console.error('[POPUP] Supply no encontrado:', supplyId);
+        return;
     }
 
-    supplyPopup.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    console.log('[POPUP] Supply encontrado:', supply);
+    console.log('[POPUP] Imagen del supply:', supply.img);
+    currentSupplyId = supplyId;
+
+    // Verificar que los elementos existan
+    const elements = {
+        image: document.getElementById('suppPopupImage'),
+        title: document.getElementById('suppPopupTitle'),
+        description: document.getElementById('suppPopupDescription'),
+        stock: document.getElementById('suppPopupStock'),
+        barcode: document.getElementById('suppPopupBarcode')
+    };
+
+    console.log('[POPUP] Elementos del popup:', elements);
+
+    // Rellenar datos - IMAGEN
+    if (elements.image) {
+        const imgSrc = supply.img ? normalizeImagePath(supply.img) : '/assets/icons/supply-placeholder.png';
+        elements.image.src = imgSrc;
+        console.log('[POPUP SUPPLY] Valor original:', supply.img);
+        console.log('[POPUP SUPPLY] Asignando imagen del popup:', imgSrc);
+        
+        elements.image.onerror = function() {
+            console.error('[POPUP SUPPLY] ❌ ERROR cargando imagen del popup:', imgSrc);
+            elements.image.src = '/assets/icons/supply-placeholder.png';
+        };
+        
+        elements.image.onload = function() {
+            console.log('[POPUP SUPPLY] ✅ Imagen del popup cargada:', imgSrc);
+        };
+    }
+    
+    if (elements.title) elements.title.textContent = supply.name;
+    if (elements.description) elements.description.textContent = supply.description || 'Sin descripción disponible';
+    if (elements.stock) elements.stock.textContent = (supply.total_quantity - supply.borrowed) > 0 ? `${supply.total_quantity - supply.borrowed} disponibles` : 'No disponible';
+    if (elements.barcode) elements.barcode.textContent = supply.barCode || 'N/A';
+
+    if (reserveSupplyBtn) {
+        if ((supply.total_quantity - supply.borrowed) > 0) {
+            reserveSupplyBtn.disabled = false;
+            reserveSupplyBtn.textContent = 'Reservar Material';
+        } else {
+            reserveSupplyBtn.disabled = true;
+            reserveSupplyBtn.textContent = 'No Disponible';
+        }
+    }
+
+    // Abrir popup
+    if (supplyPopup) {
+        console.log('[POPUP] Abriendo popup de supply...');
+        supplyPopup.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        console.log('[POPUP] ✅ Popup de supply abierto');
+    } else {
+        console.error('[POPUP] ❌ Elemento supplyPopup no encontrado!');
+    }
 }
 
 /**
  * Función para cerrar popup de libro
  */
 function closeBookPopup() {
-    bookPopup.classList.remove('active');
-    document.body.style.overflow = 'auto';
-    currentBookId = null;
+    if (bookPopup) {
+        bookPopup.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        currentBookId = null;
+        console.log('[POPUP] ✅ Popup de libro cerrado');
+    }
 }
 
 /**
  * Función para cerrar popup de suministro
  */
 function closeSupplyPopup() {
-    supplyPopup.classList.remove('active');
-    document.body.style.overflow = 'auto';
-    currentSupplyId = null;
+    if (supplyPopup) {
+        supplyPopup.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        currentSupplyId = null;
+        console.log('[POPUP] ✅ Popup de supply cerrado');
+    }
 }
 
 /**
@@ -514,27 +916,17 @@ async function handleBookReserve() {
         reserveBookBtn.disabled = true;
         reserveBookBtn.textContent = 'Procesando...';
 
-        const response = await fetch('/api/loans/book', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                bookId: currentBookId,
-                dateOut: calculateReturnDate()
-            })
-        });
+        // Obtener nombre del libro del popup
+        const bookName = document.getElementById('bookPopupTitle')?.textContent || '';
 
-        const data = await response.json();
+        // Usar función unificada
+        const result = await requestLoan(currentBookId, 'book', bookName);
 
-        if (response.ok) {
-            alert('¡Reserva exitosa! Puedes retirar el libro en la biblioteca.');
+        if (result.success) {
             closeBookPopup();
             // Recargar carruseles para actualizar datos
             await reloadCarousels();
         } else {
-            alert(data.message || 'Error al realizar la reserva');
             reserveBookBtn.disabled = false;
             reserveBookBtn.textContent = 'Reservar Libro';
         }
@@ -556,27 +948,17 @@ async function handleSupplyReserve() {
         reserveSupplyBtn.disabled = true;
         reserveSupplyBtn.textContent = 'Procesando...';
 
-        const response = await fetch('/api/loans/supply', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                supplyId: currentSupplyId,
-                dateOut: calculateReturnDate()
-            })
-        });
+        // Obtener nombre del supply del popup
+        const supplyName = document.getElementById('suppPopupTitle')?.textContent || '';
 
-        const data = await response.json();
+        // Usar función unificada
+        const result = await requestLoan(currentSupplyId, 'supply', supplyName);
 
-        if (response.ok) {
-            alert('¡Reserva exitosa! Puedes retirar el material en la biblioteca.');
+        if (result.success) {
             closeSupplyPopup();
             // Recargar carruseles para actualizar datos
             await reloadCarousels();
         } else {
-            alert(data.message || 'Error al realizar la reserva');
             reserveSupplyBtn.disabled = false;
             reserveSupplyBtn.textContent = 'Reservar Material';
         }
@@ -589,12 +971,64 @@ async function handleSupplyReserve() {
 }
 
 /**
- * Función auxiliar para calcular fecha de devolución (30 días)
+ * Carga la información del usuario
  */
-function calculateReturnDate() {
-    const date = new Date();
-    date.setDate(date.getDate() + 30);
-    return date.toISOString().split('T')[0];
+async function loadUserInfo() {
+    try {
+        console.log('[USER] Cargando información del usuario...');
+        
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (!userData) {
+            console.error('[USER] No hay datos de usuario en localStorage');
+            window.location.href = '/login';
+            return;
+        }
+
+        // Si tenemos datos básicos, mostrarlos
+        if (userData.name) {
+            updateUserDisplay(userData);
+        }
+
+        // Cargar información completa del usuario desde la API
+        const response = await fetch(`/api/users/${userData.id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            if (result.user) {
+                // Actualizar localStorage con datos frescos
+                const updatedUserData = { ...userData, ...result.user };
+                localStorage.setItem('userData', JSON.stringify(updatedUserData));
+                updateUserDisplay(updatedUserData);
+                console.log('[USER] Información del usuario cargada');
+            }
+        } else {
+            console.warn('[USER] No se pudo cargar info completa, usando datos básicos');
+        }
+
+    } catch (error) {
+        console.error('[USER] Error cargando información del usuario:', error);
+    }
+}
+
+/**
+ * Actualiza la visualización de la información del usuario
+ */
+function updateUserDisplay(userData) {
+    // Aquí puedes agregar lógica para mostrar el nombre del usuario en la página
+    // Por ejemplo, en un elemento de bienvenida o en el header
+    
+    const welcomeElement = document.getElementById('user-welcome');
+    if (welcomeElement && userData.name) {
+        welcomeElement.textContent = `¡Bienvenido, ${userData.name} ${userData.lastName || ''}!`;
+    }
+    
+    console.log('[USER] Display actualizado:', userData.name, userData.lastName);
 }
 
 console.log('[USER HOME] Script cargado correctamente');

@@ -9,30 +9,38 @@
 
 <body>
   
-  <header id="header">
-    <img src="/assets/logo.png" alt="BiblioTech">
-    <a href="/userActivity" target="_self">
-      <img src="/assets/icons/campana.png" id="campana" alt="Notificaciones">
-    </a>
-  </header>
+  <script>
+    // Cargar el header
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.body.insertAdjacentHTML('afterbegin', data);
+      })
+      .catch(error => console.error('Error cargando header:', error));
+  </script>
 
   <main id="main-content">
   
     <section class="title-description-section">
       <h1 id="title">BiblioTech</h1>
       <p id="descripcion">Tu biblioteca digital de confianza</p>
+      <p id="user-welcome" class="user-welcome"></p>
     </section>
 
     <!-- Carrusel de Préstamos Activos -->
-    <section id="loans-carousel" class="carousel-section loans-section">
+    <section id="loans-carousel" class="carousel-section loans-section hidden">
       <h2 class="carousel-title">Mis Préstamos Activos</h2>
       <div class="carousel-container-loans">
         <!-- Los préstamos se cargan dinámicamente -->
       </div>
       
       <div class="carousel-controls">
-        <button class="carousel-prev"></button>
-        <button class="carousel-next"></button>
+        <button class="carousel-prev" aria-label="Anterior">
+          <img src="/assets/icons/left.png" alt="Anterior">
+        </button>
+        <button class="carousel-next" aria-label="Siguiente">
+          <img src="/assets/icons/right.png" alt="Siguiente">
+        </button>
       </div>
     </section>
 
@@ -43,8 +51,12 @@
       </div>
       
       <div class="carousel-controls">
-        <button class="carousel-prev"></button>
-        <button class="carousel-next"></button>
+        <button class="carousel-prev" aria-label="Anterior">
+          <img src="/assets/icons/left.png" alt="Anterior">
+        </button>
+        <button class="carousel-next" aria-label="Siguiente">
+          <img src="/assets/icons/right.png" alt="Siguiente">
+        </button>
       </div>
     </section>
   
@@ -56,8 +68,12 @@
       </div>
 
       <div class="carousel-controls">
-        <button class="carousel-prev"></button>
-        <button class="carousel-next"></button>
+        <button class="carousel-prev" aria-label="Anterior">
+          <img src="/assets/icons/left.png" alt="Anterior">
+        </button>
+        <button class="carousel-next" aria-label="Siguiente">
+          <img src="/assets/icons/right.png" alt="Siguiente">
+        </button>
       </div>
     </section>   
 
@@ -67,7 +83,7 @@
       <div class="info-grid">
         <div class="info-square">
           <h3 class="info-title">Sobre Nosotros</h3>
-          <p class="info">¡Ayudanos a crecer!</p>
+          <p class="info" href="https://et21.com.ar/">et21.com.ar</p>
         </div>
 
         <div class="info-square">
@@ -83,71 +99,10 @@
   <div id="nav-placeholder"></div>
 
   <!-- Popups para información de libros y supplies -->
-  <div id="bookPopup" class="popup">
-    <div class="popup-content">
-      <button class="close-btn" id="closeBookPopup">&times;</button>
-      <div class="popup-body">
-        <div class="popup-left">
-          <img id="bookPopupImage" src="" alt="Portada del libro">
-        </div>
-        <div class="popup-right">
-          <h2 id="bookPopupTitle"></h2>
-          <p class="author" id="bookPopupAuthor"></p>
-          <p class="sinopsis" id="bookPopupSinopsis"></p>
-          
-          <div class="book-meta">
-            <div class="meta-item">
-              <div class="meta-label">Editorial</div>
-              <div class="meta-value" id="bookPopupEditorial"></div>
-            </div>
-            <div class="meta-item">
-              <div class="meta-label">Género</div>
-              <div class="meta-value" id="bookPopupGender"></div>
-            </div>
-            <div class="meta-item">
-              <div class="meta-label">Páginas</div>
-              <div class="meta-value" id="bookPopupLength"></div>
-            </div>
-            <div class="meta-item">
-              <div class="meta-label">Disponibles</div>
-              <div class="meta-value" id="bookPopupStock"></div>
-            </div>
-          </div>
+  <div id="book-popup-placeholder"></div>
+  <div id="supp-popup-placeholder"></div>
 
-          <button class="reserve-btn" id="reserveBookBtn">Reservar Libro</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="suppPopup" class="popup">
-    <div class="popup-content">
-      <button class="close-btn" id="closeSuppPopup">&times;</button>
-      <div class="popup-body">
-        <div class="popup-left">
-          <img id="suppPopupImage" src="" alt="Imagen del supply">
-        </div>
-        <div class="popup-right">
-          <h2 id="suppPopupTitle"></h2>
-          <p class="description" id="suppPopupDescription"></p>
-          
-          <div class="supp-meta">
-            <div class="meta-item">
-              <div class="meta-label">Código de Barras</div>
-              <div class="meta-value" id="suppPopupBarcode"></div>
-            </div>
-            <div class="meta-item">
-              <div class="meta-label">Disponibles</div>
-              <div class="meta-value" id="suppPopupStock"></div>
-            </div>
-          </div>
-
-          <button class="reserve-btn" id="reserveSuppBtn">Reservar Material</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <script src="/js/loanHelper.js"></script>
   <script src="/js/userHome.js"></script>
   <script>
     // Cargar la barra de navegación

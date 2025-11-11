@@ -8,71 +8,97 @@
 </head>
 <body>
 
-  <header>
-    <div class="perfil-header">
-      <div class="perfil-info">
-        <div class="foto-perfil">Foto de perfil</div>
-        <span class="nombre-usuario">Test@gmail.com</span>
+  <main class="profile-container">
+    <!-- Información del usuario -->
+    <section class="user-info-section">
+      <div class="profile-picture">
+        <img id="user-avatar" src="/assets/profiles/user-default.jpg" alt="Foto de perfil">
       </div>
-      <button class="btn-editar" onclick="togglePopup()">Editar perfil</button>
-    </div>
-  </header>
+      <div class="user-details">
+        <h1 id="user-fullname">Nombre Apellido</h1>
+        <p id="user-email">correo@ejemplo.com</p>
+      </div>
+    </section>
 
-  <!-- CONTENEDOR CON GRID -->
-  <div class="section-grid">
+    <!-- Botones de acción -->
+    <section class="action-buttons">
+      <button class="btn-editar" onclick="togglePopup()">
+        <img src="/assets/icons/edit.png" alt="Editar" class="btn-icon">
+        Editar perfil
+      </button>
+      <button class="btn-logout" onclick="window.location.href='/logout'">
+        <img src="/assets/icons/logout.png" alt="Cerrar sesión" class="btn-icon">
+        Cerrar sesión
+      </button>
+    </section>
 
-    <!-- MEDALLAS -->
-    <a href="/medals" class="section-card">
-      <h2>Medallas</h2>
-      <p>Aún no tienes medallas</p>
-    </a>
+    <!-- Grid de secciones -->
+    <section class="section-grid">
+      <!-- Medallas -->
+      <a href="/medals" class="section-card">
+        <div class="card-icon">🏅</div>
+        <h2>Tus Medallas</h2>
+        <p id="medals-preview" class="card-preview">Cargando...</p>
+      </a>
 
-    <!-- LIBROS LIKEADOS -->
-    <a href="/likes" class="section-card">
-      <h2>Libros con Me Gusta</h2>
-      <p>Sin libros guardados</p>
-    </a>
+      <!-- Libros Likeados -->
+      <a href="/liked" class="section-card">
+        <div class="card-icon">❤️</div>
+        <h2>Libros Likeados</h2>
+        <p id="likes-preview" class="card-preview">Cargando...</p>
+      </a>
 
-    <!-- HISTORIAL OCUPA TODO EL ANCHO -->
-    <a href="/history" class="section-card section-full">
-      <h2>Historial de reservas</h2>
-      <p>No tienes reservas aún</p>
-    </a>
-
-  </div>
+      <!-- Historial de reservas - Ocupa todo el ancho -->
+      <a href="/history" class="section-card section-full">
+        <div class="card-icon">📚</div>
+        <h2>Historial de Reservas</h2>
+        <p id="history-preview" class="card-preview">Cargando...</p>
+      </a>
+    </section>
+  </main>
 
   <!-- Popup Editar Perfil -->
   <div id="popupEditarPerfil" class="popup-overlay">
-      <div class="popup-content">
-          <div class="popup-header">
-              <h2>Editar Perfil</h2>
-              <button class="close-btn" onclick="togglePopup()">×</button>
-          </div>
-          <form class="edit-form">
-              <div class="form-group">
-                  <label for="nombre">Nombre:</label>
-                  <input type="text" id="nombre" name="nombre" required>
-              </div>
-              <div class="form-group">
-                  <label for="email">Email:</label>
-                  <input type="email" id="email" name="email" required>
-              </div>
-              <div class="form-group">
-                  <label for="bio">Biografía:</label>
-                  <textarea id="bio" name="bio" rows="4"></textarea>
-              </div>
-              <div class="form-group">
-                  <label for="foto">Foto de perfil:</label>
-                  <input type="file" id="foto" name="foto" accept="image/*">
-              </div>
-              <div class="form-buttons">
-                  <button type="button" class="btn-cancelar" onclick="togglePopup()">Cancelar</button>
-                  <button type="submit" class="btn-guardar">Guardar Cambios</button>
-              </div>
-          </form>
+    <div class="popup-content">
+      <div class="popup-header">
+        <h2>Editar perfil</h2>
+        <button class="close-btn" onclick="togglePopup()">×</button>
       </div>
+      <form id="editForm" class="edit-form">
+        <div class="form-group">
+          <label for="edit-name">Nombre:</label>
+          <input type="text" id="edit-name" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-lastname">Apellido:</label>
+          <input type="text" id="edit-lastname" name="lastName" required>
+        </div>
+        <div class="form-group">
+          <label for="photo-selector">Selecciona foto de perfil:</label>
+          <div id="photo-selector" class="photo-grid">
+            <!-- Las fotos se cargarán dinámicamente -->
+          </div>
+        </div>
+        <div class="form-buttons">
+          <button type="button" class="btn-cancelar" onclick="togglePopup()">Cancelar</button>
+          <button type="submit" class="btn-guardar">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
   </div>
 
+  <!-- Navigation Component -->
+  <div id="navigation-container"></div>
+
   <script src="/js/userProfile.js"></script>
+  <script>
+    // Load navigation component
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('navigation-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error loading navigation:', error));
+  </script>
 </body>
 </html>

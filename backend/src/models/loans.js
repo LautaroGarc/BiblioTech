@@ -4,8 +4,8 @@ class LoanModel {
     static async createBookLoan(loanData) {
         const { userId, bookId, dateOut } = loanData;
         const query = `
-            INSERT INTO bookLoans (userId, bookId, dateOut, state) 
-            VALUES (?, ?, ?, 'no aprobado')
+            INSERT INTO bookLoans (userId, bookId, dateOut) 
+            VALUES (?, ?, ?)
         `;
         const [result] = await db.execute(query, [userId, bookId, dateOut]);
         return result;
@@ -14,8 +14,8 @@ class LoanModel {
     static async createSupplyLoan(loanData) {
         const { userId, itemId, dateOut } = loanData;
         const query = `
-            INSERT INTO suppLoans (userId, itemId, dateOut, state) 
-            VALUES (?, ?, ?, 'no aprobado')
+            INSERT INTO suppLoans (userId, itemId, dateOut) 
+            VALUES (?, ?, ?)
         `;
         const [result] = await db.execute(query, [userId, itemId, dateOut]);
         return result;
@@ -58,7 +58,7 @@ class LoanModel {
                 bl.returned_at
             FROM bookLoans bl
             JOIN books b ON bl.bookId = b.id
-            WHERE bl.userId = ? AND bl.state IN ('espera', 'en prestamo', 'atrasado')
+            WHERE bl.userId = ? AND bl.state IN ('no aprobado', 'espera', 'en prestamo', 'atrasado')
             
             UNION ALL
             
@@ -75,7 +75,7 @@ class LoanModel {
                 sl.returned_at
             FROM suppLoans sl
             JOIN supplies s ON sl.itemId = s.id
-            WHERE sl.userId = ? AND sl.state IN ('espera', 'en prestamo', 'atrasado')
+            WHERE sl.userId = ? AND sl.state IN ('no aprobado', 'espera', 'en prestamo', 'atrasado')
             ORDER BY dateIn DESC
         `;
         const [rows] = await db.execute(query, [userId, userId]);
@@ -213,11 +213,13 @@ class LoanModel {
 
     static async getAllLoans(filters = {}) {
         const { state, type, limit = 50, offset = 0 } = filters;
-        let whereClause = '';
+        let bookWhereClause = '';
+        let supplyWhereClause = '';
         const params = [];
 
         if (state) {
-            whereClause += ` AND bl.state = ? AND sl.state = ?`;
+            bookWhereClause += ` AND bl.state = ?`;
+            supplyWhereClause += ` AND sl.state = ?`;
             params.push(state, state);
         }
 
@@ -231,6 +233,7 @@ class LoanModel {
                 u.email as userEmail,
                 bl.bookId as itemId,
                 b.name as itemName,
+                b.img,
                 bl.state,
                 bl.dateIn,
                 bl.dateOut,
@@ -238,7 +241,7 @@ class LoanModel {
             FROM bookLoans bl
             JOIN users u ON bl.userId = u.id
             JOIN books b ON bl.bookId = b.id
-            WHERE 1=1 ${whereClause}
+            WHERE 1=1 ${bookWhereClause}
             
             UNION ALL
             
@@ -251,6 +254,7 @@ class LoanModel {
                 u.email as userEmail,
                 sl.itemId as itemId,
                 s.name as itemName,
+                s.img,
                 sl.state,
                 sl.dateIn,
                 sl.dateOut,
@@ -258,7 +262,7 @@ class LoanModel {
             FROM suppLoans sl
             JOIN users u ON sl.userId = u.id
             JOIN supplies s ON sl.itemId = s.id
-            WHERE 1=1 ${whereClause}
+            WHERE 1=1 ${supplyWhereClause}
             ORDER BY dateIn DESC
             LIMIT ? OFFSET ?
         `;

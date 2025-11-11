@@ -79,6 +79,64 @@ class BarcodeController {
             });
         }
     }
+
+    /**
+     * Escanear código de barras y obtener información completa del item
+     * @route GET /api/barcode/scan/:barcode
+     */
+    static async scanBarcode(req, res) {
+        try {
+            const { barcode } = req.params;
+
+            if (!barcode) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Código de barras requerido'
+                });
+            }
+
+            // Buscar en libros
+            const book = await getBookBarcode(barcode);
+            if (book) {
+                return res.json({
+                    success: true,
+                    data: {
+                        ...book,
+                        type: 'book',
+                        available: book.quant - (book.borrowed ? 1 : 0),
+                        quantity: book.quant
+                    }
+                });
+            }
+
+            // Buscar en útiles
+            const supply = await getItemBarcode(barcode);
+            if (supply) {
+                return res.json({
+                    success: true,
+                    data: {
+                        ...supply,
+                        type: 'supply',
+                        available: (supply.total_quantity || 0) - (supply.borrowed || 0),
+                        quantity: supply.total_quantity
+                    }
+                });
+            }
+
+            // No encontrado
+            return res.status(404).json({
+                success: false,
+                message: 'Item no encontrado con ese código de barras'
+            });
+
+        } catch (error) {
+            console.error('[SCAN BARCODE ERROR]', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al escanear código de barras'
+            });
+        }
+    }
 }
 
 module.exports = BarcodeController;

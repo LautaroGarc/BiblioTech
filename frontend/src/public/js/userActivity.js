@@ -1,35 +1,233 @@
 let currentFilter = 'todas';
-let currentUserId = 'user123'; // En producción, esto vendría de la sesión del usuario
+let currentUser = null;
+let notifications = [];
 
-// Función para cargar notificaciones del usuario
+// Inicializar usuario
+document.addEventListener('DOMContentLoaded', async function() {
+  // Obtener datos del usuario
+  const userData = JSON.parse(localStorage.getItem('userData'));
+  if (!userData) {
+    console.error('[ACTIVITY] No hay datos de usuario');
+    window.location.href = '/login';
+    return;
+  }
+  
+  currentUser = userData;
+  console.log('[ACTIVITY] Usuario cargado:', currentUser.email);
+  
+  // Cargar notificaciones
+  await loadUserNotifications();
+  
+  // Event listeners para los filtros
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', async () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentFilter = tab.dataset.filter;
+      await renderNotifications(currentFilter);
+    });
+  });
+  
+  // Renderizar notificaciones iniciales
+  await renderNotifications(currentFilter);
+});
+
+// Función para cargar notificaciones del usuario desde localStorage y API
 async function loadUserNotifications() {
   try {
-    const result = await window.storage.get(`notifications:${currentUserId}`);
-    if (result && result.value) {
-      return JSON.parse(result.value);
+    notifications = [];
+    
+    // Cargar notificaciones del localStorage (solicitudes recientes)
+    try {
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      if (userData.notifications && Array.isArray(userData.notifications)) {
+        userData.notifications.forEach(localNotif => {
+          const state = localNotif.state || 'espera';
+          let icon, badge;
+          
+          if (state === 'no aprobado') {
+            icon = '⏳';
+            badge = 'Por Aprobar';
+          } else if (state === 'espera') {
+            icon = '📦';
+            badge = 'Listo';
+          } else {
+            icon = '📚';
+            badge = 'Activo';
+          }
+          
+          notifications.push({
+            id: `local-${localNotif.id}`,
+            type: 'alquileres',
+            icon: icon,
+            iconClass: 'icon-alquiler',
+            title: localNotif.title || 'Préstamo',
+            description: localNotif.message || localNotif.itemName,
+            date: getTimeAgo(new Date(localNotif.timestamp).getTime()),
+            badge: badge,
+            unread: !localNotif.read,
+            timestamp: new Date(localNotif.timestamp).getTime()
+          });
+        });
+      }
+    } catch (error) {
+      console.error('[ACTIVITY] Error cargando notificaciones de localStorage:', error);
     }
-    return [];
+    
+    // Cargar préstamos del usuario desde la API
+    const loansResponse = await fetch('/api/loans/me', {
+      credentials: 'include'
+    });
+    
+    if (loansResponse.ok) {
+      const loansData = await loansResponse.json();
+      const loans = loansData.data || loansData.loans || [];
+      
+      console.log('[ACTIVITY] Préstamos cargados desde API:', loans.length);
+      
+      // Generar notificaciones desde los préstamos
+      loans.forEach(loan => {
+        const itemName = loan.itemName || loan.item_name || loan.book_name || 'Item';
+        const itemType = loan.type || loan.item_type || (loan.book_name ? 'libro' : 'útil');
+        const loanState = loan.state || loan.status || 'espera';
+        const dateIn = loan.dateIn || loan.created_at;
+        
+        // Notificación de préstamo no aprobado (pendiente de aprobación)
+        if (loanState === 'no aprobado') {
+          notifications.push({
+            id: `loan-pending-${loan.id}`,
+            type: 'alquileres',
+            icon: '⏳',
+            iconClass: 'icon-alquiler',
+            title: 'Préstamo por aceptar',
+            description: `${itemType === 'book' ? 'Libro' : 'Útil'}: "${itemName}" - En espera de aprobación`,
+            date: getTimeAgo(new Date(dateIn).getTime()),
+            badge: 'Por Aprobar',
+            unread: true,
+            timestamp: new Date(dateIn).getTime()
+          });
+        }
+        
+        // Notificación de préstamo en espera (aprobado, esperando retiro)
+        else if (loanState === 'espera') {
+          notifications.push({
+            id: `loan-${loan.id}`,
+            type: 'alquileres',
+            icon: '📦',
+            iconClass: 'icon-alquiler',
+            title: 'Préstamo aprobado',
+            description: `${itemType === 'book' ? 'Libro' : 'Útil'}: "${itemName}" - Listo para retirar`,
+            date: getTimeAgo(new Date(dateIn).getTime()),
+            badge: 'Listo',
+            unread: true,
+            timestamp: new Date(dateIn).getTime()
+          });
+        }
+        
+        // Notificación de préstamo activo
+        else if (loanState === 'en prestamo') {
+          notifications.push({
+            id: `loan-${loan.id}`,
+            type: 'alquileres',
+            icon: '📚',
+            iconClass: 'icon-alquiler',
+            title: 'Préstamo activo',
+            description: `${itemType === 'book' ? 'Libro' : 'Útil'}: "${itemName}"`,
+            date: getTimeAgo(new Date(dateIn).getTime()),
+            badge: 'Activo',
+            unread: false,
+            timestamp: new Date(dateIn).getTime()
+          });
+        }
+        
+        // Notificación de devolución
+        if (loanState === 'devuelto') {
+          notifications.push({
+            id: `return-${loan.id}`,
+            type: 'devoluciones',
+            icon: '✅',
+            iconClass: 'icon-devolucion',
+            title: 'Devolución completada',
+            description: `Has devuelto "${itemName}"`,
+            date: getTimeAgo(new Date(loan.dateOut).getTime()),
+            badge: 'Completado',
+            unread: false,
+            timestamp: new Date(loan.dateOut).getTime()
+          });
+        }
+        
+        // Notificación de recordatorio (si está próximo a vencer)
+        if (loanState === 'en prestamo' && loan.dateOut) {
+          const daysUntilDue = Math.ceil((new Date(loan.dateOut).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+          if (daysUntilDue <= 3 && daysUntilDue > 0) {
+            notifications.push({
+              id: `reminder-${loan.id}`,
+              type: 'recordatorios',
+              icon: '⏰',
+              iconClass: 'icon-recordatorio',
+              title: 'Recordatorio de devolución',
+              description: `"${itemName}" debe devolverse en ${daysUntilDue} día${daysUntilDue > 1 ? 's' : ''}`,
+              date: 'Recordatorio',
+              badge: 'Urgente',
+              unread: true,
+              timestamp: Date.now()
+            });
+          } else if (daysUntilDue <= 0) {
+            notifications.push({
+              id: `overdue-${loan.id}`,
+              type: 'recordatorios',
+              icon: '⚠️',
+              iconClass: 'icon-recordatorio',
+              title: 'Préstamo vencido',
+              description: `"${itemName}" debió devolverse hace ${Math.abs(daysUntilDue)} día${Math.abs(daysUntilDue) > 1 ? 's' : ''}`,
+              date: 'Vencido',
+              badge: 'Atrasado',
+              unread: true,
+              timestamp: Date.now()
+            });
+          }
+        }
+        
+        // Notificación de préstamo atrasado
+        if (loanState === 'atrasado') {
+          const daysOverdue = Math.ceil((Date.now() - new Date(loan.dateOut).getTime()) / (1000 * 60 * 60 * 24));
+          notifications.push({
+            id: `overdue-${loan.id}`,
+            type: 'recordatorios',
+            icon: '⚠️',
+            iconClass: 'icon-recordatorio',
+            title: 'Préstamo atrasado',
+            description: `"${itemName}" debió devolverse hace ${daysOverdue} día${daysOverdue > 1 ? 's' : ''}`,
+            date: 'Atrasado',
+            badge: 'Urgente',
+            unread: true,
+            timestamp: Date.now()
+          });
+        }
+      });
+    }
+    
+    // Ordenar por timestamp (más reciente primero)
+    notifications.sort((a, b) => b.timestamp - a.timestamp);
+    
+    console.log('[ACTIVITY] Notificaciones cargadas:', notifications.length);
+    
   } catch (error) {
-    console.log('No hay notificaciones previas, iniciando con array vacío');
-    return [];
+    console.error('[ACTIVITY] Error cargando notificaciones:', error);
+    notifications = [];
   }
 }
 
-// Función para guardar notificaciones
+// Función para guardar notificaciones (ya no necesaria con API)
 async function saveUserNotifications(notifications) {
-  try {
-    await window.storage.set(`notifications:${currentUserId}`, JSON.stringify(notifications));
-  } catch (error) {
-    console.error('Error guardando notificaciones:', error);
-  }
+  // Ya no guardamos en localStorage, todo viene de la API
+  console.log('[ACTIVITY] Las notificaciones se gestionan desde la API');
 }
 
-// Función para agregar una nueva notificación
+// Función para agregar una nueva notificación manualmente (para testing)
 async function addNotification(type, title, description, badge = 'Nuevo') {
-  const notifications = await loadUserNotifications();
-  
   const newNotification = {
-    id: Date.now(),
+    id: `manual-${Date.now()}`,
     type: type,
     icon: getIconForType(type),
     iconClass: getIconClassForType(type),
@@ -41,8 +239,7 @@ async function addNotification(type, title, description, badge = 'Nuevo') {
     timestamp: Date.now()
   };
 
-  notifications.unshift(newNotification); // Agregar al inicio
-  await saveUserNotifications(notifications);
+  notifications.unshift(newNotification);
   await renderNotifications(currentFilter);
 }
 
@@ -93,22 +290,22 @@ async function renderNotifications(filter = 'todas') {
   const container = document.getElementById('notificationsList');
   const emptyState = document.getElementById('emptyState');
   
-  let notifications = await loadUserNotifications();
+  if (!container || !emptyState) return;
   
   // Actualizar fechas relativas
-  notifications = notifications.map(n => ({
+  const updatedNotifications = notifications.map(n => ({
     ...n,
     date: getTimeAgo(n.timestamp)
   }));
 
-  let filteredNotifications = notifications;
+  let filteredNotifications = updatedNotifications;
   if (filter !== 'todas') {
-    filteredNotifications = notifications.filter(n => n.type === filter);
+    filteredNotifications = updatedNotifications.filter(n => n.type === filter);
   }
 
   if (filteredNotifications.length === 0) {
     container.style.display = 'none';
-    emptyState.style.display = 'block';
+    emptyState.style.display = 'flex';
     return;
   }
 
@@ -116,7 +313,7 @@ async function renderNotifications(filter = 'todas') {
   emptyState.style.display = 'none';
 
   container.innerHTML = filteredNotifications.map(notification => `
-    <div class="notification-card ${notification.unread ? 'unread' : ''}" onclick="markAsRead(${notification.id})">
+    <div class="notification-card ${notification.unread ? 'unread' : ''}" onclick="markAsRead('${notification.id}')">
       <div class="notification-top">
         <div class="notification-icon ${notification.iconClass}">
           ${notification.icon}
@@ -138,30 +335,25 @@ async function renderNotifications(filter = 'todas') {
 
 // Función para marcar como leída
 async function markAsRead(id) {
-  const notifications = await loadUserNotifications();
   const notification = notifications.find(n => n.id === id);
   if (notification && notification.unread) {
     notification.unread = false;
-    await saveUserNotifications(notifications);
     await renderNotifications(currentFilter);
   }
 }
 
-// Event listeners para los filtros
-document.querySelectorAll('.filter-tab').forEach(tab => {
-  tab.addEventListener('click', async () => {
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentFilter = tab.dataset.filter;
-    await renderNotifications(currentFilter);
-  });
-});
+// Función para recargar notificaciones
+async function reloadNotifications() {
+  await loadUserNotifications();
+  await renderNotifications(currentFilter);
+}
 
-// Renderizar al cargar la página
-renderNotifications();
+// Actualizar notificaciones cada 30 segundos
+setInterval(reloadNotifications, 30000);
 
-// Función global para agregar notificaciones desde otras páginas
+// Función global para agregar notificaciones desde otras páginas (ya no es necesaria pero la mantenemos para compatibilidad)
 window.BiblioTechNotifications = {
+  reload: reloadNotifications,
   addAlquiler: async (itemName, itemType = 'libro') => {
     await addNotification(
       'alquileres',
@@ -194,7 +386,5 @@ window.BiblioTechNotifications = {
       'Pendiente'
     );
   }
-  
 };
-
 

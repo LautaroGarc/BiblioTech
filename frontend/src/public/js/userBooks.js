@@ -19,11 +19,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
 
-    // Cargar libros
-    await loadBooks();
-
-    // Cargar likes del usuario
+    // Cargar likes del usuario primero
     await loadUserLikes();
+
+    // Cargar libros (esto llamará a renderBooks)
+    await loadBooks();
 
     // Control de scroll modular (más preciso)
     setupScrollControl();
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Función para cargar libros
     async function loadBooks() {
         try {
-            const response = await fetch('/api/books', {
+            const response = await fetch('/api/items/books', {
                 credentials: 'include'
             });
 
@@ -177,6 +177,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             const isLiked = userLikes.has(book.id);
             const stockAvailable = book.quant > 0;
             
+            console.log(`[RENDER] Libro ${book.id} (${book.name}): isLiked=${isLiked}, userLikes.has=${userLikes.has(book.id)}`);
+            
             // Calcular cantidad de likes
             let likesCount = 0;
             if (book.likes) {
@@ -188,8 +190,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             }
 
+            // Construir ruta de imagen correctamente
+            const imgSrc = book.img ? `/assets/items/${book.img}` : '/assets/icons/book-placeholder.png';
+
             bookCard.innerHTML = `
-                <img src="${book.img || '/assets/icons/book-placeholder.png'}" 
+                <img src="${imgSrc}" 
                      alt="${book.name}" 
                      class="cover"
                      data-book-id="${book.id}">
@@ -242,7 +247,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (response.ok) {
                 const data = await response.json();
                 const likes = data.user.likes ? JSON.parse(data.user.likes) : [];
-                userLikes = new Set(likes);
+                // Asegurar que todos los IDs sean números
+                const numericLikes = likes.map(id => parseInt(id));
+                userLikes = new Set(numericLikes);
+                console.log('[LOAD LIKES] Likes del usuario cargados:', Array.from(userLikes));
             }
         } catch (error) {
             console.error('[LOAD LIKES ERROR]', error);
@@ -253,7 +261,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function toggleLike(bookId, button) {
         try {
             const isLiked = userLikes.has(bookId);
-            const endpoint = isLiked ? '/api/books/unlike' : '/api/books/like';
+            const endpoint = isLiked ? '/api/items/books/unlike' : '/api/items/books/like';
+
+            console.log(`[TOGGLE LIKE] BookId: ${bookId} (tipo: ${typeof bookId})`);
+            console.log(`[TOGGLE LIKE] UserLikes contiene bookId:`, userLikes.has(bookId));
+            console.log(`[TOGGLE LIKE] UserLikes actual:`, Array.from(userLikes));
+            console.log(`[TOGGLE LIKE] ${isLiked ? 'Quitando' : 'Agregando'} like al libro ${bookId}`);
+            console.log(`[TOGGLE LIKE] Endpoint:`, endpoint);
 
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -265,24 +279,54 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
 
             if (response.ok) {
+                const data = await response.json();
+                console.log('[TOGGLE LIKE] Respuesta:', data);
+
                 const likeIcon = button.querySelector('.like-icon');
                 const likeCountSpan = button.querySelector('.like-count');
                 let currentCount = parseInt(likeCountSpan.textContent) || 0;
 
                 if (isLiked) {
+                    // Quitar like
                     userLikes.delete(bookId);
                     button.classList.remove('liked');
                     likeIcon.src = '/assets/icons/like.png';
+                    button.title = 'Me gusta';
                     likeCountSpan.textContent = Math.max(0, currentCount - 1);
+                    
+                    // Actualizar el objeto book en el array
+                    const book = books.find(b => b.id === bookId);
+                    if (book) {
+                        const likesArray = book.likes ? (typeof book.likes === 'string' ? JSON.parse(book.likes) : book.likes) : [];
+                        const updatedLikes = likesArray.filter(id => id !== userData.id);
+                        book.likes = JSON.stringify(updatedLikes);
+                    }
                 } else {
+                    // Agregar like
                     userLikes.add(bookId);
                     button.classList.add('liked');
                     likeIcon.src = '/assets/icons/liked.png';
+                    button.title = 'Quitar like';
                     likeCountSpan.textContent = currentCount + 1;
+                    
+                    // Actualizar el objeto book en el array
+                    const book = books.find(b => b.id === bookId);
+                    if (book) {
+                        const likesArray = book.likes ? (typeof book.likes === 'string' ? JSON.parse(book.likes) : book.likes) : [];
+                        likesArray.push(userData.id);
+                        book.likes = JSON.stringify(likesArray);
+                    }
                 }
+
+                console.log('[TOGGLE LIKE] Like actualizado correctamente');
+            } else {
+                const errorData = await response.json();
+                console.error('[TOGGLE LIKE ERROR] Error del servidor:', errorData);
+                alert(errorData.message || 'Error al procesar el like');
             }
         } catch (error) {
             console.error('[TOGGLE LIKE ERROR]', error);
+            alert('Error de conexión al procesar el like');
         }
     }
 
@@ -293,7 +337,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         currentBookId = bookId;
 
-        document.getElementById('popupImage').src = book.img || '/assets/icons/book-placeholder.png';
+        // Construir ruta de imagen correctamente
+        const imgSrc = book.img ? `/assets/items/${book.img}` : '/assets/icons/book-placeholder.png';
+        document.getElementById('popupImage').src = imgSrc;
         document.getElementById('popupTitle').textContent = book.name;
         document.getElementById('popupAuthor').textContent = `Por ${book.author}`;
         document.getElementById('popupSinopsis').textContent = book.sinopsis || 'Sin sinopsis disponible';
@@ -329,27 +375,17 @@ document.addEventListener('DOMContentLoaded', async function() {
             reserveBtn.disabled = true;
             reserveBtn.textContent = 'Procesando...';
 
-            const response = await fetch('/api/loans/book', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    bookId: currentBookId,
-                    dateOut: calculateReturnDate()
-                })
-            });
+            // Obtener nombre del libro del popup
+            const bookName = document.getElementById('popupTitle')?.textContent || '';
 
-            const data = await response.json();
+            // Usar función unificada
+            const result = await requestLoan(currentBookId, 'book', bookName);
 
-            if (response.ok) {
-                alert('¡Reserva exitosa! Puedes retirar el libro en la biblioteca.');
+            if (result.success) {
                 closePopup();
                 // Recargar libros para actualizar stock
                 await loadBooks();
             } else {
-                alert(data.message || 'Error al realizar la reserva');
                 reserveBtn.disabled = false;
                 reserveBtn.textContent = 'Reservar Libro';
             }

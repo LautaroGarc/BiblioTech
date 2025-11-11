@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Administrador - Usuarios | BiblioTech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/adminUsers_new.css">
+</head>
+
+<body>
+  
+  <script>
+    // Cargar el header
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.body.insertAdjacentHTML('afterbegin', data);
+      })
+      .catch(error => console.error('Error cargando header:', error));
+  </script>
+
+  <main id="main-content">
+    
+    <section class="title-description-section">
+      <h1 id="title">Gestión de Usuarios</h1>
+      <p id="descripcion">Administra usuarios, advertencias y lista negra</p>
+    </section>
+    
+    <section class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <div class="stat-number" id="totalUsers">0</div>
+          <div class="stat-label">Usuarios Totales</div>
+        </div>
+      </div>
+
+      <div class="stat-card warning">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-info">
+          <div class="stat-number" id="usersWithWarnings">0</div>
+          <div class="stat-label">Con Advertencias</div>
+        </div>
+      </div>
+
+      <div class="stat-card danger">
+        <div class="stat-icon">🚫</div>
+        <div class="stat-info">
+          <div class="stat-number" id="blacklistedUsers">0</div>
+          <div class="stat-label">Blacklisteados</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="users-management">
+      <div class="section-header">
+        <h2 class="section-title">👥 Gestión de Usuarios</h2>
+        
+        <div class="filters">
+          <select id="warningFilter" class="filter-select">
+            <option value="all">Todos</option>
+            <option value="clean">Sin advertencias</option>
+            <option value="warned">Con advertencias</option>
+            <option value="high">Riesgo alto (3+)</option>
+          </select>
+          
+          <input type="text" id="userSearch" class="filter-input" placeholder="Buscar usuario...">
+          
+          <button id="refreshUsers" class="filter-btn">🔄 Actualizar</button>
+        </div>
+      </div>
+
+      <div id="usersContainer" class="users-container">
+        <div class="loading">Cargando usuarios...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal para gestionar usuario -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeUserModal()">&times;</button>
+      
+      <h2 class="modal-title">Gestionar Usuario</h2>
+
+      <div class="user-preview">
+        <img id="modalUserImg" class="user-preview-img" src="" alt="Usuario">
+        <div class="user-preview-info">
+          <h3 id="modalUserName" class="user-preview-name"></h3>
+          <p id="modalUserEmail" class="user-preview-email"></p>
+          <span id="modalUserWarnings" class="warning-badge"></span>
+        </div>
+      </div>
+
+      <div class="user-stats">
+        <div class="user-stat-item">
+          <span class="user-stat-label">Préstamos Totales:</span>
+          <span id="modalUserLoans" class="user-stat-value">0</span>
+        </div>
+        <div class="user-stat-item">
+          <span class="user-stat-label">Préstamos Activos:</span>
+          <span id="modalUserActiveLoans" class="user-stat-value">0</span>
+        </div>
+        <div class="user-stat-item">
+          <span class="user-stat-label">Atrasados:</span>
+          <span id="modalUserOverdue" class="user-stat-value">0</span>
+        </div>
+      </div>
+
+      <div class="warning-section">
+        <h3>Advertencias</h3>
+        <div class="warning-controls">
+          <button class="warning-btn add" onclick="addWarning()">
+            ➕ Agregar Advertencia
+          </button>
+          <button class="warning-btn remove" onclick="removeWarning()">
+            ➖ Quitar Advertencia
+          </button>
+          <button class="warning-btn reset" onclick="resetWarnings()">
+            🔄 Resetear Advertencias
+          </button>
+        </div>
+        
+        <div class="warning-input-group">
+          <label>Razón de la advertencia:</label>
+          <textarea id="warningReason" rows="3" placeholder="Describa el motivo..."></textarea>
+        </div>
+      </div>
+
+      <div class="blacklist-section">
+        <h3>Blacklist</h3>
+        <p class="blacklist-warning">
+          ⚠️ Los usuarios blacklisteados no podrán solicitar préstamos hasta que sean removidos de la lista.
+        </p>
+        <button id="blacklistBtn" class="btn-danger" onclick="toggleBlacklist()">
+          🚫 Blacklistear Usuario
+        </button>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeUserModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cargar barra de navegación -->
+  <div id="nav-placeholder"></div>
+
+  <script src="/js/adminUsers.js"></script>
+  <script>
+    // Cargar la barra de navegación
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('nav-placeholder').innerHTML = data;
+      })
+      .catch(error => console.error('Error cargando navegación:', error));
+  </script>
+</body>
+</html>
+

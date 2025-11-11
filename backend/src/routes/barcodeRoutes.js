@@ -2,6 +2,14 @@
 const express = require('express');
 const router = express.Router();
 const BarcodeController = require('../controllers/barcodeHandlers');
+const AuthMiddleware = require('../middlewares/authMiddleware');
+
+/**
+ * @route   GET /api/barcode/scan/:barcode
+ * @desc    Escanear código de barras para admin
+ * @access  Private (Admin)
+ */
+router.get('/scan/:barcode', AuthMiddleware.authenticateToken, BarcodeController.scanBarcode);
 
 /**
  * @route   GET /api/barcode/:barcode

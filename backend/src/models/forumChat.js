@@ -4,7 +4,7 @@ class ForumChatModel {
     // crear comentario
     static async createComment(comment) {
         try{
-            const [result] = await db.execute(`INSERT INTO forumChat (userId, forumId, text, date) VALUES (?, ?, ?, ?)`, [comment.userId, comment.forumId, comment.text, comment.date]);
+            const [result] = await db.execute(`INSERT INTO forumChat (userId, forumId, text) VALUES (?, ?, ?)`, [comment.userId, comment.forumId, comment.text]);
             return result;
         } catch (error){
             console.error('Error en createComment: ', error);

@@ -80,7 +80,6 @@ app.get('/books', authenticateToken, (req, res) => {
 
 app.get('/forum', authenticateToken, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'forum.html'));
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', 'forum.html'));
 });
 
 app.get('/ranking', authenticateToken, (req, res) => {
@@ -88,10 +87,10 @@ app.get('/ranking', authenticateToken, (req, res) => {
 });
 
 app.get('/search', authenticateToken, (req, res) => {
+    const userType = req.user.type;
     if (userType === 'admin') {
         return res.redirect('/404');
     }
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'shared', 'search.html'));
     res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'search.html'));
 });
 
@@ -105,18 +104,86 @@ app.get('/plus', authenticateToken, (req, res) => {
     }
 });
 
-app.get('/userActivity', authenticateToken, (req, res) => {
+app.get('/medals', authenticateToken, (req, res) => {
+    const userType = req.user.type;
     if (userType === 'admin') {
         return res.redirect('/404');
     }
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'user', 'userActivity.html'));
-})
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'medals.html'));
+});
+
+app.get('/liked', authenticateToken, (req, res) => {
+    const userType = req.user.type;
+    if (userType === 'admin') {
+        return res.redirect('/404');
+    }
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'liked.html'));
+});
+
+app.get('/history', authenticateToken, (req, res) => {
+    const userType = req.user.type;
+    if (userType === 'admin') {
+        return res.redirect('/404');
+    }
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'history.html'));
+});
+
+app.get('/userActivity', authenticateToken, (req, res) => {
+    const userType = req.user.type;
+    if (userType === 'admin') {
+        return res.redirect('/404');
+    }
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'userActivity.html'));
+});
+
+app.get('/supplies', authenticateToken, (req, res) => {
+    const userType = req.user.type;
+    if (userType === 'admin') {
+        return res.redirect('/404');
+    }
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'user', 'supplies.html'));
+});
+
+//--- RUTAS ADMIN ---
+app.get('/admin/home', authenticateToken, (req, res) => {
+    const userType = req.user.type;
+    if (userType !== 'admin') {
+        return res.redirect('/404');
+    }
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'home.html'));
+});
+
+app.get('/admin/stats', authenticateToken, (req, res) => {
+    const userType = req.user.type;
+    if (userType !== 'admin') {
+        return res.redirect('/404');
+    }
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'stats.html'));
+});
+
+app.get('/admin/plus', authenticateToken, (req, res) => {
+    const userType = req.user.type;
+    if (userType !== 'admin') {
+        return res.redirect('/404');
+    }
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'plus.html'));
+});
+
+app.get('/admin/users', authenticateToken, (req, res) => {
+    const userType = req.user.type;
+    if (userType !== 'admin') {
+        return res.redirect('/404');
+    }
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'src', 'private', 'admin', 'users.html'));
+});
 
 //--- RUTAS API ---
 app.use('/api/auth', require('./src/routes/authRoutes.js'));
 app.use('/api/users', require('./src/routes/userRoutes.js'));
 app.use('/api/admin', require('./src/routes/adminRoutes.js'));
-app.use('/api', require('./src/routes/itemRoutes.js'));
+app.use('/api/items', require('./src/routes/itemRoutes.js'));
+app.use('/api/books', require('./src/routes/bookRoutes.js'));
+app.use('/api/supplies', require('./src/routes/supplyRoutes.js'));
 app.use('/api/loans', require('./src/routes/loanRoutes.js'));
 app.use('/api/forums', require('./src/routes/forumRoutes.js'));
 app.use('/api/recommendations', require('./src/routes/recomendationRoutes.js'));
@@ -124,7 +191,7 @@ app.use('/api/barcode', require('./src/routes/barcodeRoutes.js'));
 
 //--- ERROR 404 ---
 app.use('*', (req, res) => {
-    res.status(404).sendFile(path.join(__dirname, '..', 'frontend', 'views', 'public', '404.html'));
+    res.status(404).sendFile(path.join(__dirname, '..', 'frontend', 'src', 'public', '404.html'));
 });
 
 // Servidor desplegado

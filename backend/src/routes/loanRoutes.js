@@ -71,11 +71,43 @@ router.get('/overdue', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin,
 router.post('/check-overdue', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, LoanController.checkOverdue);
 
 /**
- * @route   GET /api/loans
+ * @route   GET /api/loans/all
  * @desc    Obtener todos los préstamos (Admin)
  * @access  Private (Admin)
  * @query   state, type, page, limit
  */
-router.get('/', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, LoanController.getAllLoans);
+router.get('/all', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, LoanController.getAllLoans);
+
+/**
+ * @route   PUT /api/loans/:id/approve
+ * @desc    Aprobar préstamo pendiente
+ * @access  Private (Admin)
+ * @body    { type: 'book' | 'supply' }
+ */
+router.put('/:id/approve', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, LoanController.approveLoan);
+
+/**
+ * @route   PUT /api/loans/:id/pickup
+ * @desc    Marcar préstamo como recogido (cambia de 'espera' a 'en prestamo')
+ * @access  Private (Admin)
+ * @body    { type: 'book' | 'supply' }
+ */
+router.put('/:id/pickup', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, LoanController.pickupLoan);
+
+/**
+ * @route   POST /api/loans/return
+ * @desc    Tramitar devolución de item
+ * @access  Private
+ * @body    { loanId, type: 'book' | 'supply' }
+ */
+router.post('/return', AuthMiddleware.authenticateToken, LoanController.returnLoan);
+
+/**
+ * @route   POST /api/loans/pickup
+ * @desc    Tramitar entrega de préstamo (admin crea préstamo directo)
+ * @access  Private (Admin)
+ * @body    { userId, itemId, type: 'book' | 'supply' }
+ */
+router.post('/pickup', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, LoanController.createDirectLoan);
 
 module.exports = router;

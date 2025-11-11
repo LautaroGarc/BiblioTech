@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Administrador - Estadísticas | BiblioTech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/adminStats_new.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  
+  <script>
+    // Cargar el header
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.body.insertAdjacentHTML('afterbegin', data);
+      })
+      .catch(error => console.error('Error cargando header:', error));
+  </script>
+
+  <main id="main-content">
+    
+    <section class="title-description-section">
+      <h1 id="title">Estadísticas del Sistema</h1>
+      <p id="descripcion">Resumen completo y métricas en tiempo real de BiblioTech</p>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card users">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <div class="stat-number" id="totalUsers">0</div>
+          <div class="stat-label">Usuarios Totales</div>
+          <div class="stat-sublabel" id="adminUsers">0 administradores</div>
+        </div>
+      </div>
+
+      <div class="stat-card books">
+        <div class="stat-icon">📚</div>
+        <div class="stat-info">
+          <div class="stat-number" id="totalBooks">0</div>
+          <div class="stat-label">Libros</div>
+          <div class="stat-sublabel" id="bookCopies">0 copias totales</div>
+        </div>
+      </div>
+
+      <div class="stat-card supplies">
+        <div class="stat-icon">✏️</div>
+        <div class="stat-info">
+          <div class="stat-number" id="totalSupplies">0</div>
+          <div class="stat-label">Útiles</div>
+          <div class="stat-sublabel" id="supplyCopies">0 unidades totales</div>
+        </div>
+      </div>
+
+      <div class="stat-card loans">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+          <div class="stat-number" id="activeLoans">0</div>
+          <div class="stat-label">Préstamos Activos</div>
+          <div class="stat-sublabel" id="totalLoans">0 completados</div>
+        </div>
+      </div>
+
+      <div class="stat-card overdue">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-info">
+          <div class="stat-number" id="overdueLoans">0</div>
+          <div class="stat-label">Atrasados</div>
+          <div class="stat-sublabel">Requieren atención</div>
+        </div>
+      </div>
+
+      <div class="stat-card reads">
+        <div class="stat-icon">📖</div>
+        <div class="stat-info">
+          <div class="stat-number" id="totalReads">0</div>
+          <div class="stat-label">Lecturas Totales</div>
+          <div class="stat-sublabel" id="avgRating">★ 0.0 promedio</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="charts-section">
+      <div class="chart-container">
+        <h3 class="chart-title">📈 Préstamos por Estado</h3>
+        <canvas id="loansStateChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <h3 class="chart-title">📊 Préstamos: Libros vs Útiles</h3>
+        <canvas id="loansTypeChart"></canvas>
+      </div>
+    </section>
+
+    <section class="charts-section">
+      <div class="chart-container wide">
+        <h3 class="chart-title">📅 Préstamos en los Últimos 30 Días</h3>
+        <canvas id="loansTrendChart"></canvas>
+      </div>
+    </section>
+
+    <section class="top-lists">
+      <div class="top-list">
+        <h3 class="list-title">🏆 Top 10 Libros Más Leídos</h3>
+        <div id="topBooks" class="list-content">
+          <div class="loading-small">Cargando...</div>
+        </div>
+      </div>
+
+      <div class="top-list">
+        <h3 class="list-title">👥 Top 10 Usuarios Más Activos</h3>
+        <div id="topUsers" class="list-content">
+          <div class="loading-small">Cargando...</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="alerts-section">
+      <h3 class="section-title">⚠️ Alertas del Sistema</h3>
+      <div id="systemAlerts" class="alerts-container">
+        <div class="loading-small">Verificando alertas...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Cargar barra de navegación -->
+  <div id="nav-placeholder"></div>
+
+  <script src="/js/adminStats.js"></script>
+  <script>
+    // Cargar la barra de navegación
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('nav-placeholder').innerHTML = data;
+      })
+      .catch(error => console.error('Error cargando navegación:', error));
+  </script>
+</body>
+</html>

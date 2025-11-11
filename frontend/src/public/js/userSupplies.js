@@ -193,39 +193,16 @@ async function rentSupply(supplyId, supplyName) {
         const userData = await userResponse.json();
         const userId = userData.user.id;
 
-        // Calcular fecha de devolución (7 días desde hoy)
-        const dateOut = new Date();
-        dateOut.setDate(dateOut.getDate() + 7);
-        const formattedDateOut = dateOut.toISOString().split('T')[0];
+        // Usar función unificada (supplyName ya viene como parámetro)
+        const result = await requestLoan(supplyId, 'supply', supplyName);
 
-        // Crear préstamo
-        const loanResponse = await fetch('/api/loans/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                userId: userId,
-                itemId: supplyId,
-                dateOut: formattedDateOut,
-                type: 'supply'
-            })
-        });
-
-        if (!loanResponse.ok) {
-            throw new Error('Error al crear préstamo');
+        if (result.success) {
+            console.log('[RENT] Préstamo creado:', result.data);
+            closeSupplyModal();
+            
+            // Recargar supplies para actualizar disponibilidad
+            await loadSupplies();
         }
-
-        const loanResult = await loanResponse.json();
-        console.log('[RENT] Préstamo creado:', loanResult);
-
-        alert(`✅ Solicitud de préstamo enviada para "${supplyName}"\n\nTu solicitud está pendiente de aprobación.`);
-        
-        closeSupplyModal();
-        
-        // Recargar supplies para actualizar disponibilidad
-        await loadSupplies();
 
     } catch (error) {
         console.error('[RENT] Error solicitando préstamo:', error);

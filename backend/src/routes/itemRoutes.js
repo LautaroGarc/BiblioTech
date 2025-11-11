@@ -36,6 +36,22 @@ router.get('/books/search', ItemController.searchBooks);
 router.get('/books/recommendations', AuthMiddleware.authenticateToken, ItemController.getRecommendations);
 
 /**
+ * @route   POST /api/items/books/like
+ * @desc    Dar like a un libro
+ * @access  Private
+ * @body    { bookId }
+ */
+router.post('/books/like', AuthMiddleware.authenticateToken, ItemController.likeBook);
+
+/**
+ * @route   POST /api/items/books/unlike
+ * @desc    Quitar like a un libro
+ * @access  Private
+ * @body    { bookId }
+ */
+router.post('/books/unlike', AuthMiddleware.authenticateToken, ItemController.unlikeBook);
+
+/**
  * @route   GET /api/items/books
  * @desc    Obtener todos los libros
  * @access  Public
@@ -94,5 +110,19 @@ router.post('/supps', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, 
  * @body    { field, data }
  */
 router.put('/supps/:id', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, ItemController.updateSupply);
+
+/**
+ * @route   DELETE /api/items/books/:id
+ * @desc    Eliminar libro
+ * @access  Private (Admin)
+ */
+router.delete('/books/:id', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, ItemController.deleteBook);
+
+/**
+ * @route   DELETE /api/items/supps/:id
+ * @desc    Eliminar supply
+ * @access  Private (Admin)
+ */
+router.delete('/supps/:id', AuthMiddleware.authenticateToken, AuthMiddleware.isAdmin, ItemController.deleteSupply);
 
 module.exports = router;

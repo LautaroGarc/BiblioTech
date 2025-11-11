@@ -4,13 +4,14 @@ class LoanController {
     // Crear préstamo
     static async createLoan(req, res) {
         try {
-            const { userId, itemId, dateOut, type } = req.body;
+            const { itemId, type } = req.body;
+            const userId = req.user.id; // Obtenido del token
             
             // Validaciones básicas
-            if (!userId || !itemId || !dateOut || !type) {
+            if (!itemId || !type) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Faltan campos requeridos: userId, itemId, dateOut, type'
+                    message: 'Faltan campos requeridos: itemId, type'
                 });
             }
 
@@ -21,8 +22,13 @@ class LoanController {
                 });
             }
 
+            // Calcular fecha de devolución (14 días por defecto)
+            const dateOut = new Date();
+            dateOut.setDate(dateOut.getDate() + 14);
+            const formattedDateOut = dateOut.toISOString().split('T')[0];
+
             let result;
-            const loanData = { userId, dateOut };
+            const loanData = { userId, dateOut: formattedDateOut };
 
             if (type === 'book') {
                 loanData.bookId = itemId;
@@ -34,10 +40,15 @@ class LoanController {
 
             res.status(201).json({
                 success: true,
-                message: 'Préstamo creado exitosamente',
+                message: 'Préstamo solicitado correctamente. Listo para retirar.',
                 data: {
                     loanId: result.insertId,
-                    ...loanData
+                    userId,
+                    itemId,
+                    type,
+                    dateOut: formattedDateOut,
+                    state: 'espera',
+                    daysUntilReturn: 14
                 }
             });
 
@@ -223,7 +234,16 @@ class LoanController {
                 offset: parseInt(offset)
             };
 
+            console.log('[GET ALL LOANS] Filters:', filters);
             const loans = await LoanModel.getAllLoans(filters);
+            console.log('[GET ALL LOANS] Total loans returned:', loans.length);
+            
+            // Debug: contar estados
+            const stateCount = {};
+            loans.forEach(loan => {
+                stateCount[loan.state] = (stateCount[loan.state] || 0) + 1;
+            });
+            console.log('[GET ALL LOANS] State breakdown:', stateCount);
             
             res.json({
                 success: true,
@@ -257,6 +277,143 @@ class LoanController {
 
         } catch (error) {
             console.error('Error getting overdue loans:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor',
+                error: error.message
+            });
+        }
+    }
+
+    // Aprobar préstamo (cambiar de 'no aprobado' a 'espera')
+    static async approveLoan(req, res) {
+        try {
+            const loanId = req.params.id;
+            const { type } = req.body;
+
+            if (!type || !['book', 'supply'].includes(type)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Tipo debe ser "book" o "supply"'
+                });
+            }
+
+            const result = await LoanModel.approveLoan(loanId, type);
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Préstamo no encontrado o ya aprobado'
+                });
+            }
+
+            res.json({
+                success: true,
+                message: 'Préstamo aprobado exitosamente'
+            });
+
+        } catch (error) {
+            console.error('Error approving loan:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor',
+                error: error.message
+            });
+        }
+    }
+
+    // Marcar préstamo como recogido (pickup)
+    static async pickupLoan(req, res) {
+        try {
+            const loanId = req.params.id;
+            const { type } = req.body;
+
+            if (!type || !['book', 'supply'].includes(type)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Tipo debe ser "book" o "supply"'
+                });
+            }
+
+            const result = await LoanModel.pickupLoan(loanId, type);
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Préstamo no encontrado o no está en estado "espera"'
+                });
+            }
+
+            res.json({
+                success: true,
+                message: 'Préstamo marcado como recogido'
+            });
+
+        } catch (error) {
+            console.error('Error marking loan as picked up:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor',
+                error: error.message
+            });
+        }
+    }
+
+    // Crear préstamo directo (admin tramita préstamo en persona)
+    static async createDirectLoan(req, res) {
+        try {
+            const { userId, itemId, type } = req.body;
+
+            if (!userId || !itemId || !type) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Faltan campos requeridos: userId, itemId, type'
+                });
+            }
+
+            if (!['book', 'supply'].includes(type)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Tipo debe ser "book" o "supply"'
+                });
+            }
+
+            // Calcular fecha de devolución (14 días)
+            const dateOut = new Date();
+            dateOut.setDate(dateOut.getDate() + 14);
+            const formattedDateOut = dateOut.toISOString().split('T')[0];
+
+            let result;
+            const loanData = { userId, dateOut: formattedDateOut };
+
+            // Crear préstamo directamente en estado "en prestamo"
+            if (type === 'book') {
+                loanData.bookId = itemId;
+                result = await LoanModel.createBookLoan(loanData);
+                // Cambiar a "en prestamo" inmediatamente
+                await LoanModel.pickupLoan(result.insertId, 'book');
+            } else {
+                loanData.itemId = itemId;
+                result = await LoanModel.createSupplyLoan(loanData);
+                // Cambiar a "en prestamo" inmediatamente
+                await LoanModel.pickupLoan(result.insertId, 'supply');
+            }
+
+            res.status(201).json({
+                success: true,
+                message: 'Préstamo tramitado exitosamente',
+                data: {
+                    loanId: result.insertId,
+                    userId,
+                    itemId,
+                    type,
+                    dateOut: formattedDateOut,
+                    state: 'en prestamo'
+                }
+            });
+
+        } catch (error) {
+            console.error('Error creating direct loan:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor',

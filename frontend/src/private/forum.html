@@ -1,49 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foros</title>
+    <title>Foro - BiblioTech</title>
+    <link rel="stylesheet" href="/css/forum.css">
 </head>
 <body>
-    <!--agregar boton de ranking-->
-    <header>
-        <div class="header">
-            <a id="rankingBtn" href="ranking.html">Ranking</a>
+    <!-- Header común -->
+    <header id="forum-header">
+        <div class="header-content">
+            <div class="logo-container">
+                <h1 style="margin: 0; color: #fff; font-size: 24px;">📚 BiblioTech</h1>
+            </div>
+            <div class="header-actions">
+                <button id="ranking-btn" class="ranking-btn">
+                    <img src="/assets/icons/ranking.png" alt="Ranking" onerror="this.style.display='none'">
+                </button>
+            </div>
         </div>
     </header>
-    <div class="principal">
-        <h1>¡NUESTROS FOROS!</h1>
-        <h2>Participa en nuestra comunidad de lectores.</h2>
 
-        <div id="forums">
-            <!--Cargar foros existentes-->
-        </div>
+    <!-- Contenedor principal -->
+    <main id="forum-container">
+        <!-- Vista de lista de foros -->
+        <section id="forums-list" class="forum-section active">
+            <h1 class="section-title">Foros Disponibles</h1>
+            <div id="forums-grid" class="forums-grid">
+                <!-- Los foros se cargarán aquí dinámicamente -->
+            </div>
+        </section>
 
-        <div id="forum-chat">
-            <!--Cargar mensajes-->
-        </div>
-        <div id="chat-box" style="display: none;">
-            <form id="comment-form">
+        <!-- Vista del foro seleccionado -->
+        <section id="forum-chat" class="forum-section">
+            <div class="chat-header">
+                <button id="back-to-forums" class="back-btn">
+                    <img src="/assets/icons/left.png" alt="Volver">
+                </button>
+                <h2 id="forum-title" class="forum-title"></h2>
+            </div>
 
-                <input type="hidden" id="forumId" name="forumId">
-                <input type="hidden" id="userId" name="userId">
-                <input type="hidden" id="replyId" name="replyId" value="">
-                <input type="hidden" id="isReply" name="isReply" value="false">
+            <div id="messages-container" class="messages-container">
+                <div id="messages-list" class="messages-list">
+                    <!-- Los mensajes se cargarán aquí -->
+                </div>
+                <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Cargando mensajes...</p>
+                </div>
+            </div>
 
-                <label for="comment">Comentario</label>
-                <textarea id="comment" name="comment" rows="3" required placeholder="Escribe tu comentario..."></textarea>
-                <button type="submit" id="submit-btn">Enviar</button>
-                <button type="button" id="cancel-reply" style="display: none;">Cancelar respuesta</button>
-            </form>
-        </div>
-        <div id="pagesBtn">
-            <button id="prevPageBtn">Anterior</button>
-            <span id="pageInfo">Página 1</span>
-            <button id="nextPageBtn">Siguiente</button>
-        </div>
-    </div>
+            <div class="message-input-container">
+                <form id="message-form" class="message-form">
+                    <textarea
+                        id="message-input"
+                        class="message-input"
+                        placeholder="Escribe tu mensaje..."
+                        maxlength="500"
+                        rows="1"
+                    ></textarea>
+                    <button type="submit" id="send-btn" class="send-btn" disabled>
+                        <img src="/assets/icons/send.png" alt="Enviar">
+                    </button>
+                </form>
+                <div id="char-counter" class="char-counter">0/500</div>
+            </div>
+        </section>
+    </main>
 
-    <script src="../js/forum.js"></script>
+    <!-- Barra de navegación -->
+    <div id="nav-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="/js/forum.js"></script>
+    <script>
+        // Cargar la barra de navegación
+        fetch('/components/navigation.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+            })
+            .catch(error => console.error('Error cargando navegación:', error));
+    </script>
 </body>
 </html>

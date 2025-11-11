@@ -556,38 +556,12 @@ async function rentBook(bookId, bookName) {
             return;
         }
 
-        const userData = await userResponse.json();
-        const userId = userData.user.id;
+        // Usar función unificada
+        const result = await requestLoan(bookId, 'book', bookName);
 
-        // Calcular fecha de devolución (14 días para libros)
-        const dateOut = new Date();
-        dateOut.setDate(dateOut.getDate() + 14);
-        const formattedDateOut = dateOut.toISOString().split('T')[0];
-
-        const loanResponse = await fetch('/api/loans/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                userId: userId,
-                itemId: bookId,
-                dateOut: formattedDateOut,
-                type: 'book'
-            })
-        });
-
-        if (!loanResponse.ok) {
-            throw new Error('Error al crear préstamo');
+        if (result.success) {
+            closeBookModal();
         }
-
-        const loanResult = await loanResponse.json();
-        console.log('[RENT] Préstamo creado:', loanResult);
-
-        alert(`✅ Solicitud de préstamo enviada para "${bookName}"\n\nTu solicitud está pendiente de aprobación.\nTienes 14 días para devolverlo una vez aprobado.`);
-        
-        closeBookModal();
         await loadAllBooks();
         applyAllFilters();
 
