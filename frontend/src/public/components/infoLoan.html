@@ -376,6 +376,28 @@
     <script>
         let currentLoanData = null;
 
+        function applyExperienceReward(reward) {
+            if (!reward || typeof reward.awardedXp !== 'number') {
+                return;
+            }
+
+            try {
+                const storedRaw = localStorage.getItem('userData');
+                if (!storedRaw) return;
+                const stored = JSON.parse(storedRaw);
+
+                if (stored.id && Number(stored.id) !== Number(reward.userId)) {
+                    return;
+                }
+
+                stored.lvl = reward.level;
+                stored.xp = reward.xp;
+                localStorage.setItem('userData', JSON.stringify(stored));
+            } catch (error) {
+                console.error('[LOAN POPUP] Error sincronizando experiencia:', error);
+            }
+        }
+
         function openLoanPopup(loanData, userData = null) {
             currentLoanData = loanData;
             
@@ -563,7 +585,13 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Item marcado como devuelto');
+                    applyExperienceReward(data.experience);
+
+                    const xpMessage = data.experience && typeof data.experience.awardedXp === 'number'
+                        ? `\n⭐ +${data.experience.awardedXp} XP${data.experience.leveledUp ? ` | Nivel ${data.experience.level}` : ''}`
+                        : '';
+
+                    alert(`Item marcado como devuelto${xpMessage}`);
                     closeLoanPopup();
                     
                     if (typeof loadLoans === 'function') {

@@ -17,6 +17,15 @@
       <div class="user-details">
         <h1 id="user-fullname">Nombre Apellido</h1>
         <p id="user-email">correo@ejemplo.com</p>
+        <div class="user-level" aria-live="polite">
+          <div class="user-level-header">
+            <span id="user-level-label">Nivel 1</span>
+            <span id="level-progress-label">0 / 100 XP</span>
+          </div>
+          <div class="level-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="level-progress-bar" id="level-progress-bar"></div>
+          </div>
+        </div>
       </div>
     </section>
 

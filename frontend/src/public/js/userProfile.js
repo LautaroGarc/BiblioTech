@@ -1,5 +1,7 @@
 let currentUser = null;
 let selectedPhoto = null;
+const BASE_LEVEL_XP = 100;
+const LEVEL_STEP_XP = 50;
 
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('[PROFILE] Inicializando perfil...');
@@ -28,8 +30,10 @@ async function loadUserData() {
             throw new Error('Error al cargar datos del usuario');
         }
         
-        const data = await response.json();
-        currentUser = data.user;
+    const data = await response.json();
+    currentUser = data.user;
+    currentUser.lvl = Number(currentUser.lvl) || 1;
+    currentUser.xp = Number(currentUser.xp) || 0;
         
         // Normalizar img si es inválida
         const validPhotos = ['user-yellow.jpg', 'user-blue.jpg', 'user-lblue.jpg', 'user-default.jpg', 'user-pink.jpg', 'user-purple.jpg', 'user-red.jpg', 'user-green.jpg'];
@@ -38,6 +42,9 @@ async function loadUserData() {
         }
         
         console.log('[PROFILE] Usuario cargado:', currentUser);
+
+        updateLevelDisplay();
+        syncLocalUserData(currentUser);
         
         // Actualizar información en la página
         document.getElementById('user-fullname').textContent = `${currentUser.name} ${currentUser.lastName}`;
@@ -88,6 +95,72 @@ function selectPhoto(element, photoPath) {
     selectedPhoto = photoPath;
 }
 
+function getNextLevelXp(level) {
+    const safeLevel = Number.isFinite(level) && level > 0 ? level : 1;
+    return BASE_LEVEL_XP + (safeLevel - 1) * LEVEL_STEP_XP;
+}
+
+function updateLevelDisplay() {
+    if (!currentUser) return;
+
+    const level = Number(currentUser.lvl) || 1;
+    const xp = Number(currentUser.xp) || 0;
+    const nextLevelXp = getNextLevelXp(level);
+    const progressPercent = Math.min(100, Math.round((xp / nextLevelXp) * 100));
+
+    const levelLabel = document.getElementById('user-level-label');
+    const progressLabel = document.getElementById('level-progress-label');
+    const progressBar = document.getElementById('level-progress-bar');
+    const progressWrapper = document.querySelector('.level-progress');
+
+    if (levelLabel) {
+        levelLabel.textContent = `Nivel ${level}`;
+    }
+
+    if (progressLabel) {
+        progressLabel.textContent = `${xp} / ${nextLevelXp} XP`;
+    }
+
+    if (progressBar) {
+        progressBar.style.width = `${progressPercent}%`;
+    }
+
+    if (progressWrapper) {
+        progressWrapper.setAttribute('aria-valuenow', progressPercent.toString());
+    }
+}
+
+function syncLocalUserData(user) {
+    if (!user) return;
+
+    try {
+        const storedRaw = localStorage.getItem('userData');
+        const stored = storedRaw ? JSON.parse(storedRaw) : {};
+
+        if (stored.id && Number(stored.id) !== Number(user.id)) {
+            return;
+        }
+
+        const updated = {
+            ...stored,
+            id: user.id,
+            name: user.name,
+            lastName: user.lastName,
+            nombre: user.name,
+            apellido: user.lastName,
+            img: user.img,
+            fotoPerfil: user.img,
+            lvl: user.lvl,
+            xp: user.xp,
+            email: user.email
+        };
+
+        localStorage.setItem('userData', JSON.stringify(updated));
+    } catch (error) {
+        console.error('[PROFILE] Error sincronizando userData:', error);
+    }
+}
+
 async function loadPreviewData() {
     try {
         // Cargar preview de medallas
@@ -122,16 +195,16 @@ async function loadPreviewData() {
         }
         
         // Cargar preview de historial
-        const loansResponse = await fetch('/api/loans/user', {
+        const loansResponse = await fetch(`/api/loans/history?userId=${currentUser.id}`, {
             credentials: 'include'
         });
-        
+
         if (loansResponse.ok) {
             const loansData = await loansResponse.json();
-            const loansCount = loansData.loans ? loansData.loans.length : 0;
-            
+            const history = Array.isArray(loansData.data) ? loansData.data : [];
+
             document.getElementById('history-preview').textContent = 
-                loansCount > 0 ? `${loansCount} préstamo${loansCount !== 1 ? 's' : ''}` : 'No tienes reservas aún';
+                history.length > 0 ? `${history.length} préstamo${history.length !== 1 ? 's' : ''}` : 'No tienes reservas aún';
         }
         
     } catch (error) {

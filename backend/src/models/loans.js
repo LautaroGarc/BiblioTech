@@ -93,6 +93,17 @@ class LoanModel {
         return result;
     }
 
+    static async getLoanById(loanId, type) {
+        const table = type === 'book' ? 'bookLoans' : 'suppLoans';
+        const query = `
+            SELECT id, userId, state 
+            FROM ${table}
+            WHERE id = ?
+        `;
+        const [rows] = await db.execute(query, [loanId]);
+        return rows[0] || null;
+    }
+
     static async checkAndUpdateOverdueLoans() {
         const bookQuery = `
             UPDATE bookLoans 

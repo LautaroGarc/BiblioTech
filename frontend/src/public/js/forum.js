@@ -405,6 +405,10 @@ async function handleSendMessage(e) {
             messageInput.value = '';
             updateCharCounter();
 
+            if (result.experience) {
+                handleExperienceReward(result.experience);
+            }
+
             // Recargar mensajes para mostrar el nuevo
             await loadLatestMessages();
 
@@ -559,6 +563,61 @@ function stopLiveUpdates() {
         liveUpdateInterval = null;
         console.log('[LIVE UPDATE] Actualizaciones en vivo detenidas');
     }
+}
+
+function handleExperienceReward(reward) {
+    if (!reward || typeof reward.awardedXp !== 'number') {
+        return;
+    }
+
+    updateLocalUserExperience(reward);
+
+    const levelNotice = reward.leveledUp
+        ? ` | ¡Nuevo nivel ${reward.level}!`
+        : '';
+    showSuccess(`+${reward.awardedXp} XP${levelNotice}`);
+}
+
+function updateLocalUserExperience(reward) {
+    try {
+        const storedRaw = localStorage.getItem('userData');
+        if (!storedRaw) return;
+        const stored = JSON.parse(storedRaw);
+
+        if (stored.id && Number(stored.id) !== Number(reward.userId)) {
+            return;
+        }
+
+        stored.lvl = reward.level;
+        stored.xp = reward.xp;
+        localStorage.setItem('userData', JSON.stringify(stored));
+    } catch (error) {
+        console.error('[FORUM] Error actualizando experiencia local:', error);
+    }
+}
+
+function showSuccess(message) {
+    const toast = document.createElement('div');
+    toast.className = 'success-toast';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #4caf50;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        z-index: 1000;
+        animation: slideDown 0.3s ease-out;
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 }
 
 /**

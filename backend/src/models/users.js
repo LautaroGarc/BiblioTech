@@ -42,6 +42,16 @@ class UserModel {
         }
     }
 
+    static async updateExperience(idUser, xp, lvl) {
+        try {
+            const [result] = await db.execute(`UPDATE users SET xp = ?, lvl = ? WHERE id = ?`, [xp, lvl, idUser]);
+            return result;
+        } catch (error) {
+            console.error('Error en updateExperience: ', error);
+            throw error;
+        }
+    }
+
     static async getUsers() {
         try {
             const [result] = await db.execute(`SELECT * FROM users`);
@@ -102,6 +112,7 @@ module.exports.addUser = UserModel.addUser;
 module.exports.editUser = UserModel.editUser;
 module.exports.deleteUser = UserModel.deleteUser;
 module.exports.updateLvl = UserModel.updateLvl;
+module.exports.updateExperience = UserModel.updateExperience;
 module.exports.getUsers = UserModel.getUsers;
 module.exports.getUserWith = UserModel.getUserWith;
 module.exports.getUsersWith = UserModel.getUsersWith;

@@ -40,7 +40,7 @@ async function loadUserData() {
 
 async function loadLoans() {
     try {
-        const response = await fetch('/api/loans/user', {
+        const response = await fetch(`/api/loans/history?userId=${currentUser.id}`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -50,7 +50,12 @@ async function loadLoans() {
         }
         
         const data = await response.json();
-        allLoans = data.loans || [];
+
+        if (!data.success) {
+            throw new Error(data.message || 'Error al cargar préstamos');
+        }
+
+        allLoans = Array.isArray(data.data) ? data.data : [];
         
         console.log('[HISTORY] Préstamos cargados:', allLoans);
         

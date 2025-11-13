@@ -1,5 +1,6 @@
 const db = require('../../../database/database');
 const ForumChatModel = require('../models/forumChat');
+const ExperienceService = require('../services/experienceService');
 
 class ForumController {
     // Obtener todos los foros
@@ -166,6 +167,18 @@ class ForumController {
             };
             
             const result = await ForumChatModel.createComment(comment);
+
+            let experience = null;
+
+            try {
+                experience = await ExperienceService.awardExperience(
+                    userId,
+                    ExperienceService.XP_REWARDS.FORUM_MESSAGE,
+                    { source: 'forum_message', forumId }
+                );
+            } catch (xpError) {
+                console.error('[XP] Error al otorgar experiencia (mensaje foro):', xpError);
+            }
             
             res.status(201).json({
                 success: true,
@@ -174,7 +187,8 @@ class ForumController {
                     id: result.insertId,
                     ...comment,
                     created_at: new Date()
-                }
+                },
+                experience
             });
         } catch (error) {
             console.error('[POST MESSAGE ERROR]', error);
@@ -217,6 +231,18 @@ class ForumController {
                 `INSERT INTO forumChat (userId, forumId, text, reply, replyId) VALUES (?, ?, ?, TRUE, ?)`,
                 [userId, forumId, text.trim(), messageId]
             );
+
+            let experience = null;
+
+            try {
+                experience = await ExperienceService.awardExperience(
+                    userId,
+                    ExperienceService.XP_REWARDS.FORUM_MESSAGE,
+                    { source: 'forum_reply', forumId, replyTo: messageId }
+                );
+            } catch (xpError) {
+                console.error('[XP] Error al otorgar experiencia (respuesta foro):', xpError);
+            }
             
             res.status(201).json({
                 success: true,
@@ -227,7 +253,8 @@ class ForumController {
                     forumId,
                     text: text.trim(),
                     replyId: messageId
-                }
+                },
+                experience
             });
         } catch (error) {
             console.error('[REPLY TO MESSAGE ERROR]', error);

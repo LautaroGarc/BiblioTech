@@ -82,6 +82,7 @@ class UserController {
                     email: email,
                     type: 'user',
                     lvl: 1,
+                    xp: 0,
                     img: newUser.img
                 }
             });
@@ -160,6 +161,7 @@ class UserController {
                     email: user.email,
                     type: user.type,
                     lvl: user.lvl,
+                    xp: user.xp,
                     img: user.img
                 }
             });

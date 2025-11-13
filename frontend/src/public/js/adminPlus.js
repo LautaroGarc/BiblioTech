@@ -2,6 +2,28 @@ let allItems = [];
 let currentItemType = null;
 let editingItemId = null;
 
+function applyExperienceReward(reward) {
+    if (!reward || typeof reward.awardedXp !== 'number') {
+        return;
+    }
+
+    try {
+        const storedRaw = localStorage.getItem('userData');
+        if (!storedRaw) return;
+        const stored = JSON.parse(storedRaw);
+
+        if (stored.id && Number(stored.id) !== Number(reward.userId)) {
+            return;
+        }
+
+        stored.lvl = reward.level;
+        stored.xp = reward.xp;
+        localStorage.setItem('userData', JSON.stringify(stored));
+    } catch (error) {
+        console.error('[ADMIN PLUS] Error sincronizando experiencia:', error);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadItems();
     setupFilters();
@@ -536,7 +558,13 @@ async function tramitarDevolucion() {
         const returnData = await returnResponse.json();
 
         if (returnData.success) {
-            alert(`✅ Devolución tramitada exitosamente\n\nUsuario: ${loan.userName} ${loan.userLastName}\nItem: ${loan.itemName}\nEstado: Devuelto`);
+            applyExperienceReward(returnData.experience);
+
+            const xpMessage = returnData.experience && typeof returnData.experience.awardedXp === 'number'
+                ? `\n⭐ +${returnData.experience.awardedXp} XP${returnData.experience.leveledUp ? ` | Nivel ${returnData.experience.level}` : ''}`
+                : '';
+
+            alert(`✅ Devolución tramitada exitosamente\n\nUsuario: ${loan.userName} ${loan.userLastName}\nItem: ${loan.itemName}\nEstado: Devuelto${xpMessage}`);
             loadItems();
         } else {
             alert('Error: ' + returnData.message);
@@ -852,8 +880,14 @@ async function processTramitarDevolucion() {
     const data = await response.json();
     console.log('[TRAMITAR DEVOLUCION MODAL] Respuesta:', data);
 
-    if (response.ok && data.success) {
-      alert(`✅ Devolución tramitada exitosamente\n\nUsuario: ${userName}\nItem: ${itemName}`);
+        if (response.ok && data.success) {
+            applyExperienceReward(data.experience);
+
+            const xpMessage = data.experience && typeof data.experience.awardedXp === 'number'
+                ? `\n⭐ +${data.experience.awardedXp} XP${data.experience.leveledUp ? ` | Nivel ${data.experience.level}` : ''}`
+                : '';
+
+            alert(`✅ Devolución tramitada exitosamente\n\nUsuario: ${userName}\nItem: ${itemName}${xpMessage}`);
       closeReturnModal();
       loadItems(); // Recargar items
     } else {

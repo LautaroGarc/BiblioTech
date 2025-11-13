@@ -1,4 +1,5 @@
 const LoanModel = require('../models/loans.js');
+const ExperienceService = require('../services/experienceService');
 
 class LoanController {
     // Crear préstamo
@@ -109,16 +110,27 @@ class LoanController {
     // Devolver item
     static async returnLoan(req, res) {
         try {
-            const { loanId, type } = req.body;
+            const loanId = req.params.id ? parseInt(req.params.id, 10) : parseInt(req.body.loanId, 10);
+            const typeValue = typeof req.body.type === 'string' ? req.body.type.toLowerCase() : '';
 
-            if (!loanId || !type) {
+            if (!loanId || !['book', 'supply'].includes(typeValue)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Faltan loanId o type'
                 });
             }
 
-            const result = await LoanModel.returnLoan(loanId, type);
+            const normalizedType = typeValue;
+            const loanData = await LoanModel.getLoanById(loanId, normalizedType);
+
+            if (!loanData) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Préstamo no encontrado'
+                });
+            }
+
+            const result = await LoanModel.returnLoan(loanId, normalizedType);
 
             if (result.affectedRows === 0) {
                 return res.status(404).json({
@@ -127,9 +139,22 @@ class LoanController {
                 });
             }
 
+            let experience = null;
+
+            try {
+                experience = await ExperienceService.awardExperience(
+                    loanData.userId,
+                    ExperienceService.XP_REWARDS.RETURN_ITEM,
+                    { source: 'loan_return', loanId, type: normalizedType }
+                );
+            } catch (xpError) {
+                console.error('[XP] Error al otorgar experiencia (devolución):', xpError);
+            }
+
             res.json({
                 success: true,
-                message: 'Item devuelto exitosamente'
+                message: 'Item devuelto exitosamente',
+                experience
             });
 
         } catch (error) {
