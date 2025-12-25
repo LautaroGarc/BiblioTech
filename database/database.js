@@ -1,23 +1,22 @@
 const mysql = require('mysql2');
+const path = require('path');
+const { DB_CONFIG } = require(path.join(__dirname, '..', 'backend', 'src', 'config', 'config.js'));
 
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: "BiblioTech",
-  port: 3306,
+const pool = mysql.createPool({
+  host: DB_CONFIG.host,
+  user: DB_CONFIG.user,
+  password: DB_CONFIG.password,
+  database: DB_CONFIG.database,
+  port: DB_CONFIG.port,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Error conectando a MySQL:', err.message);
-    return;
-  }
-  console.log('Conectado a MySQL - Base de datos: BiblioTech');
+const promisePool = pool.promise();
+
+promisePool.on('error', (err) => {
+  console.error('Error de MySQL Pool:', err.message);
 });
 
-connection.on('error', (err) => {
-  console.error('Error de MySQL:', err.message);
-});
-
-module.exports = connection.promise();
+module.exports = promisePool;

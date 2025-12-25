@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tus Medallas - BiblioTech</title>
+  <link rel="stylesheet" href="/css/medals.css">
+</head>
+<body>
+
+  <!-- Header Component -->
+  <div id="header-container"></div>
+
+  <main class="medals-container">
+    <div class="page-header">
+      <button class="back-btn" onclick="window.history.back()">
+        <span>←</span>
+      </button>
+      <h1>Tus Medallas</h1>
+    </div>
+
+    <div id="medals-grid" class="medals-grid">
+      <!-- Las medallas se cargarán dinámicamente -->
+    </div>
+
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-icon">🏅</div>
+      <h2>Aún no tienes medallas</h2>
+      <p>Completa actividades en BiblioTech para ganar medallas</p>
+    </div>
+  </main>
+
+  <!-- Navigation Component -->
+  <div id="navigation-container"></div>
+
+  <script src="/js/medals.js"></script>
+  <script>
+    // Load header component
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error loading header:', error));
+
+    // Load navigation component
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('navigation-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error loading navigation:', error));
+  </script>
+</body>
+</html>

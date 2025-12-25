@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Administrador - Préstamos | BiblioTech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/adminHome_new.css">
+</head>
+
+<body>
+  
+  <script>
+    // Cargar el header
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.body.insertAdjacentHTML('afterbegin', data);
+      })
+      .catch(error => console.error('Error cargando header:', error));
+  </script>
+
+  <!-- Admin Navigation -->
+  <nav class="admin-navigation">
+    <a href="/home" class="nav-link">Inicio</a>
+    <a href="/plus" class="nav-link">Agregar</a>
+    <a href="/books" class="nav-link">Estadísticas</a>
+    <a href="/profile" class="nav-link">Usuarios</a>
+    <a href="/logout" class="nav-link logout">Cerrar Sesión</a>
+  </nav>
+
+  <main id="main-content">
+    
+    <section class="title-description-section">
+      <h1 id="title">Gestión de Préstamos</h1>
+      <p id="descripcion">Administra todas las solicitudes y préstamos activos</p>
+    </section>
+
+    <div class="filters-section">
+      <div class="filter-group">
+        <label for="filterState">Estado:</label>
+        <select id="filterState" class="filter-select">
+          <option value="all" selected>Todos</option>
+          <option value="no aprobado">Pendientes</option>
+          <option value="espera">Listo para Retirar</option>
+          <option value="en prestamo">En Préstamo</option>
+          <option value="atrasado">Atrasados</option>
+          <option value="devuelto">Devueltos</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filterType">Tipo:</label>
+        <select id="filterType" class="filter-select">
+          <option value="all">Todos</option>
+          <option value="book">Libros</option>
+          <option value="supply">Útiles</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <input type="text" id="searchUser" class="filter-input" placeholder="Buscar por usuario...">
+      </div>
+
+      <button id="refreshBtn" class="filter-btn">🔄 Actualizar</button>
+    </div>
+
+    <div class="stats-overview">
+      <div class="stat-card pending">
+        <div class="stat-number" id="statPending">0</div>
+        <div class="stat-label">Pendientes</div>
+      </div>
+      <div class="stat-card active">
+        <div class="stat-number" id="statActive">0</div>
+        <div class="stat-label">Activos</div>
+      </div>
+      <div class="stat-card overdue">
+        <div class="stat-number" id="statOverdue">0</div>
+        <div class="stat-label">Atrasados</div>
+      </div>
+      <div class="stat-card today">
+        <div class="stat-number" id="statToday">0</div>
+        <div class="stat-label">Hoy</div>
+      </div>
+    </div>
+
+    <div id="loansContainer" class="loans-container">
+      <div class="loading">Cargando préstamos...</div>
+    </div>
+  </main>
+
+  <!-- Cargar barra de navegación -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Incluir componente de popup de préstamos -->
+  <div id="loanPopupContainer"></div>
+
+  <script src="/js/adminHome.js"></script>
+  <script>
+    // Cargar la barra de navegación
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('nav-placeholder').innerHTML = data;
+      })
+      .catch(error => console.error('Error cargando navegación:', error));
+
+    // Cargar componente de popup
+    fetch('/components/infoLoan.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('loanPopupContainer').innerHTML = html;
+      });
+  </script>
+</body>
+</html>

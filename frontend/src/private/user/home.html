@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Inicio - BiblioTech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/userHome.css">
+</head>
+
+<body>
+  
+  <script>
+    // Cargar el header
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.body.insertAdjacentHTML('afterbegin', data);
+      })
+      .catch(error => console.error('Error cargando header:', error));
+  </script>
+
+  <main id="main-content">
+  
+    <section class="title-description-section">
+      <h1 id="title">BiblioTech</h1>
+      <p id="descripcion">Tu biblioteca digital de confianza</p>
+      <p id="user-welcome" class="user-welcome"></p>
+    </section>
+
+    <!-- Carrusel de Préstamos Activos -->
+    <section id="loans-carousel" class="carousel-section loans-section hidden">
+      <h2 class="carousel-title">Mis Préstamos Activos</h2>
+      <div class="carousel-container-loans">
+        <!-- Los préstamos se cargan dinámicamente -->
+      </div>
+      
+      <div class="carousel-controls">
+        <button class="carousel-prev" aria-label="Anterior">
+          <img src="/assets/icons/left.png" alt="Anterior">
+        </button>
+        <button class="carousel-next" aria-label="Siguiente">
+          <img src="/assets/icons/right.png" alt="Siguiente">
+        </button>
+      </div>
+    </section>
+
+    <section id="book-carousel" class="carousel-section">
+      <h2 class="carousel-title">Top Libros</h2>
+      <div class="carousel-container-books">
+        <!-- Los libros se cargan dinámicamente -->
+      </div>
+      
+      <div class="carousel-controls">
+        <button class="carousel-prev" aria-label="Anterior">
+          <img src="/assets/icons/left.png" alt="Anterior">
+        </button>
+        <button class="carousel-next" aria-label="Siguiente">
+          <img src="/assets/icons/right.png" alt="Siguiente">
+        </button>
+      </div>
+    </section>
+  
+    <section id="items-carousel" class="carousel-section">
+      <h2 class="carousel-title">Útiles Escolares</h2>
+      
+      <div class="carousel-container-items">
+        <!-- Los items se cargan dinámicamente -->
+      </div>
+
+      <div class="carousel-controls">
+        <button class="carousel-prev" aria-label="Anterior">
+          <img src="/assets/icons/left.png" alt="Anterior">
+        </button>
+        <button class="carousel-next" aria-label="Siguiente">
+          <img src="/assets/icons/right.png" alt="Siguiente">
+        </button>
+      </div>
+    </section>   
+
+    <section class="seccion-info">
+      <h2 class="subtitle-info">Sobre BiblioTech</h2>
+      
+      <div class="info-grid">
+        <div class="info-square">
+          <h3 class="info-title">Sobre Nosotros</h3>
+          <p class="info" href="https://et21.com.ar/">et21.com.ar</p>
+        </div>
+
+        <div class="info-square">
+          <h3 class="info-title">Horarios de Atención</h3>
+          <p class="info">Lunes a Viernes<br>8:00 - 12:10 | 13:10 - 22:00</p>
+        </div> 
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Cargar barra de navegación -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Popups para información de libros y supplies -->
+  <div id="book-popup-placeholder"></div>
+  <div id="supp-popup-placeholder"></div>
+
+  <script src="/js/loanHelper.js"></script>
+  <script src="/js/userHome.js"></script>
+  <script>
+    // Cargar la barra de navegación
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('nav-placeholder').innerHTML = data;
+      })
+      .catch(error => console.error('Error cargando navegación:', error));
+  </script>
+</body>
+</html>

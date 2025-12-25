@@ -1,29 +1,55 @@
 const db = require('../../../database/database.js')
 
-// crear comentario
-async function createComment(comment) {
-    try{
-        const [result] = await db.execute(`INSERT INTO forumChat (userId, forumId, text, date) VALUES (?, ?, ?, ?)`, [comment.userId, comment.forumId, comment.text, comment.date]);
-        return result;
-    } catch (error){
-        console.error('Error en createComment: ', error);
-        throw error;
+class ForumModel {
+    static async createForum(forum) {
+        try {
+            const [result] = await db.execute(`INSERT INTO forum (name, description) VALUES (?, ?)`, [forum.name, forum.description]);
+            return result;
+        } catch (error) {
+            console.error('Error en createForum: ', error);
+            throw error;
+        }
     }
-};
 
-
-// eliminar comentario
-async function deleteComment(idComment) {
-    try{
-        const [result] = await db.execute(`DELETE FROM forumChat WHERE id = ?`, [idComment]);
-        return result;
-    } catch (error){
-        console.error('Error en deleteComment: ', error);
-        throw error;
+    static async getForums() {
+        try {
+            const [rows] = await db.execute(`SELECT * FROM forum ORDER BY id`);
+            return rows;
+        } catch (error) {
+            console.error('Error en getForums:', error);
+            throw error;
+        }
     }
-};
 
-module.exports = {
-    createComment,
-    deleteComment
-};
+    static async getForum(forumId) {
+        try {
+            const [rows] = await db.execute(`SELECT * FROM forum WHERE id = ?`, [forumId]);
+            return rows[0];
+        } catch (error) {
+            console.error('Error en getForum:', error);
+            throw error;
+        }
+    }
+
+    static async editForum(forumId, field, data) {
+        try {
+            const [result] = await db.execute(`UPDATE forum SET \`${field}\` = ? WHERE id = ?`, [data, forumId]);
+            return result;
+        } catch (error) {
+            console.error('Error en editForum:', error);
+            throw error;
+        }
+    }
+
+    static async deleteForum(forumId) {
+        try {
+            const [result] = await db.execute(`DELETE FROM forum WHERE id = ?`, [forumId]);
+            return result;
+        } catch (error) {
+            console.error('Error en deleteForum:', error);
+            throw error;
+        }
+    }
+}
+
+module.exports = ForumModel;

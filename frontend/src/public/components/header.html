@@ -1,0 +1,126 @@
+<style>
+/* Header Component Styles */
+.header-component {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.header-component .logo-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.3s ease;
+}
+
+.header-component .logo-btn:hover {
+  transform: scale(1.05);
+}
+
+.header-component .logo-btn img {
+  width: 45px;
+  height: auto;
+  filter: drop-shadow(0 0 10px rgba(79, 195, 247, 0.4));
+}
+
+.header-component .notification-link {
+  position: absolute;
+  right: 20px;
+  transition: transform 0.3s ease;
+}
+
+.header-component .notification-link:hover {
+  transform: scale(1.1) rotate(15deg);
+}
+
+.header-component .notification-link img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-component {
+    padding: 15px;
+  }
+
+  .header-component .logo-btn img {
+    width: 40px;
+  }
+}
+</style>
+
+<header class="header-component">
+  <button class="logo-btn" onclick="window.location.href='/home'">
+    <img src="/assets/logo.png" alt="BiblioTech">
+  </button>
+  <a href="/userActivity" class="notification-link">
+    <img id="notification-icon" src="/assets/icons/notification.png" alt="Notificaciones">
+  </a>
+</header>
+
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+  const notificationIcon = document.getElementById('notification-icon');
+  
+  // Función para verificar notificaciones
+  async function checkNotifications() {
+    let hasNotifications = false;
+    
+    // Verificar notificaciones en localStorage
+    try {
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      if (userData.notifications && userData.notifications.length > 0) {
+        // Verificar si hay notificaciones sin leer
+        const unreadNotifications = userData.notifications.filter(n => !n.read);
+        if (unreadNotifications.length > 0) {
+          hasNotifications = true;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking localStorage notifications:', error);
+    }
+    
+    // Verificar notificaciones del backend
+    try {
+      const response = await fetch('/api/users/me/ads', {
+        method: 'GET',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.exists) {
+          hasNotifications = true;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking backend notifications:', error);
+    }
+    
+    // Actualizar icono
+    if (hasNotifications) {
+      notificationIcon.src = '/assets/icons/notificationOn.png';
+    } else {
+      notificationIcon.src = '/assets/icons/notification.png';
+    }
+  }
+  
+  // Verificar notificaciones al cargar
+  await checkNotifications();
+  
+  // Escuchar evento de nuevas notificaciones
+  window.addEventListener('newNotification', async () => {
+    await checkNotifications();
+  });
+  
+  // Verificar cada 30 segundos
+  setInterval(checkNotifications, 30000);
+});
+</script>

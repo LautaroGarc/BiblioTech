@@ -1,0 +1,105 @@
+<!-- Barra de navegación inferior fija -->
+<nav class="bottom-nav">
+  <a href="/home" class="nav-item" id="nav-home">
+    <img src="/assets/icons/home.png" alt="Inicio" class="nav-icon">
+    <span class="nav-label">Inicio</span>
+  </a>
+  <a href="/books" class="nav-item" id="nav-books">
+    <img src="/assets/icons/search.png" alt="Books" class="nav-icon">
+    <span class="nav-label">Libros</span>
+  </a>
+  <a href="/plus" class="nav-item nav-plus" id="nav-plus">
+    <img src="/assets/icons/plus.png" alt="Plus" class="nav-icon">
+    <span class="nav-label"></span>
+  </a>
+  <a href="/forum" class="nav-item" id="nav-forum">
+    <img src="/assets/icons/forum.png" alt="Forum" class="nav-icon">
+    <span class="nav-label">Foro</span>
+  </a>
+  <a href="/profile" class="nav-item" id="nav-profile">
+    <img src="/assets/icons/profile.png" alt="Perfil" class="nav-icon">
+    <span class="nav-label">Perfil</span>
+  </a>
+</nav>
+
+<style>
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    z-index: 1000;
+  }
+  
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.3s ease;
+  }
+  
+  .nav-item:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Estilos específicos para el botón plus */
+  .nav-plus {
+    transform: scale(1.6);
+  }
+  
+  .nav-plus:hover {
+    transform: scale(1.5);
+  }
+  
+  .nav-plus .nav-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .nav-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+  
+  .nav-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  /* Activar ítem activo basado en la página actual */
+  .nav-item.active {
+    color: #4fc3f7;
+  }
+</style>
+
+<script>
+  // Script para cambiar hrefs según tipo de usuario y resaltar el ítem activo
+  document.addEventListener('DOMContentLoaded', function() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    
+    if (userData && userData.type === 'admin') {
+      document.getElementById('nav-books').href = '/stats';
+      document.getElementById('nav-profile').href = '/users';
+    }
+    
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+      const href = item.getAttribute('href');
+      if (currentPath === href) {
+        item.classList.add('active');
+      }
+    });
+  });
+</script>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Reservas - BiblioTech</title>
+  <link rel="stylesheet" href="/css/history.css">
+</head>
+<body>
+
+  <!-- Header Component -->
+  <div id="header-container"></div>
+
+  <main class="history-container">
+    <div class="page-header">
+      <button class="back-btn" onclick="window.history.back()">
+        <span>←</span>
+      </button>
+      <h1>Historial de Reservas</h1>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">Todas</button>
+      <button class="filter-tab" data-filter="en prestamo">Activas</button>
+      <button class="filter-tab" data-filter="devuelto">Devueltas</button>
+      <button class="filter-tab" data-filter="atrasado">Atrasadas</button>
+    </div>
+
+    <div id="loans-list" class="loans-list">
+      <!-- Las reservas se cargarán dinámicamente -->
+    </div>
+
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-icon">📚</div>
+      <h2>No tienes reservas</h2>
+      <p>Explora nuestra colección y solicita un préstamo</p>
+      <button class="explore-btn" onclick="window.location.href='/search'">
+        Explorar libros
+      </button>
+    </div>
+  </main>
+
+  <!-- Navigation Component -->
+  <div id="navigation-container"></div>
+
+  <script src="/js/history.js"></script>
+  <script>
+    // Load header component
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error loading header:', error));
+
+    // Load navigation component
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('navigation-container').innerHTML = data;
+      })
+      .catch(error => console.error('Error loading navigation:', error));
+  </script>
+</body>
+</html>

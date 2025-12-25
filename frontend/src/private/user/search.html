@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Buscar Libros - BiblioTech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/userSearch.css">
+</head>
+<body>
+  
+  <!-- Header con barra de búsqueda -->
+  <header class="header">
+    <button class="back-button" onclick="window.location.href='/books'">
+      <span class="back-icon">←</span>
+    </button>
+    <div class="search-bar-container">
+      <input 
+        type="text" 
+        id="search-input" 
+        class="search-input" 
+        placeholder="Buscar libros por título, autor..."
+        autocomplete="off"
+      >
+      <button class="search-button" onclick="performSearch()">
+        <span class="search-icon">🔍</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Barra de filtros -->
+  <section class="filters-section">
+    <div class="filters-bar">
+      
+      <!-- Botón de filtros avanzados -->
+      <button class="filter-chip filter-advanced" onclick="openFiltersModal()">
+        <span class="filter-icon">🔽</span>
+        <span class="filter-text">Filtros</span>
+      </button>
+
+      <!-- Botón de favoritos -->
+      <button class="filter-chip filter-likes" id="likes-filter" onclick="toggleLikesFilter()">
+        <span class="filter-icon">❤️</span>
+        <span class="filter-text">Favoritos</span>
+      </button>
+
+      <!-- Filtros de géneros (navegables horizontalmente) -->
+      <div class="genres-container" id="genres-container">
+        <!-- Se cargan dinámicamente -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido principal -->
+  <main class="main-content">
+    
+    <!-- Información de resultados -->
+    <div class="results-info" id="results-info">
+      <p class="results-count"></p>
+    </div>
+
+    <!-- Grid de libros -->
+    <section class="books-grid" id="books-grid">
+      <!-- Los libros se cargan dinámicamente aquí -->
+    </section>
+
+    <!-- Estado de carga -->
+    <div class="loading-state" id="loading-state">
+      <div class="spinner"></div>
+      <p>Buscando libros...</p>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" id="empty-state" style="display: none;">
+      <div class="empty-icon">📚</div>
+      <p class="empty-message">No se encontraron libros</p>
+      <p class="empty-submessage">Intenta con otros términos de búsqueda</p>
+    </div>
+
+  </main>
+
+  <!-- Modal de filtros avanzados -->
+  <div class="modal" id="filters-modal">
+    <div class="modal-overlay" onclick="closeFiltersModal()"></div>
+    <div class="modal-content filters-modal-content">
+      <button class="modal-close" onclick="closeFiltersModal()">✕</button>
+      
+      <h2 class="modal-title">Filtros Avanzados</h2>
+      
+      <div class="filters-form" id="filters-form">
+        <!-- Filtros se cargan dinámicamente -->
+      </div>
+
+      <div class="modal-actions">
+        <button class="action-button secondary" onclick="clearFilters()">
+          Limpiar Filtros
+        </button>
+        <button class="action-button primary" onclick="applyFilters()">
+          Aplicar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de información del libro -->
+  <div class="modal" id="book-modal">
+    <div class="modal-overlay" onclick="closeBookModal()"></div>
+    <div class="modal-content book-modal-content">
+      <button class="modal-close" onclick="closeBookModal()">✕</button>
+      
+      <div class="modal-body" id="book-modal-body">
+        <!-- Contenido dinámico -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra de navegación -->
+  <div id="nav-placeholder"></div>
+
+  <script src="/js/loanHelper.js"></script>
+  <script src="/js/userSearch.js"></script>
+  <script>
+    // Cargar la barra de navegación
+    fetch('/components/navigation.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('nav-placeholder').innerHTML = data;
+      })
+      .catch(error => console.error('Error cargando navegación:', error));
+  </script>
+</body>
+</html>
